@@ -1,0 +1,22 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // The owner is hard-coded so access can never be lost; other users are listed in config/accesso.
+    function autorizzato() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && (
+          request.auth.token.email == 'federico.trabucchi04@gmail.com'
+          || (
+            exists(/databases/$(database)/documents/config/accesso)
+            && request.auth.token.email.lower() in get(/databases/$(database)/documents/config/accesso).data.emails
+          )
+        );
+    }
+
+    match /{collezione}/{id} {
+      allow read, write: if autorizzato();
+    }
+  }
+}
