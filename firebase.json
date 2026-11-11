@@ -1,6 +1,16 @@
 {
   "firestore": {
+    "database": "(default)",
+    "location": "eur3",
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "auth": {
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "Gestionale AGS",
+        "supportEmail": "federico.trabucchi04@gmail.com"
+      }
+    }
   }
 }
