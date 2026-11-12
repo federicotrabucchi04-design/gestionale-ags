@@ -1,3 +1,4 @@
+import { capacita, righeMenu, schermate } from "./modelli";
 import type {
   Articolo,
   CostoFisso,
@@ -6,7 +7,9 @@ import type {
   Impostazioni,
   Listino,
   MateriaPrima,
+  MetodoRiparto,
   Movimento,
+  Parte,
   PrezzoMP,
   RigaAcquisto,
   RigaMenu,
@@ -122,7 +125,10 @@ export interface RigaCosto {
 export interface QuotaFissa {
   costoFissoId: string;
   nome: string;
+  metodo: MetodoRiparto;
   quota: number;
+  /** The share this article would get with each method, for comparison. */
+  alternative: Record<MetodoRiparto, number>;
 }
 
 export interface CostoArticolo {
@@ -135,16 +141,92 @@ export interface CostoArticolo {
   avvisi: string[];
 }
 
+type CtxCosto = {
+  materiePrime: MateriaPrima[];
+  prezziMP: PrezzoMP[];
+  costiFissi: CostoFisso[];
+  listini?: Listino[];
+  articoli?: Articolo[];
+  edizioni?: Edizione[];
+};
+
+export const METODI_RIPARTO: Record<MetodoRiparto, { etichetta: string; spiegazione: string }> = {
+  pezzo: { etichetta: "Per pezzo", spiegazione: "Stesso importo su ogni pezzo venduto. Adatto a costi legati all'uso, come il gas della piastra." },
+  prezzo: {
+    etichetta: "In proporzione al prezzo",
+    spiegazione: "Ogni articolo paga la stessa percentuale del suo prezzo. Neutro e semplice: adatto ai costi generali.",
+  },
+  margine: {
+    etichetta: "In proporzione al margine",
+    spiegazione: "Ogni articolo cede la stessa percentuale del suo margine. Non cambia la classifica di convenienza.",
+  },
+};
+
+/** Base share per piece of a fixed cost (cost / pieces). */
 export function quotaCostoFisso(c: CostoFisso): number {
   if (!c.attivo || !(c.baseRiparto > 0)) return 0;
   return c.costoTotale / c.baseRiparto;
 }
 
-export function costoArticolo(
-  articolo: Articolo,
-  data: string,
-  ctx: { materiePrime: MateriaPrima[]; prezziMP: PrezzoMP[]; costiFissi: CostoFisso[] },
-): CostoArticolo {
+function materieArticolo(a: Articolo, data: string, ctx: CtxCosto): number {
+  return a.ricetta.reduce((s, r) => s + (costoUnitario(prezzoMPAl(ctx.prezziMP, r.mpId, data)) ?? 0) * (r.qta || 0), 0);
+}
+
+/** Pieces sold of each article in the latest edition that had any of them: the mix used to weigh shares. */
+function mixPezzi(ids: string[], edizioni: Edizione[] | undefined, data: string): Map<string, number> {
+  const mix = new Map<string, number>();
+  const passate = [...(edizioni ?? [])].filter((e) => e.data <= data).sort((a, b) => (a.data < b.data ? 1 : -1));
+  for (const ed of passate) {
+    const righe = righeMenu(ed).filter((r) => ids.includes(r.articoloId));
+    if (!righe.length) continue;
+    for (const r of righe) mix.set(r.articoloId, (mix.get(r.articoloId) ?? 0) + (r.qtaReale || r.qtaPrevista || 0));
+    if ([...mix.values()].some((v) => v > 0)) break;
+    mix.clear();
+  }
+  return mix;
+}
+
+/**
+ * Share of a fixed cost for every article it applies to, with all three methods.
+ * "prezzo" and "margine" weigh pieces with the latest sales mix, so the shares still add up to the cost.
+ */
+export function quoteCostoFisso(c: CostoFisso, data: string, ctx: CtxCosto): Map<string, Record<MetodoRiparto, number>> {
+  const base = quotaCostoFisso(c);
+  const out = new Map<string, Record<MetodoRiparto, number>>();
+  const listino = ctx.listini ? listinoAl(ctx.listini, data) : undefined;
+  const articoli = c.articoliIds.map((id) => ctx.articoli?.find((a) => a.id === id)).filter((a): a is Articolo => !!a);
+  const mix = mixPezzi(c.articoliIds, ctx.edizioni, data);
+  const peso = (id: string) => (mix.size ? (mix.get(id) ?? 0) : 1);
+
+  const prezzi = new Map(articoli.map((a) => [a.id, listino?.prezzi[a.id]]));
+  const margini = new Map(articoli.map((a) => [a.id, Math.max(0, (prezzi.get(a.id) ?? 0) - materieArticolo(a, data, ctx))]));
+  const media = (val: Map<string, number | undefined>) => {
+    let num = 0;
+    let den = 0;
+    for (const a of articoli) {
+      const v = val.get(a.id);
+      if (v === undefined) continue;
+      num += peso(a.id) * v;
+      den += peso(a.id);
+    }
+    return den > 0 ? num / den : 0;
+  };
+  const mediaPrezzo = media(prezzi);
+  const mediaMargine = media(margini);
+
+  for (const id of c.articoliIds) {
+    const p = prezzi.get(id);
+    const m = margini.get(id);
+    out.set(id, {
+      pezzo: base,
+      prezzo: p !== undefined && mediaPrezzo > 0 ? (base * p) / mediaPrezzo : base,
+      margine: m !== undefined && mediaMargine > 0 ? (base * m) / mediaMargine : base,
+    });
+  }
+  return out;
+}
+
+export function costoArticolo(articolo: Articolo, data: string, ctx: CtxCosto): CostoArticolo {
   const avvisi: string[] = [];
   if (articolo.ricetta.length === 0) avvisi.push("Ricetta vuota");
 
@@ -169,7 +251,9 @@ export function costoArticolo(
     .filter((c) => c.attivo && c.articoliIds.includes(articolo.id))
     .map((c) => {
       if (!(c.baseRiparto > 0)) avvisi.push(`Costo fisso "${c.nome}" senza base di riparto`);
-      return { costoFissoId: c.id, nome: c.nome, quota: quotaCostoFisso(c) };
+      const metodo = c.metodo ?? "pezzo";
+      const alternative = quoteCostoFisso(c, data, ctx).get(articolo.id) ?? { pezzo: 0, prezzo: 0, margine: 0 };
+      return { costoFissoId: c.id, nome: c.nome, metodo, quota: alternative[metodo], alternative };
     });
 
   const materie = righe.reduce((s, r) => s + r.costo, 0);
@@ -186,7 +270,7 @@ export function costoArticolo(
 }
 
 // ---------------------------------------------------------------------------
-// Edizione: previsto e reale
+// Edizione: parti, previsto e reale
 // ---------------------------------------------------------------------------
 
 export interface ValoriScenario {
@@ -201,6 +285,9 @@ export interface ValoriScenario {
 
 export interface RigaMenuCalc {
   riga: RigaMenu;
+  parteId: string;
+  /** Offered food (walk stops, fixed menus): only the cost counts. */
+  offerto: boolean;
   articolo?: Articolo;
   prezzo?: number;
   costoVivo?: number;
@@ -212,6 +299,7 @@ export interface RigaMenuCalc {
 
 export interface RigaAcquistoCalc {
   riga: RigaAcquisto;
+  parteId: string;
   mp?: MateriaPrima;
   prezzo?: PrezzoMP;
   costoUM?: number;
@@ -223,6 +311,8 @@ export interface RigaAcquistoCalc {
   disponibile: number;
   consumo: number;
   costoConsumato: number;
+  /** Value of the leftover returned to the warehouse. */
+  valoreAvanzo: number;
   percentualeConsumo?: number;
   /** Effect on the warehouse balance: leftover returned minus quantity taken. */
   nettoMagazzino: number;
@@ -230,14 +320,51 @@ export interface RigaAcquistoCalc {
 
 export interface TotaliScenario {
   pezzi: number;
+  ricaviMenu: number;
+  ingressi: number;
+  lotteria: number;
   ricavi: number;
   costoMenu: number;
+  /**
+   * Purchases not covered by the menu recipes (materials, decorations, ice...).
+   * Planned: planned spend. Real: only what was used, net of leftovers returned to stock.
+   */
+  costoMateriali: number;
   margineMenu: number;
   extraRipartiti: number;
   extraNonRipartiti: number;
+  premi: number;
+  /** Net shared costs (costs minus shared income). */
+  comuni: number;
   extra: number;
   margineFinale: number;
   marginePct?: number;
+  costoAcquisti: number;
+  /** Paid admissions (fixed-menu covers, registrations). */
+  paganti: number;
+}
+
+export interface TotaliReali extends TotaliScenario {
+  costoConsumato: number;
+  margineSuAcquisti: number;
+}
+
+export interface CalcoloParte {
+  parte: Parte;
+  menu: RigaMenuCalc[];
+  acquisti: RigaAcquistoCalc[];
+  previsto: TotaliScenario;
+  reale: TotaliReali;
+}
+
+export interface CalcoloUnita {
+  id: string;
+  nome: string;
+  data?: string;
+  peso: number;
+  partiIds: string[];
+  previsto: { ricavi: number; costi: number; comuni: number; margine: number; paganti: number };
+  reale: { ricavi: number; costi: number; comuni: number; margine: number; paganti: number };
 }
 
 export interface CassaEdizione {
@@ -251,34 +378,33 @@ export interface CassaEdizione {
 
 export interface CalcoloEdizione {
   listino?: Listino;
+  parti: CalcoloParte[];
+  /** Evenings (or parts when there are none) that share the common costs. */
+  unita: CalcoloUnita[];
   menu: RigaMenuCalc[];
   acquisti: RigaAcquistoCalc[];
-  previsto: TotaliScenario & { costoAcquisti: number };
-  reale: TotaliScenario & { costoAcquisti: number; costoConsumato: number; margineSuAcquisti: number };
+  previsto: TotaliScenario;
+  reale: TotaliReali;
+  haReali: boolean;
   cassa: CassaEdizione;
   quadratura: { ricavi: number; costi: number };
   avvisi: string[];
 }
 
+type CtxEdizione = Pick<Dati, "articoli" | "listini" | "materiePrime" | "prezziMP" | "costiFissi" | "movimenti"> & { edizioni?: Edizione[] };
+
 function scenario(prezzo: number, costoVivo: number, qta: number, quotaExtra: number): ValoriScenario {
   const ricavo = prezzo * qta;
   const costo = costoVivo * qta;
   const costoPieno = (costoVivo + quotaExtra) * qta;
-  return {
-    qta,
-    ricavo,
-    costo,
-    margine: ricavo - costo,
-    quotaExtra,
-    costoPieno,
-    margineDopoExtra: ricavo - costoPieno,
-  };
+  return { qta, ricavo, costo, margine: ricavo - costo, quotaExtra, costoPieno, margineDopoExtra: ricavo - costoPieno };
 }
 
 export function calcolaAcquisto(
   riga: RigaAcquisto,
   data: string,
   ctx: { materiePrime: MateriaPrima[]; prezziMP: PrezzoMP[] },
+  parteId = "",
 ): RigaAcquistoCalc {
   const mp = ctx.materiePrime.find((m) => m.id === riga.mpId);
   const prezzo = prezzoMPAl(ctx.prezziMP, riga.mpId, data);
@@ -289,6 +415,7 @@ export function calcolaAcquisto(
   const consumo = disponibile - (riga.rimanenza || 0);
   return {
     riga,
+    parteId,
     mp,
     prezzo,
     costoUM,
@@ -300,6 +427,7 @@ export function calcolaAcquisto(
     disponibile,
     consumo,
     costoConsumato: costoUM !== undefined ? consumo * costoUM : 0,
+    valoreAvanzo: costoUM !== undefined ? (riga.rimanenza || 0) * costoUM : 0,
     percentualeConsumo: disponibile > 0 ? consumo / disponibile : undefined,
     nettoMagazzino: (riga.rimanenza || 0) - (riga.daMagazzino || 0),
   };
@@ -319,27 +447,45 @@ export function cassaEdizione(movimenti: Movimento[], edizioneId: string): Cassa
   return { ...c, netto, nettoPrudente: netto - c.uscitePreviste };
 }
 
-export function calcolaEdizione(
-  ed: Edizione,
-  ctx: Pick<Dati, "articoli" | "listini" | "materiePrime" | "prezziMP" | "costiFissi" | "movimenti">,
-): CalcoloEdizione {
-  const listino = listinoEdizione(ctx.listini, ed);
-  const avvisi: string[] = [];
-  if (!listino) avvisi.push("Nessun listino valido alla data dell'edizione");
+function totaleVuoto(): TotaliScenario {
+  return {
+    pezzi: 0,
+    ricaviMenu: 0,
+    ingressi: 0,
+    lotteria: 0,
+    ricavi: 0,
+    costoMenu: 0,
+    costoMateriali: 0,
+    margineMenu: 0,
+    extraRipartiti: 0,
+    extraNonRipartiti: 0,
+    premi: 0,
+    comuni: 0,
+    extra: 0,
+    margineFinale: 0,
+    costoAcquisti: 0,
+    paganti: 0,
+  };
+}
 
-  const pezziPrevisti = ed.menu.reduce((s, r) => s + (r.qtaPrevista || 0), 0);
-  const pezziReali = ed.menu.reduce((s, r) => s + (r.qtaReale || 0), 0);
-  const extraRipPrev = ed.costiExtra.filter((c) => c.ripartisci).reduce((s, c) => s + (c.importoPrevisto || 0), 0);
-  const extraRipReale = ed.costiExtra.filter((c) => c.ripartisci).reduce((s, c) => s + (c.importoReale || 0), 0);
-  const extraAltriPrev = ed.costiExtra.filter((c) => !c.ripartisci).reduce((s, c) => s + (c.importoPrevisto || 0), 0);
-  const extraAltriReale = ed.costiExtra.filter((c) => !c.ripartisci).reduce((s, c) => s + (c.importoReale || 0), 0);
-  const quotaPrev = pezziPrevisti > 0 ? extraRipPrev / pezziPrevisti : 0;
-  const quotaReale = pezziReali > 0 ? extraRipReale / pezziReali : 0;
+function calcolaParte(parte: Parte, ed: Edizione, listino: Listino | undefined, ctx: CtxEdizione, avvisi: string[]): CalcoloParte {
+  const cap = capacita(parte);
+  const offerto = cap.menu === "offerto";
+  const menuRighe = cap.menu ? parte.menu : [];
+  const extra = parte.costiExtra;
+  const somma = (rip: boolean, k: "importoPrevisto" | "importoReale") =>
+    extra.filter((c) => c.ripartisci === rip).reduce((s, c) => s + (c[k] || 0), 0);
+  const pezziPrev = menuRighe.reduce((s, r) => s + (r.qtaPrevista || 0), 0);
+  const pezziReali = menuRighe.reduce((s, r) => s + (r.qtaReale || 0), 0);
+  const ripPrev = somma(true, "importoPrevisto");
+  const ripReale = somma(true, "importoReale");
+  const quotaPrev = pezziPrev > 0 ? ripPrev / pezziPrev : 0;
+  const quotaReale = pezziReali > 0 ? ripReale / pezziReali : 0;
 
-  const menu: RigaMenuCalc[] = ed.menu.map((riga) => {
+  const menu: RigaMenuCalc[] = menuRighe.map((riga) => {
     const articolo = ctx.articoli.find((a) => a.id === riga.articoloId);
     const avvisiRiga: string[] = [];
-    let prezzo = riga.prezzoFissato;
+    let prezzo = offerto ? 0 : riga.prezzoFissato;
     let costoVivo = riga.costoFissato;
     let costo: CostoArticolo | undefined;
     if (articolo) {
@@ -356,6 +502,8 @@ export function calcolaEdizione(
     avvisi.push(...avvisiRiga);
     return {
       riga,
+      parteId: parte.id,
+      offerto,
       articolo,
       prezzo,
       costoVivo,
@@ -366,67 +514,228 @@ export function calcolaEdizione(
     };
   });
 
-  const acquisti = ed.acquisti.map((r) => {
-    const calc = calcolaAcquisto(r, ed.data, ctx);
+  const acquisti = (cap.acquisti ? parte.acquisti : []).map((r) => {
+    const calc = calcolaAcquisto(r, ed.data, ctx, parte.id);
     if (calc.mp && !calc.prezzo) avvisi.push(`${calc.mp.nome}: manca il prezzo a questa data`);
+    if (calc.consumo < 0) avvisi.push(`${calc.mp?.nome ?? "Acquisto"}: riportato in magazzino più di quanto disponibile`);
     return calc;
   });
+  const inRicetta = new Set(menu.flatMap((m) => m.articolo?.ricetta.map((r) => r.mpId) ?? []));
+  const fuoriRicetta = acquisti.filter((a) => !inRicetta.has(a.riga.mpId));
 
-  const totale = (k: "previsto" | "reale", extraRip: number, extraAltri: number): TotaliScenario => {
-    const pezzi = menu.reduce((s, r) => s + r[k].qta, 0);
-    const ricavi = menu.reduce((s, r) => s + r[k].ricavo, 0);
-    const costoMenu = menu.reduce((s, r) => s + r[k].costo, 0);
-    const extra = extraRip + extraAltri;
-    const margineFinale = ricavi - costoMenu - extra;
-    return {
-      pezzi,
-      ricavi,
-      costoMenu,
-      margineMenu: ricavi - costoMenu,
-      extraRipartiti: extraRip,
-      extraNonRipartiti: extraAltri,
-      extra,
-      margineFinale,
-      marginePct: ricavi > 0 ? margineFinale / ricavi : undefined,
-    };
+  const ing = cap.ingresso ? parte.ingresso : undefined;
+  const lot = cap.lotteria ? parte.lotteria : undefined;
+  const premi = lot ? lot.premi.filter((p) => !p.donato).reduce((s, p) => s + (p.valore || 0), 0) : 0;
+
+  const totale = (k: "previsto" | "reale"): TotaliScenario => {
+    const t = totaleVuoto();
+    t.pezzi = menu.reduce((s, r) => s + r[k].qta, 0);
+    t.ricaviMenu = menu.reduce((s, r) => s + r[k].ricavo, 0);
+    t.costoMenu = menu.reduce((s, r) => s + r[k].costo, 0);
+    if (ing) {
+      t.paganti = k === "previsto" ? ing.previsti || 0 : (ing.prevendite || 0) + (ing.venditeGiorno || 0);
+      t.ingressi = (ing.prezzo || 0) * t.paganti;
+    }
+    if (lot) t.lotteria = (lot.prezzoBiglietto || 0) * ((k === "previsto" ? lot.vendutiPrevisti : lot.vendutiReali) || 0);
+    t.ricavi = t.ricaviMenu + t.ingressi + t.lotteria;
+    t.margineMenu = t.ricaviMenu - t.costoMenu;
+    t.extraRipartiti = k === "previsto" ? ripPrev : ripReale;
+    t.extraNonRipartiti = somma(false, k === "previsto" ? "importoPrevisto" : "importoReale");
+    t.premi = premi;
+    t.extra = t.extraRipartiti + t.extraNonRipartiti + t.premi;
+    t.costoMateriali = fuoriRicetta.reduce((s, a) => s + (k === "previsto" ? a.costoPrevisto : a.costoConsumato), 0);
+    t.margineFinale = t.ricavi - t.costoMenu - t.costoMateriali - t.extra;
+    t.marginePct = t.ricavi > 0 ? t.margineFinale / t.ricavi : undefined;
+    t.costoAcquisti = acquisti.reduce((s, a) => s + (k === "previsto" ? a.costoPrevisto : a.costoAcquisto), 0);
+    return t;
   };
 
-  const previsto = {
-    ...totale("previsto", extraRipPrev, extraAltriPrev),
-    costoAcquisti: acquisti.reduce((s, a) => s + a.costoPrevisto, 0),
-  };
-  const baseReale = totale("reale", extraRipReale, extraAltriReale);
+  const reale = totale("reale");
   const costoConsumato = acquisti.reduce((s, a) => s + a.costoConsumato, 0);
-  const reale = {
-    ...baseReale,
-    costoAcquisti: acquisti.reduce((s, a) => s + a.costoAcquisto, 0),
-    costoConsumato,
-    margineSuAcquisti: baseReale.ricavi - costoConsumato - baseReale.extra,
-  };
-
-  const cassa = cassaEdizione(ctx.movimenti, ed.id);
   return {
-    listino,
+    parte,
     menu,
     acquisti,
+    previsto: totale("previsto"),
+    reale: { ...reale, costoConsumato, margineSuAcquisti: reale.ricavi - costoConsumato - reale.extra },
+  };
+}
+
+function sommaTotali(lista: TotaliScenario[]): TotaliScenario {
+  const t = totaleVuoto();
+  for (const x of lista) {
+    for (const k of Object.keys(t) as (keyof TotaliScenario)[]) {
+      if (k === "marginePct") continue;
+      (t[k] as number) += (x[k] as number) || 0;
+    }
+  }
+  return t;
+}
+
+export function calcolaEdizione(ed: Edizione, ctx: CtxEdizione): CalcoloEdizione {
+  const listino = listinoEdizione(ctx.listini, ed);
+  const avvisi: string[] = [];
+  const parti = ed.parti.map((p) => calcolaParte(p, ed, listino, ctx, avvisi));
+  if (!listino && parti.some((p) => p.menu.some((m) => !m.offerto))) avvisi.push("Nessun listino valido alla data dell'edizione");
+
+  const comuniNetti = (k: "importoPrevisto" | "importoReale") =>
+    ed.comuni.reduce((s, c) => s + (c.tipo === "uscita" ? 1 : -1) * (c[k] || 0), 0);
+
+  const chiudi = (base: TotaliScenario, comuni: number): TotaliScenario => {
+    const t = { ...base, comuni, extra: base.extra + comuni, margineFinale: base.margineFinale - comuni };
+    t.marginePct = t.ricavi > 0 ? t.margineFinale / t.ricavi : undefined;
+    return t;
+  };
+  const previsto = chiudi(
+    sommaTotali(parti.map((p) => p.previsto)),
+    comuniNetti("importoPrevisto"),
+  );
+  const baseReale = chiudi(
+    sommaTotali(parti.map((p) => p.reale)),
+    comuniNetti("importoReale"),
+  );
+  const costoConsumato = parti.reduce((s, p) => s + p.reale.costoConsumato, 0);
+  const reale: TotaliReali = { ...baseReale, costoConsumato, margineSuAcquisti: baseReale.ricavi - costoConsumato - baseReale.extra };
+
+  const gruppi = schermate(ed);
+  const pesoTot = gruppi.reduce((s, g) => s + (g.serata ? g.serata.peso : (g.parti[0]?.peso ?? 0)), 0);
+  const unita: CalcoloUnita[] = gruppi.map((g) => {
+    const peso = g.serata ? g.serata.peso : (g.parti[0]?.peso ?? 0);
+    const quota = pesoTot > 0 ? peso / pesoTot : 0;
+    const mie = parti.filter((p) => g.parti.some((x) => x.id === p.parte.id));
+    const val = (k: "previsto" | "reale") => {
+      const ricavi = mie.reduce((s, p) => s + p[k].ricavi, 0);
+      const costi = mie.reduce((s, p) => s + p[k].costoMenu + p[k].costoMateriali + p[k].extra, 0);
+      const comuni = (k === "previsto" ? previsto.comuni : reale.comuni) * quota;
+      return { ricavi, costi, comuni, margine: ricavi - costi - comuni, paganti: mie.reduce((s, p) => s + p[k].paganti, 0) };
+    };
+    return { id: g.id, nome: g.nome, data: g.serata?.data, peso, partiIds: g.parti.map((p) => p.id), previsto: val("previsto"), reale: val("reale") };
+  });
+
+  const cassa = cassaEdizione(ctx.movimenti, ed.id);
+  const comuniUsciteReali = ed.comuni.filter((c) => c.tipo === "uscita").reduce((s, c) => s + (c.importoReale || 0), 0);
+  const comuniEntrateReali = ed.comuni.filter((c) => c.tipo === "entrata").reduce((s, c) => s + (c.importoReale || 0), 0);
+  const haReali = reale.pezzi > 0 || reale.paganti > 0 || reale.lotteria > 0 || reale.costoAcquisti > 0;
+  return {
+    listino,
+    parti,
+    unita,
+    menu: parti.flatMap((p) => p.menu),
+    acquisti: parti.flatMap((p) => p.acquisti),
     previsto,
     reale,
+    haReali,
     cassa,
     quadratura: {
-      ricavi: cassa.entrateUfficiali - reale.ricavi,
-      costi: cassa.usciteUfficiali - (reale.costoAcquisti + reale.extra),
+      ricavi: cassa.entrateUfficiali - reale.ricavi - comuniEntrateReali,
+      costi: cassa.usciteUfficiali - (reale.costoAcquisti + reale.extra - reale.comuni + comuniUsciteReali),
     },
     avvisi: [...new Set(avvisi)],
   };
 }
 
-/** Freezes price and cost on each menu row (used when closing an edition). */
-export function fissaValoriMenu(
-  ed: Edizione,
-  ctx: Pick<Dati, "articoli" | "listini" | "materiePrime" | "prezziMP" | "costiFissi" | "movimenti">,
-): RigaMenu[] {
-  const calc = calcolaEdizione({ ...ed, menu: ed.menu.map(({ prezzoFissato, costoFissato, ...r }) => r) }, ctx);
-  return calc.menu.map((m) => ({ ...m.riga, prezzoFissato: m.prezzo ?? 0, costoFissato: m.costoVivo ?? 0 }));
+/** Freezes price and cost on each menu row of every part (used when closing an edition). */
+export function fissaValori(ed: Edizione, ctx: CtxEdizione): Parte[] {
+  const calc = calcolaEdizione({ ...ed, parti: sbloccaValori(ed.parti) }, ctx);
+  return ed.parti.map((p) => {
+    const cp = calc.parti.find((x) => x.parte.id === p.id);
+    return {
+      ...p,
+      menu: p.menu.map((r) => {
+        const m = cp?.menu.find((x) => x.riga.id === r.id);
+        return m ? { ...r, prezzoFissato: m.prezzo ?? 0, costoFissato: m.costoVivo ?? 0 } : r;
+      }),
+    };
+  });
+}
+
+export function sbloccaValori(parti: Parte[]): Parte[] {
+  return parti.map((p) => ({ ...p, menu: p.menu.map(({ prezzoFissato, costoFissato, ...r }) => r) }));
+}
+
+// ---------------------------------------------------------------------------
+// Storico: quanto si è venduto e usato nelle edizioni precedenti
+// ---------------------------------------------------------------------------
+
+export interface DatoStorico {
+  edizioni: { id: string; nome: string; data: string; valore: number; partecipanti?: number }[];
+  media?: number;
+  /** Average per participant, when the editions record participants. */
+  mediaPerPartecipante?: number;
+}
+
+function precedentiStesseEvento(ed: Pick<Edizione, "id" | "eventoId" | "data">, edizioni: Edizione[], n: number): Edizione[] {
+  return edizioni
+    .filter((e) => e.eventoId === ed.eventoId && e.id !== ed.id && e.data < ed.data && e.stato !== "pianificata")
+    .sort((a, b) => (a.data < b.data ? 1 : -1))
+    .slice(0, n);
+}
+
+function riassumi(righe: DatoStorico["edizioni"]): DatoStorico {
+  if (!righe.length) return { edizioni: [] };
+  const media = righe.reduce((s, r) => s + r.valore, 0) / righe.length;
+  const conPart = righe.filter((r) => r.partecipanti && r.partecipanti > 0);
+  const mediaPerPartecipante = conPart.length ? conPart.reduce((s, r) => s + r.valore / r.partecipanti!, 0) / conPart.length : undefined;
+  return { edizioni: righe, media, mediaPerPartecipante };
+}
+
+/** Consumption of a raw material in the last editions of the same event (same part name when possible). */
+export function usoStorico(
+  mpId: string,
+  ed: Pick<Edizione, "id" | "eventoId" | "data">,
+  ctx: Pick<Dati, "edizioni" | "materiePrime" | "prezziMP">,
+  parteNome?: string,
+  n = 3,
+): DatoStorico {
+  const righe: DatoStorico["edizioni"] = [];
+  for (const e of precedentiStesseEvento(ed, ctx.edizioni, n)) {
+    const parti = e.parti.filter((p) => p.acquisti.some((a) => a.mpId === mpId));
+    const stesse = parteNome ? parti.filter((p) => p.nome === parteNome) : [];
+    const usate = stesse.length ? stesse : parti;
+    if (!usate.length) continue;
+    const valore = usate.flatMap((p) => p.acquisti.filter((a) => a.mpId === mpId)).reduce((s, a) => s + calcolaAcquisto(a, e.data, ctx).consumo, 0);
+    righe.push({ id: e.id, nome: e.nome, data: e.data, valore, partecipanti: e.partecipantiReali });
+  }
+  return riassumi(righe);
+}
+
+/** Pieces sold of an article in the last editions of the same event. */
+export function venditeStoriche(articoloId: string, ed: Pick<Edizione, "id" | "eventoId" | "data">, edizioni: Edizione[], parteNome?: string, n = 3): DatoStorico {
+  const righe: DatoStorico["edizioni"] = [];
+  for (const e of precedentiStesseEvento(ed, edizioni, n)) {
+    const parti = e.parti.filter((p) => p.menu.some((m) => m.articoloId === articoloId));
+    const stesse = parteNome ? parti.filter((p) => p.nome === parteNome) : [];
+    const usate = stesse.length ? stesse : parti;
+    if (!usate.length) continue;
+    const valore = usate.flatMap((p) => p.menu.filter((m) => m.articoloId === articoloId)).reduce((s, m) => s + (m.qtaReale || 0), 0);
+    righe.push({ id: e.id, nome: e.nome, data: e.data, valore, partecipanti: e.partecipantiReali });
+  }
+  return riassumi(righe);
+}
+
+/** Any per-part figure (paid covers, tickets sold...) in the last editions of the same event, matched by part name. */
+export function storicoParte(
+  ed: Pick<Edizione, "id" | "eventoId" | "data">,
+  edizioni: Edizione[],
+  parteNome: string,
+  valore: (p: Parte) => number | undefined,
+  n = 3,
+): DatoStorico {
+  const righe: DatoStorico["edizioni"] = [];
+  for (const e of precedentiStesseEvento(ed, edizioni, n)) {
+    const p = e.parti.find((x) => x.nome === parteNome);
+    const v = p ? valore(p) : undefined;
+    if (v !== undefined) righe.push({ id: e.id, nome: e.nome, data: e.data, valore: v, partecipanti: e.partecipantiReali });
+  }
+  return riassumi(righe);
+}
+
+/** Suggested quantity to buy: historical use (scaled on expected participants when known) minus what is in stock. */
+export function suggerimentoAcquisto(storico: DatoStorico, partecipantiPrevisti: number | undefined, giacenza: number): number | undefined {
+  const fabbisogno =
+    storico.mediaPerPartecipante !== undefined && partecipantiPrevisti ? storico.mediaPerPartecipante * partecipantiPrevisti : storico.media;
+  if (fabbisogno === undefined) return undefined;
+  return Math.max(0, fabbisogno - Math.max(0, giacenza));
 }
 
 // ---------------------------------------------------------------------------
@@ -529,6 +838,7 @@ export interface PuntoInventario {
   conteggio?: { calcolato: number; differenza: number };
   voceId?: string;
   edizioneId?: string;
+  scadenza?: string;
 }
 
 export function edizioneMuoveMagazzino(ed: Edizione, oggi = oggiISO()): boolean {
@@ -541,21 +851,23 @@ export function storicoInventario(
   ctx: Pick<Dati, "edizioni" | "inventario" | "materiePrime" | "prezziMP" | "eventi">,
   oggi = oggiISO(),
 ): PuntoInventario[] {
-  type Passo = { data: string; ordine: number; descrizione: string; fn: (saldo: number) => PuntoInventario };
+  type Passo = { data: string; ordine: number; fn: (saldo: number) => PuntoInventario };
   const lista: Passo[] = [];
 
   for (const ed of ctx.edizioni) {
     if (!edizioneMuoveMagazzino(ed, oggi)) continue;
-    for (const r of ed.acquisti) {
-      if (r.mpId !== mpId) continue;
-      const calc = calcolaAcquisto(r, ed.data, ctx);
-      const variazione = calc.nettoMagazzino;
-      lista.push({
-        data: ed.data,
-        ordine: 0,
-        descrizione: `Edizione ${ed.nome}`,
-        fn: (saldo) => ({ data: ed.data, descrizione: `Edizione ${ed.nome}`, variazione, saldo: saldo + variazione, edizioneId: ed.id }),
-      });
+    const multi = ed.parti.length > 1;
+    for (const parte of ed.parti) {
+      for (const r of parte.acquisti) {
+        if (r.mpId !== mpId) continue;
+        const variazione = calcolaAcquisto(r, ed.data, ctx).nettoMagazzino;
+        const descrizione = multi ? `Edizione ${ed.nome} · ${parte.nome}` : `Edizione ${ed.nome}`;
+        lista.push({
+          data: ed.data,
+          ordine: 0,
+          fn: (saldo) => ({ data: ed.data, descrizione, variazione, saldo: saldo + variazione, edizioneId: ed.id, scadenza: r.rimanenza > 0 ? r.scadenza : undefined }),
+        });
+      }
     }
   }
 
@@ -565,7 +877,6 @@ export function storicoInventario(
       lista.push({
         data: v.data,
         ordine: 1,
-        descrizione: "Conteggio",
         fn: (saldo) => ({
           data: v.data,
           descrizione: v.note ? `Conteggio - ${v.note}` : "Conteggio",
@@ -581,7 +892,6 @@ export function storicoInventario(
       lista.push({
         data: v.data,
         ordine: 0,
-        descrizione: descr,
         fn: (saldo) => ({
           data: v.data,
           descrizione: v.note ? `${descr} - ${v.note}` : descr,
@@ -607,6 +917,17 @@ export function storicoInventario(
 export function saldoInventario(mpId: string, ctx: Parameters<typeof storicoInventario>[1], oggi = oggiISO()): number {
   const punti = storicoInventario(mpId, ctx, oggi);
   return punti.length ? punti[punti.length - 1].saldo : 0;
+}
+
+/** Expiry of the most recent leftover still relevant (after the last count), if any. */
+export function scadenzaGiacenza(mpId: string, ctx: Parameters<typeof storicoInventario>[1], oggi = oggiISO()): string | undefined {
+  const punti = storicoInventario(mpId, ctx, oggi);
+  if (!punti.length || punti[punti.length - 1].saldo <= 0) return undefined;
+  for (let i = punti.length - 1; i >= 0; i--) {
+    if (punti[i].scadenza) return punti[i].scadenza;
+    if (punti[i].conteggio) return undefined;
+  }
+  return undefined;
 }
 
 export function ultimoConteggio(inventario: VoceInventario[], mpId: string): VoceInventario | undefined {

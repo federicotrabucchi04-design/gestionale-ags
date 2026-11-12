@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import Button from "@mui/material/Button";
@@ -15,7 +16,10 @@ import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
+import AccountTreeOutlined from "@mui/icons-material/AccountTreeOutlined";
 import CheckCircleOutlined from "@mui/icons-material/CheckCircleOutlined";
 import CloudDoneOutlined from "@mui/icons-material/CloudDoneOutlined";
 import CloudSyncOutlined from "@mui/icons-material/CloudSyncOutlined";
@@ -24,19 +28,25 @@ import EditOutlined from "@mui/icons-material/EditOutlined";
 import LockOpenOutlined from "@mui/icons-material/LockOpenOutlined";
 import LockOutlined from "@mui/icons-material/LockOutlined";
 import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
+import PrintOutlined from "@mui/icons-material/PrintOutlined";
+import ShoppingCartOutlined from "@mui/icons-material/ShoppingCartOutlined";
+import TableViewOutlined from "@mui/icons-material/TableViewOutlined";
 import { useGestionale } from "@/components/Gestionale";
+import ListaSpesa from "@/components/ListaSpesa";
 import { Etichetta, Vuoto } from "@/components/ui";
-import { annoSociale, calcolaEdizione, fissaValoriMenu } from "@/lib/calcoli";
+import { annoSociale, calcolaEdizione, fissaValori, sbloccaValori } from "@/lib/calcoli";
+import { esportaEdizioneExcel } from "@/lib/export";
 import { dataLunga } from "@/lib/format";
+import { TIPI_EVENTO, schermate } from "@/lib/modelli";
 import { STATI } from "@/lib/stati";
-import type { Edizione } from "@/lib/types";
-import AcquistiEdizione from "./AcquistiEdizione";
-import CostiExtraEdizione from "./CostiExtraEdizione";
+import type { Edizione, Parte } from "@/lib/types";
+import CostiComuni from "./CostiComuni";
 import DatiEdizioneDialog from "./DatiEdizioneDialog";
-import MenuEdizione from "./MenuEdizione";
 import MovimentiEdizione from "./MovimentiEdizione";
+import { SchermataEdizione, SezioneParte, SolaLettura, sezioniParte, type IdSezione } from "./ParteEdizione";
 import RiepilogoEdizione from "./RiepilogoEdizione";
-import type { Aggiorna } from "./tipi";
+import StrutturaDialog from "./StrutturaDialog";
+import type { Aggiorna, PropsParte } from "./tipi";
 
 /** Local draft of the edition, saved automatically shortly after each change. */
 function useBozza(originale: Edizione | undefined) {
@@ -57,6 +67,7 @@ function useBozza(originale: Edizione | undefined) {
   useEffect(() => {
     if (!sporca.current) {
       rif.current = originale;
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- allinea la bozza ai dati arrivati dal database quando non ci sono modifiche locali
       setBozza(originale);
     }
   }, [originale]);
@@ -64,8 +75,10 @@ function useBozza(originale: Edizione | undefined) {
   useEffect(() => {
     const prima = () => scrivi();
     window.addEventListener("beforeunload", prima);
+    window.addEventListener("pagehide", prima);
     return () => {
       window.removeEventListener("beforeunload", prima);
+      window.removeEventListener("pagehide", prima);
       clearTimeout(timer.current);
       scrivi();
     };
@@ -86,9 +99,6 @@ function useBozza(originale: Edizione | undefined) {
   return { bozza, aggiorna, inSalvataggio };
 }
 
-const SCHEDE = ["riepilogo", "menu", "acquisti", "extra", "movimenti"] as const;
-type Scheda = (typeof SCHEDE)[number];
-
 export default function EdizionePagina() {
   const { id, edizioneId } = useParams<{ id: string; edizioneId: string }>();
   const router = useRouter();
@@ -96,14 +106,17 @@ export default function EdizionePagina() {
   const originale = dati.edizioni.find((e) => e.id === edizioneId);
   const evento = dati.eventi.find((e) => e.id === id);
   const { bozza, aggiorna, inSalvataggio } = useBozza(originale);
-  const [scheda, setScheda] = useState<Scheda>("riepilogo");
+  const [scheda, setScheda] = useState("riepilogo");
   const [menuAzioni, setMenuAzioni] = useState<HTMLElement | null>(null);
   const [datiAperti, setDatiAperti] = useState(false);
+  const [strutturaAperta, setStrutturaAperta] = useState(false);
+  const [spesa, setSpesa] = useState(false);
+  const [vistaPrev, setVistaPrev] = useState<boolean | null>(null);
 
   useEffect(() => {
     const t = new URLSearchParams(window.location.search).get("tab");
     // eslint-disable-next-line react-hooks/set-state-in-effect -- la query string è disponibile solo dopo l'idratazione
-    if (t && (SCHEDE as readonly string[]).includes(t)) setScheda(t as Scheda);
+    if (t) setScheda(t);
   }, []);
 
   const calc = useMemo(() => (bozza ? calcolaEdizione(bozza, dati) : undefined), [bozza, dati]);
@@ -121,26 +134,53 @@ export default function EdizionePagina() {
     );
 
   const stato = STATI[bozza.stato];
-  const cambiaScheda = (s: Scheda) => {
-    setScheda(s);
-    window.history.replaceState(null, "", `?tab=${s}`);
+  const bloccata = bozza.stato === "chiusa";
+  const previsione = vistaPrev ?? !calc.haReali;
+  const elenco = schermate(bozza);
+  const piatta = elenco.length === 1 && elenco[0].parti.length === 1 && !bozza.serate?.length;
+  const unica = piatta ? elenco[0].parti[0] : undefined;
+  const mostraComuni = calc.unita.length > 1 || bozza.comuni.length > 0;
+  const nMovimenti = dati.movimenti.filter((m) => m.edizioneId === bozza.id).length;
+
+  const schede: { id: string; etichetta: string }[] = [
+    { id: "riepilogo", etichetta: "Riepilogo" },
+    ...(unica ? sezioniParte(unica).map((s) => ({ id: `s:${s.id}`, etichetta: s.etichetta })) : elenco.map((s) => ({ id: s.id, etichetta: s.nome }))),
+    ...(mostraComuni ? [{ id: "comuni", etichetta: `Costi comuni (${bozza.comuni.length})` }] : []),
+    { id: "movimenti", etichetta: `Movimenti (${nMovimenti})` },
+  ];
+  const schedaValida = schede.some((s) => s.id === scheda) ? scheda : "riepilogo";
+
+  const cambiaScheda = (s: string) => {
+    const vecchie: Record<string, string> = { menu: "s:menu", acquisti: "s:acquisti", extra: "s:extra" };
+    const v = unica && vecchie[s] ? vecchie[s] : s;
+    setScheda(v);
+    window.history.replaceState(null, "", `?tab=${encodeURIComponent(v)}`);
   };
+
+  const propsParte = (p: Parte): PropsParte => ({
+    ed: bozza,
+    parte: p,
+    calc: calc.parti.find((c) => c.parte.id === p.id)!,
+    calcEd: calc,
+    bloccata,
+    aggiornaParte: (patch) => aggiorna((e) => ({ parti: e.parti.map((x) => (x.id === p.id ? { ...x, ...(typeof patch === "function" ? patch(x) : patch) } : x)) })),
+  });
 
   const chiudi = async () => {
     if (
       await conferma(
         "Chiudere l'edizione?",
-        "Prezzi e costi del menu vengono congelati: modifiche future a listini, ricette e materie prime non cambieranno più i conti di questa edizione. Potrai riaprirla.",
+        "Prezzi e costi vengono congelati e l'edizione diventa di sola lettura: modifiche future a listini, ricette e prezzi non cambieranno più i suoi conti. Potrai riaprirla.",
         "Chiudi edizione",
       )
     ) {
-      aggiorna((e) => ({ stato: "chiusa", menu: fissaValoriMenu(e, dati) }));
+      aggiorna((e) => ({ stato: "chiusa", parti: fissaValori(e, dati) }));
       notifica("Edizione chiusa: valori congelati");
     }
   };
 
   const riapri = () => {
-    aggiorna((e) => ({ stato: "conclusa", menu: e.menu.map(({ prezzoFissato, costoFissato, ...r }) => r) }));
+    aggiorna((e) => ({ stato: "conclusa", parti: sbloccaValori(e.parti) }));
     notifica("Edizione riaperta: valori di nuovo collegati al prezziario");
   };
 
@@ -148,7 +188,7 @@ export default function EdizionePagina() {
     const collegati = dati.movimenti.filter((m) => m.edizioneId === bozza.id);
     const testo = collegati.length
       ? `${collegati.length} movimenti collegati resteranno in cassa come gestione ordinaria.`
-      : "Menu, acquisti e costi extra di questa edizione verranno eliminati.";
+      : "Menu, acquisti e costi di questa edizione verranno eliminati.";
     if (await conferma(`Eliminare ${bozza.nome}?`, testo, "Elimina")) {
       collegati.forEach((m) => salva("movimenti", { ...m, edizioneId: undefined }));
       elimina("edizioni", bozza.id);
@@ -156,6 +196,44 @@ export default function EdizionePagina() {
       router.push(`/eventi/${id}`);
     }
   };
+
+  const voceMenu = (icona: ReactNode, testo: string, azione: () => void, colore?: string) => (
+    <MenuItem
+      onClick={() => {
+        setMenuAzioni(null);
+        azione();
+      }}
+      sx={colore ? { color: colore } : undefined}
+    >
+      <ListItemIcon>{icona}</ListItemIcon>
+      {testo}
+    </MenuItem>
+  );
+
+  let contenuto: ReactNode;
+  if (schedaValida === "riepilogo") contenuto = <RiepilogoEdizione ed={bozza} calc={calc} vai={cambiaScheda} />;
+  else if (schedaValida === "movimenti") contenuto = <MovimentiEdizione ed={bozza} calc={calc} />;
+  else if (schedaValida === "comuni")
+    contenuto = (
+      <SolaLettura attiva={bloccata}>
+        <CostiComuni ed={bozza} calc={calc} aggiorna={aggiorna} />
+      </SolaLettura>
+    );
+  else if (unica && schedaValida.startsWith("s:")) contenuto = <SezioneParte sezione={schedaValida.slice(2) as IdSezione} {...propsParte(unica)} />;
+  else {
+    const s = elenco.find((x) => x.id === schedaValida)!;
+    const u = calc.unita.find((x) => x.id === s.id);
+    contenuto = (
+      <SchermataEdizione
+        key={s.id}
+        schermata={s}
+        calcParti={calc.parti}
+        props={propsParte}
+        previsione={previsione}
+        unita={s.serata && u ? (previsione ? u.previsto : u.reale) : undefined}
+      />
+    );
+  }
 
   return (
     <>
@@ -174,10 +252,12 @@ export default function EdizionePagina() {
             <Etichetta tono={stato.tono}>{stato.etichetta}</Etichetta>
           </Stack>
           <Typography color="text.secondary" sx={{ mt: 0.5 }}>
-            {dataLunga(bozza.data)} · anno {annoSociale(bozza.data)} · {calc.listino ? `listino ${calc.listino.nome}` : "nessun listino"}
+            {TIPI_EVENTO[evento.tipo]?.etichetta} · {dataLunga(bozza.data)} · anno {annoSociale(bozza.data)}
+            {calc.menu.some((m) => !m.offerto) && ` · ${calc.listino ? `listino ${calc.listino.nome}` : "nessun listino"}`}
+            {bozza.presepe && ` · presepe ${bozza.presepe}`}
           </Typography>
         </Box>
-        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+        <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap", gap: 1 }}>
           <Chip
             size="small"
             variant="outlined"
@@ -190,7 +270,7 @@ export default function EdizionePagina() {
               startIcon={<CheckCircleOutlined />}
               onClick={() => {
                 aggiorna({ stato: "conclusa" });
-                cambiaScheda("menu");
+                setVistaPrev(false);
                 notifica("Edizione conclusa: inserisci le quantità reali");
               }}
             >
@@ -211,67 +291,57 @@ export default function EdizionePagina() {
             <MoreVertOutlined />
           </IconButton>
           <Menu anchorEl={menuAzioni} open={!!menuAzioni} onClose={() => setMenuAzioni(null)}>
-            <MenuItem
-              onClick={() => {
-                setMenuAzioni(null);
-                setDatiAperti(true);
-              }}
-            >
-              <ListItemIcon>
-                <EditOutlined fontSize="small" />
-              </ListItemIcon>
-              Dati edizione
-            </MenuItem>
-            {bozza.stato !== "pianificata" && (
-              <MenuItem
-                onClick={() => {
-                  setMenuAzioni(null);
-                  aggiorna((e) => ({ stato: "pianificata", menu: e.menu.map(({ prezzoFissato, costoFissato, ...r }) => r) }));
-                }}
-              >
-                <ListItemIcon>
-                  <EditOutlined fontSize="small" />
-                </ListItemIcon>
-                Riporta a pianificata
-              </MenuItem>
-            )}
-            <MenuItem
-              onClick={() => {
-                setMenuAzioni(null);
-                void eliminaEdizione();
-              }}
-              sx={{ color: "error.main" }}
-            >
-              <ListItemIcon>
-                <DeleteOutlined fontSize="small" color="error" />
-              </ListItemIcon>
-              Elimina edizione
-            </MenuItem>
+            {!bloccata && voceMenu(<EditOutlined fontSize="small" />, "Dati edizione", () => setDatiAperti(true))}
+            {!bloccata && voceMenu(<AccountTreeOutlined fontSize="small" />, "Struttura: serate e parti", () => setStrutturaAperta(true))}
+            {voceMenu(<ShoppingCartOutlined fontSize="small" />, "Lista della spesa", () => setSpesa(true))}
+            {voceMenu(<PrintOutlined fontSize="small" />, "Stampa o PDF", () => window.open(`/stampa?edizione=${bozza.id}`, "_blank"))}
+            {voceMenu(<TableViewOutlined fontSize="small" />, "Excel completo", () => void esportaEdizioneExcel(bozza, calc, dati, true))}
+            {voceMenu(<TableViewOutlined fontSize="small" />, "Excel sintetico", () => void esportaEdizioneExcel(bozza, calc, dati, false))}
+            {bozza.stato !== "pianificata" &&
+              voceMenu(<EditOutlined fontSize="small" />, "Riporta a pianificata", () => aggiorna((e) => ({ stato: "pianificata", parti: sbloccaValori(e.parti) })))}
+            {voceMenu(<DeleteOutlined fontSize="small" color="error" />, "Elimina edizione", () => void eliminaEdizione(), "error.main")}
           </Menu>
         </Stack>
       </Stack>
 
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        {stato.spiegazione}
-      </Typography>
+      {bloccata ? (
+        <Alert severity="info" sx={{ mb: 2 }} action={<Button onClick={riapri}>Riapri</Button>}>
+          Edizione chiusa: i dati sono in sola lettura. Riaprila per correggere qualcosa.
+        </Alert>
+      ) : (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          {stato.spiegazione}
+        </Typography>
+      )}
 
-      <Card sx={{ mb: 3, position: "sticky", top: { xs: 56, sm: 64 }, zIndex: 2 }}>
-        <Tabs value={scheda} onChange={(_, v) => cambiaScheda(v)} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
-          <Tab value="riepilogo" label="Riepilogo" />
-          <Tab value="menu" label={`Menu (${bozza.menu.length})`} />
-          <Tab value="acquisti" label={`Acquisti (${bozza.acquisti.length})`} />
-          <Tab value="extra" label={`Costi extra (${bozza.costiExtra.length})`} />
-          <Tab value="movimenti" label={`Movimenti (${dati.movimenti.filter((m) => m.edizioneId === bozza.id).length})`} />
+      <Card sx={{ mb: 3, position: "sticky", top: { xs: 56, sm: 64 }, zIndex: 2, display: "flex", alignItems: "center" }}>
+        <Tabs value={schedaValida} onChange={(_, v) => cambiaScheda(v)} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile sx={{ flex: 1, minWidth: 0 }}>
+          {schede.map((s) => (
+            <Tab key={s.id} value={s.id} label={s.etichetta} />
+          ))}
         </Tabs>
+        {!unica && elenco.some((s) => s.id === schedaValida) && (
+          <ToggleButtonGroup size="small" exclusive value={previsione ? "p" : "r"} onChange={(_, v) => v && setVistaPrev(v === "p")} sx={{ mx: 1, display: { xs: "none", sm: "flex" } }}>
+            <ToggleButton value="p">Previsto</ToggleButton>
+            <ToggleButton value="r">Reale</ToggleButton>
+          </ToggleButtonGroup>
+        )}
       </Card>
 
-      {scheda === "riepilogo" && <RiepilogoEdizione ed={bozza} calc={calc} vai={cambiaScheda} />}
-      {scheda === "menu" && <MenuEdizione ed={bozza} calc={calc} aggiorna={aggiorna} />}
-      {scheda === "acquisti" && <AcquistiEdizione ed={bozza} calc={calc} aggiorna={aggiorna} />}
-      {scheda === "extra" && <CostiExtraEdizione ed={bozza} calc={calc} aggiorna={aggiorna} />}
-      {scheda === "movimenti" && <MovimentiEdizione ed={bozza} calc={calc} />}
+      {contenuto}
 
       <DatiEdizioneDialog aperto={datiAperti} ed={bozza} aggiorna={aggiorna} onChiudi={() => setDatiAperti(false)} />
+      <StrutturaDialog
+        ed={bozza}
+        aperto={strutturaAperta}
+        onChiudi={() => setStrutturaAperta(false)}
+        onApplica={(s) => {
+          aggiorna(s);
+          setStrutturaAperta(false);
+          notifica("Struttura aggiornata");
+        }}
+      />
+      <ListaSpesa aperta={spesa} ed={bozza} calc={calc} onChiudi={() => setSpesa(false)} />
     </>
   );
 }

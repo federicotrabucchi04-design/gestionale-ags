@@ -30,7 +30,7 @@ import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
 import SearchOutlined from "@mui/icons-material/SearchOutlined";
 import { useGestionale } from "@/components/Gestionale";
 import { CampoNumero, Etichetta, Griglia, Intestazione, Kpi, Vuoto } from "@/components/ui";
-import { costoUnitario, nuovoId, oggiISO, prezzoMPAl, storicoInventario, ultimoConteggio } from "@/lib/calcoli";
+import { costoUnitario, nuovoId, oggiISO, prezzoMPAl, scadenzaGiacenza, storicoInventario, ultimoConteggio } from "@/lib/calcoli";
 import { data as fmtData, euro, numero } from "@/lib/format";
 import type { MateriaPrima, TipoInventario, VoceInventario } from "@/lib/types";
 
@@ -38,6 +38,7 @@ export default function Inventario() {
   const { dati } = useGestionale();
   const [cerca, setCerca] = useState("");
   const [soloGiacenza, setSoloGiacenza] = useState(false);
+  const [vista, setVista] = useState<"tutti" | "consumo" | "materiale" | "scadenze">("tutti");
   const [dettaglio, setDettaglio] = useState<MateriaPrima | null>(null);
   const [conteggio, setConteggio] = useState(false);
   const oggi = oggiISO();
@@ -46,15 +47,28 @@ export default function Inventario() {
     const q = cerca.toLowerCase().trim();
     return dati.materiePrime
       .filter((m) => !q || `${m.codice} ${m.nome}`.toLowerCase().includes(q))
+      .filter((m) => vista === "tutti" || vista === "scadenze" || (m.genere ?? "consumo") === vista)
       .map((m) => {
         const storia = storicoInventario(m.id, dati, oggi);
         const saldo = storia.length ? storia[storia.length - 1].saldo : 0;
         const costoUM = costoUnitario(prezzoMPAl(dati.prezziMP, m.id, oggi));
-        return { m, saldo, valore: costoUM !== undefined ? saldo * costoUM : undefined, ultimo: ultimoConteggio(dati.inventario, m.id), movimenti: storia.length };
+        const scadenza = scadenzaGiacenza(m.id, dati, oggi);
+        const entro30 = new Date(Date.now() + 30 * 86400000).toISOString().slice(0, 10);
+        return {
+          m,
+          saldo,
+          valore: costoUM !== undefined ? saldo * costoUM : undefined,
+          ultimo: ultimoConteggio(dati.inventario, m.id),
+          movimenti: storia.length,
+          scadenza,
+          scaduto: !!(scadenza && scadenza < oggi),
+          inScadenza: !!(scadenza && scadenza >= oggi && scadenza <= entro30),
+        };
       })
       .filter((r) => !soloGiacenza || r.saldo !== 0)
-      .sort((a, b) => a.m.nome.localeCompare(b.m.nome));
-  }, [dati, cerca, soloGiacenza, oggi]);
+      .filter((r) => vista !== "scadenze" || (r.scadenza && r.saldo > 0))
+      .sort((a, b) => (vista === "scadenze" ? (a.scadenza ?? "").localeCompare(b.scadenza ?? "") : a.m.nome.localeCompare(b.m.nome)));
+  }, [dati, cerca, soloGiacenza, oggi, vista]);
 
   const valoreTotale = righe.reduce((s, r) => s + (r.valore ?? 0), 0);
   const inGiacenza = righe.filter((r) => r.saldo > 0).length;
@@ -77,7 +91,7 @@ export default function Inventario() {
         <Kpi etichetta="Ultimo conteggio" valore={ultimoConteggioGlobale ? fmtData(ultimoConteggioGlobale.data) : "Mai"} />
       </Griglia>
 
-      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mt: 3, mb: 2, alignItems: { sm: "center" } }}>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mt: 3, mb: 2, alignItems: { sm: "center" }, flexWrap: "wrap", gap: 1 }}>
         <TextField
           placeholder="Cerca"
           value={cerca}
@@ -85,8 +99,19 @@ export default function Inventario() {
           sx={{ maxWidth: { sm: 320 } }}
           slotProps={{ input: { startAdornment: <InputAdornment position="start"><SearchOutlined fontSize="small" /></InputAdornment> } }}
         />
+        <ToggleButtonGroup size="small" exclusive value={vista} onChange={(_, v) => v && setVista(v)}>
+          <ToggleButton value="tutti">Tutti</ToggleButton>
+          <ToggleButton value="consumo">Cibo</ToggleButton>
+          <ToggleButton value="materiale">Materiali</ToggleButton>
+          <ToggleButton value="scadenze">Scadenze</ToggleButton>
+        </ToggleButtonGroup>
         <FormControlLabel control={<Switch checked={soloGiacenza} onChange={(e) => setSoloGiacenza(e.target.checked)} />} label="Solo con giacenza" />
       </Stack>
+      {vista !== "scadenze" && righe.some((r) => r.scaduto || r.inScadenza) && (
+        <Typography variant="body2" color="warning.main" sx={{ mb: 1.5 }}>
+          Attenzione: {righe.filter((r) => r.scaduto).length} voci scadute e {righe.filter((r) => r.inScadenza).length} in scadenza entro 30 giorni (avanzi delle edizioni).
+        </Typography>
+      )}
 
       <Card>
         {righe.length === 0 ? (
@@ -99,10 +124,8 @@ export default function Inventario() {
                   <TableCell>Materia prima</TableCell>
                   <TableCell className="num">Saldo</TableCell>
                   <TableCell className="num">Valore</TableCell>
-                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Ultimo conteggio</TableCell>
-                  <TableCell sx={{ display: { xs: "none", md: "table-cell" } }} className="num">
-                    Movimenti
-                  </TableCell>
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>Scadenza</TableCell>
+                  <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>Ultimo conteggio</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -111,19 +134,31 @@ export default function Inventario() {
                     <TableCell>
                       <Typography variant="body2" sx={{ fontWeight: 500 }}>
                         {r.m.nome}
+                        {r.m.genere === "materiale" && (
+                          <Typography component="span" variant="caption" color="text.secondary">
+                            {" "}
+                            · materiale
+                          </Typography>
+                        )}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
                         {r.m.codice}
+                        {r.scadenza && (
+                          <Typography component="span" color={r.scaduto ? "error.main" : r.inScadenza ? "warning.main" : "text.secondary"}>
+                            {" "}
+                            · scad. {fmtData(r.scadenza)}
+                          </Typography>
+                        )}
                       </Typography>
                     </TableCell>
                     <TableCell className="num" sx={{ fontWeight: 500, color: r.saldo < 0 ? "error.main" : undefined }}>
                       {numero(r.saldo)} {r.m.um}
                     </TableCell>
                     <TableCell className="num">{euro(r.valore)}</TableCell>
-                    <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>{r.ultimo ? fmtData(r.ultimo.data) : "-"}</TableCell>
-                    <TableCell sx={{ display: { xs: "none", md: "table-cell" } }} className="num">
-                      {r.movimenti}
+                    <TableCell sx={{ display: { xs: "none", sm: "table-cell" }, color: r.scadenza && r.scadenza <= oggi ? "error.main" : undefined }}>
+                      {r.scadenza ? fmtData(r.scadenza) : r.m.genere === "materiale" ? "—" : "-"}
                     </TableCell>
+                    <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>{r.ultimo ? fmtData(r.ultimo.data) : "-"}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -150,7 +185,14 @@ function DettaglioDialog({ mp, onChiudi }: { mp: MateriaPrima | null; onChiudi: 
   const storia = storicoInventario(mp.id, dati);
   const saldo = storia.length ? storia[storia.length - 1].saldo : 0;
 
+  const scartoPct = tipo === "conteggio" && Math.abs(saldo) > 1e-9 ? Math.abs(qta - saldo) / Math.abs(saldo) : 0;
+  const notaObbligatoria = tipo === "conteggio" && scartoPct > 0.2;
+
   const registra = () => {
+    if (notaObbligatoria && !note.trim()) {
+      notifica("Con uno scarto oltre il 20% la nota è obbligatoria", "error");
+      return;
+    }
     const v: VoceInventario = { id: nuovoId(), mpId: mp.id, data: dataV, tipo, quantita: qta, note: note.trim() || undefined };
     salva("inventario", v);
     notifica(tipo === "conteggio" ? "Conteggio salvato: saldo aggiornato" : "Movimento di magazzino salvato");
@@ -186,11 +228,22 @@ function DettaglioDialog({ mp, onChiudi }: { mp: MateriaPrima | null; onChiudi: 
           <Box sx={{ display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr 1fr", sm: "1fr 1fr 2fr auto" }, alignItems: "center" }}>
             <TextField label="Data" type="date" value={dataV} onChange={(e) => setDataV(e.target.value)} slotProps={{ inputLabel: { shrink: true } }} />
             <CampoNumero label={tipo === "conteggio" ? "Quantità contata" : "Quantità"} suffisso={mp.um} valore={qta} onCambia={setQta} />
-            <TextField label="Note" value={note} onChange={(e) => setNote(e.target.value)} sx={{ gridColumn: { xs: "1 / -1", sm: "auto" } }} />
-            <Button variant="contained" onClick={registra} disabled={!dataV || (tipo !== "conteggio" && !(qta > 0))}>
+            <TextField
+              label={notaObbligatoria ? "Nota obbligatoria (scarto > 20%)" : "Note"}
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              error={notaObbligatoria && !note.trim()}
+              sx={{ gridColumn: { xs: "1 / -1", sm: "auto" } }}
+            />
+            <Button variant="contained" onClick={registra} disabled={!dataV || (tipo !== "conteggio" && !(qta > 0)) || (notaObbligatoria && !note.trim())}>
               Registra
             </Button>
           </Box>
+          {notaObbligatoria && (
+            <Typography variant="caption" color="warning.main" component="div" sx={{ mt: 1 }}>
+              Scarto del {Math.round(scartoPct * 100)}% rispetto al calcolato ({numero(saldo)} {mp.um}): spiega il motivo nella nota.
+            </Typography>
+          )}
           <Typography variant="caption" color="text.secondary" component="div" sx={{ mt: 1 }}>
             {tipo === "conteggio"
               ? "Il saldo diventa la quantità contata da quella data; la differenza con il calcolato resta nello storico."

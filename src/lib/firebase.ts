@@ -1,4 +1,5 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 import { getAuth, type Auth } from "firebase/auth";
 import {
   initializeFirestore,
@@ -22,9 +23,17 @@ export const firebaseConfigurato = Boolean(config.apiKey && config.projectId && 
 let app: FirebaseApp | undefined;
 let db: Firestore | undefined;
 let auth: Auth | undefined;
+let appCheckAvviato = false;
 
 export function firebaseApp(): FirebaseApp {
-  if (!app) app = getApps().length ? getApp() : initializeApp(config);
+  if (!app) {
+    app = getApps().length ? getApp() : initializeApp(config);
+    const chiave = process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY;
+    if (chiave && typeof window !== "undefined" && !appCheckAvviato) {
+      appCheckAvviato = true;
+      initializeAppCheck(app, { provider: new ReCaptchaV3Provider(chiave), isTokenAutoRefreshEnabled: true });
+    }
+  }
   return app;
 }
 

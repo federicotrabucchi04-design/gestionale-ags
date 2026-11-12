@@ -1,5 +1,14 @@
 /** Date are ISO strings "YYYY-MM-DD"; amounts are euro as numbers. */
 
+/** Fields written by the archive on every save; never edited by hand. */
+export interface Tracciato {
+  aggiornatoIl?: number;
+  modificatoDa?: string;
+  /** Soft delete: the document stays in the bin until it is emptied. */
+  eliminato?: boolean;
+  eliminatoIl?: number;
+}
+
 export interface Fornitore {
   id: string;
   nome: string;
@@ -7,12 +16,16 @@ export interface Fornitore {
   note?: string;
 }
 
+/** "materiale" = tools, wood, decorations: tracked only as informal leftovers, not in the food warehouse. */
+export type GenereMateria = "consumo" | "materiale";
+
 export interface MateriaPrima {
   id: string;
   codice: string;
   nome: string;
   um: string;
   attiva: boolean;
+  genere?: GenereMateria;
   note?: string;
 }
 
@@ -52,6 +65,13 @@ export interface Listino {
   note?: string;
 }
 
+/**
+ * How a fixed cost is spread over the articles it applies to:
+ * "pezzo" same amount per piece, "prezzo" proportional to the selling price,
+ * "margine" proportional to the margin before fixed costs.
+ */
+export type MetodoRiparto = "pezzo" | "prezzo" | "margine";
+
 export interface CostoFisso {
   id: string;
   nome: string;
@@ -59,13 +79,18 @@ export interface CostoFisso {
   baseRiparto: number;
   articoliIds: string[];
   attivo: boolean;
+  metodo?: MetodoRiparto;
   note?: string;
 }
+
+export type TipoEvento = "festa" | "bosco" | "cammina" | "natale" | "altro";
 
 export interface Evento {
   id: string;
   nome: string;
-  tipologia: string;
+  tipo: TipoEvento;
+  /** Free label from older versions; kept only for display. */
+  tipologia?: string;
   descrizione?: string;
   archiviato?: boolean;
 }
@@ -91,6 +116,8 @@ export interface RigaAcquisto {
   daMagazzino: number;
   /** Leftover quantity returned to the warehouse. */
   rimanenza: number;
+  /** Expiry date of the leftover returned to the warehouse, for food. */
+  scadenza?: string;
   note?: string;
 }
 
@@ -103,6 +130,77 @@ export interface CostoExtra {
   ripartisci: boolean;
 }
 
+/** Paid admissions: fixed-menu dinners or walk registrations. */
+export interface Ingresso {
+  prezzo: number;
+  previsti: number;
+  /** Sold and paid in advance. */
+  prevendite: number;
+  /** Sold on the day. */
+  venditeGiorno: number;
+  /** People actually present (may differ from paid tickets). */
+  presenze: number;
+}
+
+export interface Premio {
+  id: string;
+  descrizione: string;
+  valore: number;
+  /** Donated prizes have no cost; their value is shown only for information. */
+  donato: boolean;
+}
+
+export interface Lotteria {
+  prezzoBiglietto: number;
+  bigliettiStampati: number;
+  vendutiPrevisti: number;
+  vendutiReali: number;
+  premi: Premio[];
+}
+
+/**
+ * bar: menu at list prices. servizio: a meal, "carta" at list prices or "fisso" paid by cover.
+ * tappa: food offered at a walk stop (cost only). ingressi: registrations only.
+ * lotteria: raffle. materiali: tools and decorations. generica: everything allowed.
+ */
+export type TipoParte = "bar" | "servizio" | "tappa" | "ingressi" | "lotteria" | "materiali" | "generica";
+export type FormulaServizio = "carta" | "fisso";
+
+export interface Parte {
+  id: string;
+  nome: string;
+  tipo: TipoParte;
+  formula?: FormulaServizio;
+  serataId?: string;
+  /** Weight for the shared costs when the edition has no evenings. */
+  peso: number;
+  menu: RigaMenu[];
+  acquisti: RigaAcquisto[];
+  costiExtra: CostoExtra[];
+  ingresso?: Ingresso;
+  lotteria?: Lotteria;
+  note?: string;
+}
+
+export type FormulaSerata = "bar" | "cenaFissa" | "cenaCarta" | "pranzoCena";
+
+export interface Serata {
+  id: string;
+  nome: string;
+  data: string;
+  formula: FormulaSerata;
+  peso: number;
+}
+
+/** Costs or income shared by the whole edition, split over evenings (or parts) by weight. */
+export interface VoceComune {
+  id: string;
+  descrizione: string;
+  tipo: "uscita" | "entrata";
+  importoPrevisto: number;
+  importoReale: number;
+}
+
 export interface Edizione {
   id: string;
   eventoId: string;
@@ -113,9 +211,11 @@ export interface Edizione {
   partecipantiReali?: number;
   stato: StatoEdizione;
   note?: string;
-  menu: RigaMenu[];
-  acquisti: RigaAcquisto[];
-  costiExtra: CostoExtra[];
+  parti: Parte[];
+  serate?: Serata[];
+  comuni: VoceComune[];
+  /** Nativity scene variant for Christmas editions. */
+  presepe?: "vivente" | "fermo";
 }
 
 export type TipoMovimento = "entrata" | "uscita";
@@ -150,8 +250,12 @@ export interface Impostazioni {
   /** Opening cash balance forced for a social year, e.g. { "2026/27": 11 }. */
   saldiApertura: Record<string, number>;
   categorieMovimento: string[];
-  tipologieEvento: string[];
+  /** Unused since event types became fixed; kept so older backups still load. */
+  tipologieEvento?: string[];
   categorieArticolo: string[];
+  /** Target margin on price used by the analysis traffic lights (0.4 = 40%). */
+  margineObiettivo?: number;
+  ultimoBackup?: string;
 }
 
 export interface Accesso {
@@ -205,8 +309,8 @@ export const IMPOSTAZIONI_DEFAULT: Impostazioni = {
     "Entrate straordinarie",
     "Altro",
   ],
-  tipologieEvento: ["Festa con bar", "Cena e musica", "Camminata", "Altro"],
   categorieArticolo: ["Bar", "Cucina", "Altro"],
+  margineObiettivo: 0.4,
 };
 
 export const ACCESSO_DEFAULT: Accesso = { id: "accesso", emails: [EMAIL_PROPRIETARIO] };

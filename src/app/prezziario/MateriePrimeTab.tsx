@@ -29,6 +29,7 @@ import SearchOutlined from "@mui/icons-material/SearchOutlined";
 import { useGestionale } from "@/components/Gestionale";
 import { CampoNumero, CampoScelta, Etichetta, Vuoto } from "@/components/ui";
 import { costoUnitario, nuovoId, oggiISO, prezzoMPAl, prossimoCodice } from "@/lib/calcoli";
+import { righeAcquisto } from "@/lib/modelli";
 import { data as fmtData, euro, euroFine, numero } from "@/lib/format";
 import type { MateriaPrima, PrezzoMP } from "@/lib/types";
 
@@ -62,6 +63,7 @@ export default function MateriePrimeTab() {
     nome: "",
     um: "pz",
     attiva: true,
+    genere: "consumo",
   });
 
   return (
@@ -108,7 +110,15 @@ export default function MateriePrimeTab() {
                 {righe.map(({ m, prezzo, costoUM, fornitore, storico, ricette }) => (
                   <TableRow key={m.id} hover sx={{ cursor: "pointer", opacity: m.attiva ? 1 : 0.55 }} onClick={() => setAperta(m)}>
                     <TableCell sx={{ color: "text.secondary" }}>{m.codice}</TableCell>
-                    <TableCell sx={{ fontWeight: 500 }}>{m.nome}</TableCell>
+                    <TableCell sx={{ fontWeight: 500 }}>
+                      {m.nome}
+                      {m.genere === "materiale" && (
+                        <Typography component="span" variant="caption" color="text.secondary">
+                          {" "}
+                          · materiale
+                        </Typography>
+                      )}
+                    </TableCell>
                     <TableCell sx={{ whiteSpace: "nowrap" }}>
                       {prezzo ? `${euro(prezzo.costoLotto)} / ${numero(prezzo.qtaLotto)} ${m.um}` : <Etichetta tono="attenzione">Senza prezzo</Etichetta>}
                     </TableCell>
@@ -166,7 +176,7 @@ function MateriaDialog({ materia, onChiudi }: { materia: MateriaPrima | null; on
   const esistente = dati.materiePrime.some((x) => x.id === m.id);
   const usata =
     dati.articoli.filter((a) => a.ricetta.some((r) => r.mpId === m.id)).length +
-    dati.edizioni.filter((e) => e.acquisti.some((r) => r.mpId === m.id)).length;
+    dati.edizioni.filter((e) => righeAcquisto(e).some((r) => r.mpId === m.id)).length;
   const fornitori = [...dati.fornitori].sort((a, b) => a.nome.localeCompare(b.nome)).map((f) => ({ valore: f.id, etichetta: f.nome }));
   const setP = (id: string, patch: Partial<PrezzoMP>) => setPrezzi(prezzi.map((p) => (p.id === id ? { ...p, ...patch } : p)));
   const date = prezzi.map((p) => p.validoDal);
@@ -186,11 +196,22 @@ function MateriaDialog({ materia, onChiudi }: { materia: MateriaPrima | null; on
             helperText="kg, l, pz..."
           />
         </Box>
-        <FormControlLabel
-          sx={{ mt: 1 }}
-          control={<Switch checked={m.attiva} onChange={(e) => setM({ ...m, attiva: e.target.checked })} />}
-          label="In uso"
-        />
+        <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mt: 2, alignItems: { sm: "center" } }}>
+          <CampoScelta
+            label="Genere"
+            valore={m.genere ?? "consumo"}
+            onCambia={(genere) => setM({ ...m, genere })}
+            opzioni={[
+              { valore: "consumo", etichetta: "Cibo e bevande (magazzino)" },
+              { valore: "materiale", etichetta: "Materiale (scorte informali: legno, viti, addobbi)" },
+            ]}
+            sx={{ minWidth: 280 }}
+          />
+          <FormControlLabel
+            control={<Switch checked={m.attiva} onChange={(e) => setM({ ...m, attiva: e.target.checked })} />}
+            label="In uso"
+          />
+        </Stack>
         <TextField sx={{ mt: 1 }} label="Note" value={m.note ?? ""} onChange={(e) => setM({ ...m, note: e.target.value })} />
 
         <Divider sx={{ my: 2.5 }} />

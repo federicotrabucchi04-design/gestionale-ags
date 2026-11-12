@@ -1,0 +1,38 @@
+name: Backup giornaliero Firestore
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Esporta Firestore
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_PROJECT_ID: gestionale-ags
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "Secret FIREBASE_SERVICE_ACCOUNT mancante: crea un service account con ruolo Cloud Datastore Viewer e salvalo come secret del repository."
+            exit 1
+          fi
+          echo "$FIREBASE_SERVICE_ACCOUNT" > /tmp/sa.json
+          npx -y firebase-tools@latest firestore:export gs://gestionale-ags.appspot.com/backups/$(date -u +%Y-%m-%d) --project "$FIREBASE_PROJECT_ID"
+        # Alternative without Cloud Storage: a custom Node script that dumps collections to JSON
+        # and commits them under backups/ (requires a wider service-account secret).
+      - name: Segna l'esecuzione
+        run: |
+          mkdir -p backups
+          echo "Ultimo backup avviato: $(date -u -Iseconds)" > backups/ultimo.txt
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: segno backup giornaliero"
+          file_pattern: backups/ultimo.txt

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -11,6 +11,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -25,35 +26,71 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
+import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
 import PieChartOutlined from "@mui/icons-material/PieChartOutlined";
 import PlaylistAddOutlined from "@mui/icons-material/PlaylistAddOutlined";
 import WarningAmberOutlined from "@mui/icons-material/WarningAmberOutlined";
 import ComposizionePrezzo from "@/components/ComposizionePrezzo";
 import { useGestionale } from "@/components/Gestionale";
 import { Aiuto, CampoNumero, Vuoto } from "@/components/ui";
-import { nuovoId, type CalcoloEdizione, type RigaMenuCalc } from "@/lib/calcoli";
+import { nuovoId, venditeStoriche, type DatoStorico, type RigaMenuCalc } from "@/lib/calcoli";
 import { euro, euroFine, numero, percento } from "@/lib/format";
-import type { Edizione, RigaMenu } from "@/lib/types";
-import type { Aggiorna } from "./tipi";
+import type { RigaMenu } from "@/lib/types";
+import type { PropsParte } from "./tipi";
 
-export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; calc: CalcoloEdizione; aggiorna: Aggiorna }) {
+/** Small hint with what was sold in the last editions, clickable to use it as forecast. */
+export function Storico({ dato, um, onUsa }: { dato: DatoStorico; um?: string; onUsa?: (v: number) => void }) {
+  if (dato.media === undefined) return null;
+  const titolo = dato.edizioni.map((e) => `${e.nome}: ${numero(e.valore)}${um ? ` ${um}` : ""}`).join(" · ");
+  const testo = (
+    <>
+      <HistoryOutlined sx={{ fontSize: 14 }} />
+      media {numero(dato.media)}
+      {um ? ` ${um}` : ""}
+    </>
+  );
+  const stile = { display: "inline-flex", alignItems: "center", gap: 0.25, fontSize: 12, mt: 0.25 };
+  return (
+    <Tooltip title={`Ultime edizioni: ${titolo}${onUsa ? ". Clic per usarlo come previsione" : ""}`}>
+      {onUsa ? (
+        <Link component="button" type="button" underline="hover" onClick={() => onUsa(Math.round(dato.media!))} sx={stile}>
+          {testo}
+        </Link>
+      ) : (
+        <Typography variant="caption" color="primary" sx={stile}>
+          {testo}
+        </Typography>
+      )}
+    </Tooltip>
+  );
+}
+
+export default function MenuEdizione({ ed, parte, calc, aggiornaParte }: PropsParte) {
   const { dati } = useGestionale();
   const mobile = useMediaQuery("(max-width:900px)");
   const [vista, setVista] = useState<"reale" | "previsto">(ed.stato === "pianificata" ? "previsto" : "reale");
   const [composizione, setComposizione] = useState<RigaMenuCalc | null>(null);
-  const congelata = ed.menu.some((m) => m.prezzoFissato !== undefined);
+  const congelata = parte.menu.some((m) => m.prezzoFissato !== undefined);
+  const offerto = calc.menu[0]?.offerto ?? (parte.tipo === "tappa" || (parte.tipo === "servizio" && parte.formula === "fisso"));
+
+  const storici = useMemo(() => {
+    const m = new Map<string, DatoStorico>();
+    for (const r of parte.menu) m.set(r.articoloId, venditeStoriche(r.articoloId, ed, dati.edizioni, parte.nome));
+    return m;
+  }, [parte.menu, parte.nome, ed, dati.edizioni]);
 
   const disponibili = dati.articoli
-    .filter((a) => a.attivo && !ed.menu.some((m) => m.articoloId === a.id))
+    .filter((a) => a.attivo && !parte.menu.some((m) => m.articoloId === a.id))
     .sort((a, b) => a.codice.localeCompare(b.codice));
 
   const setRiga = (id: string, patch: Partial<RigaMenu>) =>
-    aggiorna((e) => ({ menu: e.menu.map((m) => (m.id === id ? { ...m, ...patch } : m)) }));
-  const togli = (id: string) => aggiorna((e) => ({ menu: e.menu.filter((m) => m.id !== id) }));
+    aggiornaParte((p) => ({ menu: p.menu.map((m) => (m.id === id ? { ...m, ...patch } : m)) }));
+  const togli = (id: string) => aggiornaParte((p) => ({ menu: p.menu.filter((m) => m.id !== id) }));
   const aggiungi = (ids: string[]) =>
-    aggiorna((e) => ({ menu: [...e.menu, ...ids.map((articoloId) => ({ id: nuovoId(), articoloId, qtaPrevista: 0, qtaReale: 0 }))] }));
+    aggiornaParte((p) => ({ menu: [...p.menu, ...ids.map((articoloId) => ({ id: nuovoId(), articoloId, qtaPrevista: 0, qtaReale: 0 }))] }));
 
   const tot = vista === "reale" ? calc.reale : calc.previsto;
+  const etQta = offerto ? ["Porzioni previste", "Porzioni preparate"] : ["Qtà prevista", "Qtà reale"];
 
   const barra = (
     <Stack direction={{ xs: "column", sm: "row" }} spacing={2} sx={{ mb: 2, alignItems: { sm: "center" } }}>
@@ -63,11 +100,11 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
         getOptionLabel={(a) => `${a.nome} · ${a.categoria}`}
         value={null}
         onChange={(_, a) => a && aggiungi([a.id])}
-        renderInput={(p) => <TextField {...p} label="Aggiungi articolo al menu" />}
+        renderInput={(p) => <TextField {...p} label={offerto ? "Aggiungi piatto" : "Aggiungi articolo al menu"} />}
         blurOnSelect
         clearOnBlur
       />
-      {disponibili.length > 0 && (
+      {disponibili.length > 0 && !offerto && (
         <Button startIcon={<PlaylistAddOutlined />} onClick={() => aggiungi(disponibili.map((a) => a.id))}>
           Aggiungi tutti ({disponibili.length})
         </Button>
@@ -80,14 +117,25 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
     </Stack>
   );
 
-  if (ed.menu.length === 0)
+  const nota = offerto ? (
+    <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+      Piatti offerti o compresi nel prezzo: conta solo il costo. Il ricavo arriva da {parte.tipo === "tappa" ? "le iscrizioni" : "coperti e prevendite"}.
+    </Typography>
+  ) : null;
+
+  if (parte.menu.length === 0)
     return (
       <>
         {barra}
+        {nota}
         <Card>
           <Vuoto
-            titolo="Menu vuoto"
-            testo="Aggiungi gli articoli in vendita. Prezzi e costi arrivano dal listino e dalle ricette valide alla data dell'edizione."
+            titolo={offerto ? "Nessun piatto" : "Menu vuoto"}
+            testo={
+              offerto
+                ? "Aggiungi i piatti serviti: il costo arriva dalle ricette valide alla data dell'edizione."
+                : "Aggiungi gli articoli in vendita. Prezzi e costi arrivano dal listino e dalle ricette valide alla data dell'edizione."
+            }
           />
         </Card>
       </>
@@ -96,6 +144,7 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
   return (
     <>
       {barra}
+      {nota}
       {congelata && (
         <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
           Edizione chiusa: prezzi e costi sono congelati al momento della chiusura.
@@ -106,6 +155,7 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
         <Stack spacing={1.5}>
           {calc.menu.map((m) => {
             const v = m[vista];
+            const st = storici.get(m.riga.articoloId);
             return (
               <Card key={m.riga.id}>
                 <CardContent sx={{ pb: "16px !important" }}>
@@ -116,29 +166,36 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
                         {m.avvisi.length > 0 && <WarningAmberOutlined color="warning" sx={{ fontSize: 18, ml: 0.5, verticalAlign: "text-bottom" }} />}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        Prezzo {euro(m.prezzo)} · costo {euroFine(m.costoVivo)}
+                        {offerto ? "Offerto" : `Prezzo ${euro(m.prezzo)}`} · costo {euroFine(m.costoVivo)}
                       </Typography>
                     </Box>
                     <Stack direction="row">
-                      <IconButton size="small" onClick={() => setComposizione(m)}>
+                      <IconButton size="small" onClick={() => setComposizione(m)} aria-label="Composizione del prezzo">
                         <PieChartOutlined fontSize="small" />
                       </IconButton>
-                      <IconButton size="small" onClick={() => togli(m.riga.id)}>
+                      <IconButton size="small" onClick={() => togli(m.riga.id)} aria-label="Togli">
                         <DeleteOutlined fontSize="small" />
                       </IconButton>
                     </Stack>
                   </Stack>
                   <Stack direction="row" spacing={1.5} sx={{ mt: 1.5 }}>
-                    <CampoNumero label="Qtà prevista" valore={m.riga.qtaPrevista} onCambia={(q) => setRiga(m.riga.id, { qtaPrevista: q })} />
-                    <CampoNumero label="Qtà reale" valore={m.riga.qtaReale} onCambia={(q) => setRiga(m.riga.id, { qtaReale: q })} />
+                    <Box sx={{ flex: 1 }}>
+                      <CampoNumero label={etQta[0]} valore={m.riga.qtaPrevista} onCambia={(q) => setRiga(m.riga.id, { qtaPrevista: q })} />
+                      {st && <Storico dato={st} onUsa={(q) => setRiga(m.riga.id, { qtaPrevista: q })} />}
+                    </Box>
+                    <Box sx={{ flex: 1 }}>
+                      <CampoNumero label={etQta[1]} valore={m.riga.qtaReale} onCambia={(q) => setRiga(m.riga.id, { qtaReale: q })} />
+                    </Box>
                   </Stack>
                   <Stack direction="row" sx={{ justifyContent: "space-between", mt: 1.5 }}>
                     <Typography variant="body2" color="text.secondary">
-                      Ricavo {euro(v.ricavo)}
+                      {offerto ? `Costo ${euro(v.costo)}` : `Ricavo ${euro(v.ricavo)}`}
                     </Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 500, color: v.margineDopoExtra >= 0 ? "success.main" : "error.main" }}>
-                      Margine {euro(v.margineDopoExtra)}
-                    </Typography>
+                    {!offerto && (
+                      <Typography variant="body2" sx={{ fontWeight: 500, color: v.margineDopoExtra >= 0 ? "success.main" : "error.main" }}>
+                        Margine {euro(v.margineDopoExtra)}
+                      </Typography>
+                    )}
                   </Stack>
                 </CardContent>
               </Card>
@@ -148,10 +205,11 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
             <CardContent>
               <Stack direction="row" sx={{ justifyContent: "space-between" }}>
                 <Typography sx={{ fontWeight: 600 }}>Totale {vista}</Typography>
-                <Typography sx={{ fontWeight: 600 }}>{euro(tot.ricavi)}</Typography>
+                <Typography sx={{ fontWeight: 600 }}>{euro(offerto ? tot.costoMenu : tot.ricaviMenu)}</Typography>
               </Stack>
               <Typography variant="body2" color="text.secondary">
-                {numero(tot.pezzi)} pezzi · margine finale {euro(tot.margineFinale)} ({percento(tot.marginePct)})
+                {numero(tot.pezzi)} {offerto ? "porzioni" : "pezzi"}
+                {!offerto && ` · margine menu ${euro(tot.margineMenu - tot.extraRipartiti)}`}
               </Typography>
             </CardContent>
           </Card>
@@ -162,29 +220,34 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell>Articolo</TableCell>
-                  <TableCell className="num">Prezzo</TableCell>
+                  <TableCell>{offerto ? "Piatto" : "Articolo"}</TableCell>
+                  {!offerto && <TableCell className="num">Prezzo</TableCell>}
                   <TableCell className="num">
                     Costo vivo
                     <Aiuto testo="Materie prime della ricetta + quota dei costi fissi, ai prezzi validi alla data dell'edizione" />
                   </TableCell>
-                  <TableCell sx={{ width: 110 }}>Qtà prevista</TableCell>
-                  <TableCell sx={{ width: 110 }}>Qtà reale</TableCell>
-                  <TableCell className="num">Ricavo</TableCell>
+                  <TableCell sx={{ width: 130 }}>{etQta[0]}</TableCell>
+                  <TableCell sx={{ width: 110 }}>{etQta[1]}</TableCell>
+                  {!offerto && <TableCell className="num">Ricavo</TableCell>}
                   <TableCell className="num">Costo</TableCell>
-                  <TableCell className="num">Margine</TableCell>
-                  <TableCell className="num">
-                    Extra / pz
-                    <Aiuto testo="Quota dei costi extra ripartiti (es. musica) su ogni pezzo venduto" />
-                  </TableCell>
-                  <TableCell className="num">Margine dopo extra</TableCell>
-                  <TableCell className="num">%</TableCell>
+                  {!offerto && (
+                    <>
+                      <TableCell className="num">Margine</TableCell>
+                      <TableCell className="num">
+                        Extra / pz
+                        <Aiuto testo="Quota dei costi extra ripartiti (es. musica) su ogni pezzo venduto" />
+                      </TableCell>
+                      <TableCell className="num">Margine dopo extra</TableCell>
+                      <TableCell className="num">%</TableCell>
+                    </>
+                  )}
                   <TableCell />
                 </TableRow>
               </TableHead>
               <TableBody>
                 {calc.menu.map((m) => {
                   const v = m[vista];
+                  const st = storici.get(m.riga.articoloId);
                   return (
                     <TableRow key={m.riga.id} hover>
                       <TableCell sx={{ fontWeight: 500 }}>
@@ -195,22 +258,27 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
                           </Tooltip>
                         )}
                       </TableCell>
-                      <TableCell className="num">{euro(m.prezzo)}</TableCell>
+                      {!offerto && <TableCell className="num">{euro(m.prezzo)}</TableCell>}
                       <TableCell className="num">{euroFine(m.costoVivo)}</TableCell>
                       <TableCell>
                         <CampoNumero valore={m.riga.qtaPrevista} onCambia={(q) => setRiga(m.riga.id, { qtaPrevista: q })} />
+                        {st && <Storico dato={st} onUsa={(q) => setRiga(m.riga.id, { qtaPrevista: q })} />}
                       </TableCell>
                       <TableCell>
                         <CampoNumero valore={m.riga.qtaReale} onCambia={(q) => setRiga(m.riga.id, { qtaReale: q })} />
                       </TableCell>
-                      <TableCell className="num">{euro(v.ricavo)}</TableCell>
+                      {!offerto && <TableCell className="num">{euro(v.ricavo)}</TableCell>}
                       <TableCell className="num">{euro(v.costo)}</TableCell>
-                      <TableCell className="num">{euro(v.margine)}</TableCell>
-                      <TableCell className="num">{euroFine(v.quotaExtra)}</TableCell>
-                      <TableCell className="num" sx={{ fontWeight: 500, color: v.margineDopoExtra >= 0 ? "success.main" : "error.main" }}>
-                        {euro(v.margineDopoExtra)}
-                      </TableCell>
-                      <TableCell className="num">{percento(v.ricavo ? v.margineDopoExtra / v.ricavo : undefined)}</TableCell>
+                      {!offerto && (
+                        <>
+                          <TableCell className="num">{euro(v.margine)}</TableCell>
+                          <TableCell className="num">{euroFine(v.quotaExtra)}</TableCell>
+                          <TableCell className="num" sx={{ fontWeight: 500, color: v.margineDopoExtra >= 0 ? "success.main" : "error.main" }}>
+                            {euro(v.margineDopoExtra)}
+                          </TableCell>
+                          <TableCell className="num">{percento(v.ricavo ? v.margineDopoExtra / v.ricavo : undefined)}</TableCell>
+                        </>
+                      )}
                       <TableCell sx={{ whiteSpace: "nowrap" }}>
                         <Tooltip title="Composizione del prezzo">
                           <IconButton size="small" onClick={() => setComposizione(m)}>
@@ -230,16 +298,20 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
               <TableFooter>
                 <TableRow sx={{ "& td": { fontWeight: 600, color: "text.primary", fontSize: 14, bgcolor: "#f8f9fb" } }}>
                   <TableCell>Totale {vista}</TableCell>
-                  <TableCell />
+                  {!offerto && <TableCell />}
                   <TableCell />
                   <TableCell>{numero(calc.previsto.pezzi)}</TableCell>
                   <TableCell>{numero(calc.reale.pezzi)}</TableCell>
-                  <TableCell className="num">{euro(tot.ricavi)}</TableCell>
+                  {!offerto && <TableCell className="num">{euro(tot.ricaviMenu)}</TableCell>}
                   <TableCell className="num">{euro(tot.costoMenu)}</TableCell>
-                  <TableCell className="num">{euro(tot.margineMenu)}</TableCell>
-                  <TableCell className="num">{euro(tot.extraRipartiti)}</TableCell>
-                  <TableCell className="num">{euro(tot.margineMenu - tot.extraRipartiti)}</TableCell>
-                  <TableCell className="num">{percento(tot.ricavi ? (tot.margineMenu - tot.extraRipartiti) / tot.ricavi : undefined)}</TableCell>
+                  {!offerto && (
+                    <>
+                      <TableCell className="num">{euro(tot.margineMenu)}</TableCell>
+                      <TableCell className="num">{euro(tot.extraRipartiti)}</TableCell>
+                      <TableCell className="num">{euro(tot.margineMenu - tot.extraRipartiti)}</TableCell>
+                      <TableCell className="num">{percento(tot.ricaviMenu ? (tot.margineMenu - tot.extraRipartiti) / tot.ricaviMenu : undefined)}</TableCell>
+                    </>
+                  )}
                   <TableCell />
                 </TableRow>
               </TableFooter>
@@ -247,7 +319,7 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
           </Box>
           {tot.extraNonRipartiti > 0 && (
             <Typography variant="body2" color="text.secondary" sx={{ p: 2 }}>
-              Altri costi extra non ripartiti sui pezzi: {euro(tot.extraNonRipartiti)}. Margine finale: <b>{euro(tot.margineFinale)}</b>.
+              Altri costi extra non ripartiti sui pezzi: {euro(tot.extraNonRipartiti)}. Margine finale della parte: <b>{euro(tot.margineFinale)}</b>.
             </Typography>
           )}
         </Card>
@@ -264,7 +336,7 @@ export default function MenuEdizione({ ed, calc, aggiorna }: { ed: Edizione; cal
               </Typography>
               <ComposizionePrezzo
                 costo={composizione.costo}
-                prezzo={composizione.prezzo}
+                prezzo={composizione.offerto ? undefined : composizione.prezzo}
                 quotaExtra={composizione[vista].quotaExtra}
               />
             </>

@@ -27,10 +27,12 @@ import CelebrationOutlined from "@mui/icons-material/CelebrationOutlined";
 import MenuBookOutlined from "@mui/icons-material/MenuBookOutlined";
 import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
 import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
+import InsightsOutlined from "@mui/icons-material/InsightsOutlined";
 import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
 import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
 import { anniDisponibili } from "@/lib/calcoli";
 import { useGestionale } from "./Gestionale";
+import RicercaGlobale from "./RicercaGlobale";
 
 const VOCI = [
   { href: "/", etichetta: "Home", icona: <HomeOutlined /> },
@@ -41,6 +43,7 @@ const VOCI = [
 ];
 
 const ALTRE = [
+  { href: "/analisi", etichetta: "Analisi", icona: <InsightsOutlined /> },
   { href: "/storico", etichetta: "Storico anni", icona: <HistoryOutlined /> },
   { href: "/impostazioni", etichetta: "Impostazioni", icona: <SettingsOutlined /> },
 ];
@@ -52,13 +55,22 @@ function attiva(path: string, href: string) {
 }
 
 export default function AppShell({ children }: { children: ReactNode }) {
-  const { dati, anno, setAnno, utente, esci, locale } = useGestionale();
+  const { dati, anno, setAnno, utente, esci, locale, sync } = useGestionale();
   const path = usePathname();
   const [menu, setMenu] = useState<HTMLElement | null>(null);
   const anni = useMemo(() => {
     const a = anniDisponibili(dati);
     return a.includes(anno) ? a : [anno, ...a];
   }, [dati, anno]);
+
+  const stampa = path.startsWith("/stampa");
+  if (stampa) {
+    return (
+      <Box sx={{ minHeight: "100dvh", bgcolor: "#fff" }}>
+        {children}
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ display: "flex", minHeight: "100dvh", bgcolor: "background.default" }}>
@@ -94,6 +106,17 @@ export default function AppShell({ children }: { children: ReactNode }) {
             </Typography>
           </Box>
           {locale && <Chip size="small" color="warning" label="Modalità locale" sx={{ display: { xs: "none", sm: "flex" } }} />}
+          <RicercaGlobale />
+          <Box
+            title={sync === "online" ? "Sincronizzato" : sync === "offline" ? "Offline: le modifiche si invieranno al ritorno della rete" : sync === "sync" ? "Sincronizzazione in corso" : "Solo su questo browser"}
+            sx={{
+              width: 10,
+              height: 10,
+              borderRadius: "50%",
+              bgcolor: sync === "online" ? "success.main" : sync === "offline" ? "warning.main" : sync === "sync" ? "info.main" : "text.disabled",
+              flexShrink: 0,
+            }}
+          />
           <Select
             size="small"
             value={anno}

@@ -6,7 +6,8 @@ import Divider from "@mui/material/Divider";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import type { CostoArticolo } from "@/lib/calcoli";
+import { METODI_RIPARTO, type CostoArticolo } from "@/lib/calcoli";
+import type { MetodoRiparto } from "@/lib/types";
 import { euro, euroFine, numero, percento } from "@/lib/format";
 import { RigaValore } from "./ui";
 import { useGestionale } from "./Gestionale";
@@ -80,8 +81,38 @@ export default function ComposizionePrezzo({
         ))}
       <RigaValore etichetta="Totale materie prime" valore={euroFine(costo.materie)} forte={!compatto} />
       {costo.quoteFisse.map((q) => (
-        <RigaValore key={q.costoFissoId} etichetta={`Quota ${q.nome}`} valore={euroFine(q.quota)} />
+        <RigaValore
+          key={q.costoFissoId}
+          etichetta={
+            <>
+              Quota {q.nome}{" "}
+              <Typography component="span" variant="caption" color="text.secondary">
+                {METODI_RIPARTO[q.metodo].etichetta.toLowerCase()}
+              </Typography>
+            </>
+          }
+          valore={euroFine(q.quota)}
+        />
       ))}
+      {!compatto && costo.quoteFisse.length > 0 && (
+        <Box sx={{ my: 1, p: 1.5, bgcolor: "#f8f9fb", borderRadius: 2 }}>
+          <Typography variant="caption" color="text.secondary" component="div" sx={{ mb: 0.5 }}>
+            Con gli altri metodi di riparto dei costi fissi il costo vivo sarebbe:
+          </Typography>
+          <Stack direction="row" spacing={2} sx={{ flexWrap: "wrap" }}>
+            {(Object.keys(METODI_RIPARTO) as MetodoRiparto[]).map((k) => {
+              const cv = costo.materie + costo.quoteFisse.reduce((s, q) => s + q.alternative[k], 0);
+              const attivo = costo.quoteFisse.every((q) => q.metodo === k);
+              return (
+                <Typography key={k} variant="body2" sx={{ fontWeight: attivo ? 700 : 400 }}>
+                  {METODI_RIPARTO[k].etichetta}: {euroFine(cv)}
+                  {prezzo ? ` (margine ${percento((prezzo - cv - extra) / prezzo)})` : ""}
+                </Typography>
+              );
+            })}
+          </Stack>
+        </Box>
+      )}
       <Divider sx={{ my: 0.5 }} />
       <RigaValore etichetta="Costo vivo" valore={euroFine(costo.costoVivo)} forte />
       {extra > 0 && (

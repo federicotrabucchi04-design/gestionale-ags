@@ -21,6 +21,7 @@ import NuovaEdizioneDialog from "@/components/NuovaEdizioneDialog";
 import { Etichetta, Griglia, Intestazione, RigaValore, Sezione, Vuoto } from "@/components/ui";
 import { annoSociale, calcolaEdizione } from "@/lib/calcoli";
 import { data, euro, numero, percento } from "@/lib/format";
+import { TIPI_EVENTO } from "@/lib/modelli";
 import { STATI } from "@/lib/stati";
 import type { Evento } from "@/lib/types";
 
@@ -64,7 +65,7 @@ export default function EventoPagina() {
       </Breadcrumbs>
       <Intestazione
         titolo={evento.nome}
-        sottotitolo={[evento.tipologia, evento.descrizione].filter(Boolean).join(" · ")}
+        sottotitolo={[TIPI_EVENTO[evento.tipo]?.etichetta, evento.descrizione].filter(Boolean).join(" · ")}
         azioni={
           <>
             <Button startIcon={<EditOutlined />} onClick={() => setModifica(evento)}>
@@ -107,13 +108,13 @@ export default function EventoPagina() {
       ) : (
         <>
           {edizioni.length > 1 && (
-            <Sezione titolo="Confronto edizioni" sottotitolo="Ricavi del menu e margini reali, edizione per edizione">
+            <Sezione titolo="Confronto edizioni" sottotitolo="Ricavi e margini reali, edizione per edizione">
               <BarChart
                 height={260}
                 xAxis={[{ scaleType: "band", data: cronologiche.map((x) => x.ed.nome) }]}
                 yAxis={[{ valueFormatter: (v: number) => `${Math.round(v)} €`, width: 64 }]}
                 series={[
-                  { data: cronologiche.map((x) => x.calc.reale.ricavi), label: "Ricavi menu", color: "#a8c7fa", valueFormatter: fmt },
+                  { data: cronologiche.map((x) => x.calc.reale.ricavi), label: "Ricavi", color: "#a8c7fa", valueFormatter: fmt },
                   { data: cronologiche.map((x) => x.calc.reale.margineFinale), label: "Margine reale", color: "#1a73e8", valueFormatter: fmt },
                   { data: cronologiche.map((x) => x.calc.cassa.netto), label: "Netto di cassa", color: "#188038", valueFormatter: fmt },
                 ]}
@@ -140,7 +141,7 @@ export default function EventoPagina() {
                       </Box>
                     </Stack>
                     <Divider sx={{ my: 1.5 }} />
-                    <RigaValore etichetta="Ricavi menu previsti / reali" valore={`${euro(calc.previsto.ricavi)} / ${euro(calc.reale.ricavi)}`} />
+                    <RigaValore etichetta="Ricavi previsti / reali" valore={`${euro(calc.previsto.ricavi)} / ${euro(calc.reale.ricavi)}`} />
                     <RigaValore
                       etichetta="Margine reale"
                       valore={`${euro(calc.reale.margineFinale)} · ${percento(calc.reale.marginePct)}`}

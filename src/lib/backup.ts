@@ -1,4 +1,5 @@
 import { annoSociale, calcolaEdizione, costoArticolo, costoUnitario, importoFirmato, oggiISO, prezzoMPAl, saldoInventario } from "./calcoli";
+import { normalizzaDati } from "./modelli";
 import { COLLEZIONI, IMPOSTAZIONI_DEFAULT, type Dati } from "./types";
 
 export const VERSIONE_BACKUP = 1;
@@ -10,7 +11,7 @@ export interface FileBackup {
   dati: Partial<Dati>;
 }
 
-function scarica(blob: Blob, nome: string) {
+export function scarica(blob: Blob, nome: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -32,7 +33,7 @@ export function leggiBackup(testo: string): Partial<Dati> {
   const out: Partial<Dati> = {};
   for (const c of COLLEZIONI) if (Array.isArray(dati[c])) (out as Record<string, unknown>)[c] = dati[c];
   if (dati.impostazioni) out.impostazioni = { ...IMPOSTAZIONI_DEFAULT, ...dati.impostazioni, id: "impostazioni" };
-  return out;
+  return normalizzaDati(out);
 }
 
 export async function esportaExcel(dati: Dati) {
@@ -119,6 +120,7 @@ export async function esportaExcel(dati: Dati) {
     "Menu edizioni",
     [
       { header: "Edizione", key: "ed", width: 24 },
+      { header: "Parte", key: "parte", width: 18 },
       { header: "Articolo", key: "art", width: 24 },
       { header: "Prezzo", key: "prezzo", euro: true },
       { header: "Costo vivo", key: "costo", euro: true },
@@ -130,6 +132,7 @@ export async function esportaExcel(dati: Dati) {
     dati.edizioni.flatMap((e) =>
       calcolaEdizione(e, dati).menu.map((m) => ({
         ed: e.nome,
+        parte: e.parti.find((p) => p.id === m.parteId)?.nome,
         art: m.articolo?.nome,
         prezzo: m.prezzo,
         costo: m.costoVivo,
@@ -145,6 +148,7 @@ export async function esportaExcel(dati: Dati) {
     "Acquisti edizioni",
     [
       { header: "Edizione", key: "ed", width: 24 },
+      { header: "Parte", key: "parte", width: 18 },
       { header: "Materia prima", key: "mp", width: 24 },
       { header: "Lotti previsti", key: "lp" },
       { header: "Lotti comprati", key: "lr" },
@@ -157,6 +161,7 @@ export async function esportaExcel(dati: Dati) {
     dati.edizioni.flatMap((e) =>
       calcolaEdizione(e, dati).acquisti.map((a) => ({
         ed: e.nome,
+        parte: e.parti.find((p) => p.id === a.parteId)?.nome,
         mp: a.mp?.nome,
         lp: a.riga.lottiPrevisti,
         lr: a.riga.lottiReali,

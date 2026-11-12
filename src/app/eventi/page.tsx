@@ -21,6 +21,7 @@ import { useGestionale } from "@/components/Gestionale";
 import { Etichetta, Griglia, Intestazione, Vuoto } from "@/components/ui";
 import { calcolaEdizione } from "@/lib/calcoli";
 import { data, euro } from "@/lib/format";
+import { ORDINE_TIPI_EVENTO, TIPI_EVENTO } from "@/lib/modelli";
 import type { Evento } from "@/lib/types";
 
 export default function Eventi() {
@@ -77,8 +78,22 @@ export default function Eventi() {
           />
         </Card>
       ) : (
+        <Stack spacing={4}>
+          {ORDINE_TIPI_EVENTO.filter((t) => schede.some((s) => s.e.tipo === t)).map((tipo) => (
+            <Box key={tipo}>
+              <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", mb: 1.5 }}>
+                <Box>
+                  <Typography variant="h6">{TIPI_EVENTO[tipo].etichetta}</Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {TIPI_EVENTO[tipo].descrizione}
+                  </Typography>
+                </Box>
+                <Button size="small" startIcon={<AddOutlined />} onClick={() => setNuovo(eventoVuoto(tipo))} sx={{ flexShrink: 0 }}>
+                  Evento
+                </Button>
+              </Stack>
         <Griglia min={300}>
-          {schede.map(({ e, edizioni, ultima }) => (
+          {schede.filter((s) => s.e.tipo === tipo).map(({ e, edizioni, ultima }) => (
             <Card key={e.id} sx={{ opacity: e.archiviato ? 0.6 : 1 }}>
               <CardActionArea component={Link} href={`/eventi/${e.id}`} sx={{ height: "100%" }}>
                 <CardContent>
@@ -88,7 +103,7 @@ export default function Eventi() {
                         {e.nome}
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        {e.tipologia} · {edizioni.length} {edizioni.length === 1 ? "edizione" : "edizioni"}
+                        {edizioni.length} {edizioni.length === 1 ? "edizione" : "edizioni"}
                       </Typography>
                     </Box>
                     {e.archiviato && <Etichetta>Archiviato</Etichetta>}
@@ -131,6 +146,9 @@ export default function Eventi() {
             </Card>
           ))}
         </Griglia>
+            </Box>
+          ))}
+        </Stack>
       )}
 
       <EventDialog evento={nuovo} onChiudi={() => setNuovo(null)} onCreato={(e) => router.push(`/eventi/${e.id}`)} />

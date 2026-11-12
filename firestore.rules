@@ -15,8 +15,33 @@ service cloud.firestore {
         );
     }
 
+    function proprietario() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'federico.trabucchi04@gmail.com';
+    }
+
+    function collezioneNota() {
+      return collezione in [
+        'fornitori', 'materiePrime', 'prezziMP', 'articoli', 'listini',
+        'costiFissi', 'eventi', 'edizioni', 'movimenti', 'inventario'
+      ];
+    }
+
+    match /config/{id} {
+      allow read: if autorizzato();
+      // Only the owner can change who is allowed in; everyone authorised can update impostazioni.
+      allow create, update: if autorizzato()
+        && id in ['impostazioni', 'accesso']
+        && (id != 'accesso' || proprietario());
+      allow delete: if proprietario();
+    }
+
     match /{collezione}/{id} {
-      allow read, write: if autorizzato();
+      allow read: if autorizzato() && collezioneNota();
+      allow create, update: if autorizzato() && collezioneNota()
+        && (!('id' in request.resource.data) || request.resource.data.id == id);
+      allow delete: if autorizzato() && collezioneNota();
     }
   }
 }

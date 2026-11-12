@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Autocomplete from "@mui/material/Autocomplete";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,11 +11,13 @@ import Stack from "@mui/material/Stack";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import { nuovoId } from "@/lib/calcoli";
-import type { Evento } from "@/lib/types";
+import { ORDINE_TIPI_EVENTO, TIPI_EVENTO } from "@/lib/modelli";
+import type { Evento, TipoEvento } from "@/lib/types";
 import { useGestionale } from "./Gestionale";
+import { CampoScelta } from "./ui";
 
-export function eventoVuoto(): Evento {
-  return { id: nuovoId(), nome: "", tipologia: "Festa con bar" };
+export function eventoVuoto(tipo: TipoEvento = "festa"): Evento {
+  return { id: nuovoId(), nome: "", tipo };
 }
 
 export default function EventoDialog({
@@ -51,12 +52,12 @@ export default function EventoDialog({
             autoFocus
             helperText="Un evento raccoglie tutte le sue edizioni negli anni."
           />
-          <Autocomplete
-            freeSolo
-            options={dati.impostazioni.tipologieEvento}
-            value={e.tipologia}
-            onInputChange={(_, v) => setE({ ...e, tipologia: v })}
-            renderInput={(p) => <TextField {...p} label="Tipologia" />}
+          <CampoScelta
+            label="Tipo di evento"
+            valore={e.tipo}
+            onCambia={(tipo) => setE({ ...e, tipo })}
+            opzioni={ORDINE_TIPI_EVENTO.map((t) => ({ valore: t, etichetta: TIPI_EVENTO[t].etichetta }))}
+            helperText={TIPI_EVENTO[e.tipo].descrizione}
           />
           <TextField
             label="Descrizione"

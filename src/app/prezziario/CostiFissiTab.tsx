@@ -19,10 +19,16 @@ import Typography from "@mui/material/Typography";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import LocalFireDepartmentOutlined from "@mui/icons-material/LocalFireDepartmentOutlined";
 import { useGestionale } from "@/components/Gestionale";
-import { CampoNumero, Etichetta, Griglia, Vuoto } from "@/components/ui";
-import { nuovoId, quotaCostoFisso } from "@/lib/calcoli";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import { CampoNumero, CampoScelta, Etichetta, Griglia, Vuoto } from "@/components/ui";
+import { METODI_RIPARTO, listinoAl, nuovoId, oggiISO, quotaCostoFisso, quoteCostoFisso } from "@/lib/calcoli";
 import { euro, euroFine, numero } from "@/lib/format";
-import type { CostoFisso } from "@/lib/types";
+import { righeMenu } from "@/lib/modelli";
+import type { CostoFisso, MetodoRiparto } from "@/lib/types";
 
 export default function CostiFissiTab() {
   const { dati } = useGestionale();
@@ -58,6 +64,9 @@ export default function CostiFissiTab() {
                   <Typography variant="body2" color="text.secondary">
                     {euro(c.costoTotale)} su {numero(c.baseRiparto)} pezzi = <b>{euroFine(quotaCostoFisso(c))}</b> a pezzo
                   </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Riparto: {METODI_RIPARTO[c.metodo ?? "pezzo"].etichetta.toLowerCase()}
+                  </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                     Su:{" "}
                     {c.articoliIds
@@ -89,8 +98,14 @@ function CostoDialog({ costo, onChiudi }: { costo: CostoFisso | null; onChiudi: 
 
   const ultimaEdizione = [...dati.edizioni].sort((a, b) => (a.data < b.data ? 1 : -1))[0];
   const pezziSuggeriti = ultimaEdizione
-    ? ultimaEdizione.menu.filter((m) => c.articoliIds.includes(m.articoloId)).reduce((s, m) => s + (m.qtaPrevista || 0), 0)
+    ? righeMenu(ultimaEdizione)
+        .filter((m) => c.articoliIds.includes(m.articoloId))
+        .reduce((s, m) => s + (m.qtaPrevista || 0), 0)
     : 0;
+  const oggi = oggiISO();
+  const quote = quoteCostoFisso(c, oggi, dati);
+  const listino = listinoAl(dati.listini, oggi);
+  const metodo = c.metodo ?? "pezzo";
 
   return (
     <Dialog open onClose={onChiudi} fullWidth maxWidth="sm">
@@ -108,8 +123,15 @@ function CostoDialog({ costo, onChiudi }: { costo: CostoFisso | null; onChiudi: 
             />
           </Stack>
           <Typography variant="body2">
-            Quota per pezzo: <b>{euroFine(quotaCostoFisso(c))}</b>
+            Quota media per pezzo: <b>{euroFine(quotaCostoFisso(c))}</b>
           </Typography>
+          <CampoScelta
+            label="Come dividerlo fra gli articoli"
+            valore={metodo}
+            onCambia={(m) => setC({ ...c, metodo: m })}
+            opzioni={(Object.keys(METODI_RIPARTO) as MetodoRiparto[]).map((k) => ({ valore: k, etichetta: METODI_RIPARTO[k].etichetta }))}
+            helperText={METODI_RIPARTO[metodo].spiegazione}
+          />
           <FormControlLabel control={<Switch checked={c.attivo} onChange={(e) => setC({ ...c, attivo: e.target.checked })} />} label="Attivo" />
           <Box>
             <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
@@ -134,6 +156,47 @@ function CostoDialog({ costo, onChiudi }: { costo: CostoFisso | null; onChiudi: 
                 ))}
             </Box>
           </Box>
+          {c.articoliIds.length > 1 && quotaCostoFisso(c) > 0 && (
+            <Box>
+              <Typography variant="subtitle2">Confronto fra i metodi (quota per pezzo, prezzi di oggi)</Typography>
+              <Typography variant="caption" color="text.secondary" component="div" sx={{ mb: 1 }}>
+                Le quote cambiano da articolo ad articolo, ma il totale recuperato è sempre lo stesso: i pesi vengono dalle vendite dell&apos;ultima edizione.
+              </Typography>
+              <Box className="tabella-scroll">
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Articolo</TableCell>
+                      <TableCell className="num">Prezzo</TableCell>
+                      {(Object.keys(METODI_RIPARTO) as MetodoRiparto[]).map((k) => (
+                        <TableCell key={k} className="num" sx={{ fontWeight: k === metodo ? 700 : undefined }}>
+                          {METODI_RIPARTO[k].etichetta.replace("In proporzione al", "Al")}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {c.articoliIds.map((id) => {
+                      const q = quote.get(id);
+                      const a = dati.articoli.find((x) => x.id === id);
+                      if (!a || !q) return null;
+                      return (
+                        <TableRow key={id}>
+                          <TableCell>{a.nome}</TableCell>
+                          <TableCell className="num">{euro(listino?.prezzi[id])}</TableCell>
+                          {(Object.keys(METODI_RIPARTO) as MetodoRiparto[]).map((k) => (
+                            <TableCell key={k} className="num" sx={{ fontWeight: k === metodo ? 700 : undefined }}>
+                              {euroFine(q[k])}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Box>
+          )}
           <TextField label="Note" value={c.note ?? ""} onChange={(e) => setC({ ...c, note: e.target.value })} />
         </Stack>
       </DialogContent>

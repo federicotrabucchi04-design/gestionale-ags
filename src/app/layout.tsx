@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   description: "Cassa, eventi, prezziario e magazzino dell'associazione AGS",
   applicationName: "Gestionale AGS",
   appleWebApp: { capable: true, title: "AGS", statusBarStyle: "default" },
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/icon-192.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/icon-192.svg", type: "image/svg+xml" }],
+  },
 };
 
 export const viewport: Viewport = {

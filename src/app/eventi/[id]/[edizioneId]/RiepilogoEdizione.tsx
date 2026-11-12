@@ -14,39 +14,56 @@ import Typography from "@mui/material/Typography";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { Aiuto, Griglia, Kpi, RigaValore, Sezione, tonoValore } from "@/components/ui";
 import type { CalcoloEdizione } from "@/lib/calcoli";
-import { euro, numero, percento } from "@/lib/format";
+import { data as fmtData, euro, numero, percento } from "@/lib/format";
 import type { Edizione } from "@/lib/types";
 
-type Vai = (s: "menu" | "acquisti" | "extra" | "movimenti") => void;
+interface Riga {
+  voce: string;
+  prev?: number;
+  reale?: number;
+  tipo?: "euro" | "num" | "pct";
+  forte?: boolean;
+  aiuto?: string;
+  sempre?: boolean;
+}
 
-export default function RiepilogoEdizione({ ed, calc, vai }: { ed: Edizione; calc: CalcoloEdizione; vai: Vai }) {
-  const { previsto: p, reale: r, cassa } = calc;
-  const haReali = r.pezzi > 0;
+export default function RiepilogoEdizione({ ed, calc, vai }: { ed: Edizione; calc: CalcoloEdizione; vai: (scheda: string) => void }) {
+  const { previsto: p, reale: r, cassa, haReali } = calc;
   const partPrev = ed.partecipantiPrevisti || 0;
   const partReali = ed.partecipantiReali || 0;
+  const conMenu = calc.menu.some((m) => !m.offerto);
+  const altriExtra = (t: typeof p) => t.extra - t.premi - t.comuni;
 
-  const righe: { voce: string; prev?: number; reale?: number; tipo?: "euro" | "num" | "pct"; forte?: boolean; aiuto?: string }[] = [
-    { voce: "Pezzi venduti", prev: p.pezzi, reale: r.pezzi, tipo: "num" },
-    { voce: "Ricavi menu", prev: p.ricavi, reale: r.ricavi, forte: true },
-    { voce: "Costo menu (ricette)", prev: -p.costoMenu, reale: -r.costoMenu, aiuto: "Pezzi × costo vivo di ogni articolo (materie prime e costi fissi)" },
-    { voce: "Margine menu", prev: p.margineMenu, reale: r.margineMenu },
-    { voce: "Costi extra", prev: -p.extra, reale: -r.extra, aiuto: "Musica, noleggi e altri costi della sola edizione" },
+  const righe: Riga[] = [
+    ...(conMenu ? [{ voce: "Pezzi venduti", prev: p.pezzi, reale: r.pezzi, tipo: "num" as const }, { voce: "Ricavi menu", prev: p.ricaviMenu, reale: r.ricaviMenu }] : []),
+    ...(p.ingressi || r.ingressi ? [{ voce: "Coperti e iscrizioni", prev: p.ingressi, reale: r.ingressi, aiuto: "Menu fisso, prevendite, quote d'iscrizione" }] : []),
+    ...(p.lotteria || r.lotteria ? [{ voce: "Lotteria", prev: p.lotteria, reale: r.lotteria }] : []),
+    { voce: "Ricavi totali", prev: p.ricavi, reale: r.ricavi, forte: true },
+    { voce: "Costo cibo (ricette)", prev: -p.costoMenu, reale: -r.costoMenu, aiuto: "Porzioni × costo vivo di ogni articolo (materie prime e costi fissi)" },
+    ...(p.costoMateriali || r.costoMateriali
+      ? [
+          {
+            voce: "Materiali e altri acquisti usati",
+            prev: -p.costoMateriali,
+            reale: -r.costoMateriali,
+            aiuto: "Acquisti non coperti dalle ricette: nel reale conta solo quanto usato, al netto degli avanzi riportati in magazzino",
+          },
+        ]
+      : []),
+    { voce: "Costi extra", prev: -altriExtra(p), reale: -altriExtra(r), aiuto: "Musica, noleggi e altri costi delle singole parti" },
+    ...(p.premi || r.premi ? [{ voce: "Premi lotteria comprati", prev: -p.premi, reale: -r.premi }] : []),
+    ...(p.comuni || r.comuni ? [{ voce: "Costi comuni (netti)", prev: -p.comuni, reale: -r.comuni, aiuto: "Voci dell'intera edizione divise fra le serate" }] : []),
     { voce: "Margine finale", prev: p.margineFinale, reale: r.margineFinale, forte: true },
     { voce: "Margine %", prev: p.marginePct, reale: r.marginePct, tipo: "pct" },
-    { voce: "Spesa acquisti", prev: -p.costoAcquisti, reale: -r.costoAcquisti, aiuto: "Lotti × costo del lotto, dalla scheda Acquisti" },
-    { voce: "Partecipanti", prev: partPrev || undefined, reale: partReali || undefined, tipo: "num" },
-    {
-      voce: "Ricavo per partecipante",
-      prev: partPrev ? p.ricavi / partPrev : undefined,
-      reale: partReali ? r.ricavi / partReali : undefined,
-    },
+    { voce: "Spesa acquisti", prev: -p.costoAcquisti, reale: -r.costoAcquisti, aiuto: "Confezioni × costo, dalle schede Acquisti", sempre: true },
+    { voce: "Partecipanti", prev: partPrev || undefined, reale: partReali || undefined, tipo: "num", sempre: true },
+    { voce: "Ricavo per partecipante", prev: partPrev ? p.ricavi / partPrev : undefined, reale: partReali ? r.ricavi / partReali : undefined },
   ];
 
-  const fmt = (v: number | undefined, tipo: "euro" | "num" | "pct" = "euro") =>
-    tipo === "num" ? numero(v) : tipo === "pct" ? percento(v) : euro(v);
+  const fmt = (v: number | undefined, tipo: Riga["tipo"] = "euro") => (tipo === "num" ? numero(v) : tipo === "pct" ? percento(v) : euro(v));
 
-  const articoli = [...calc.menu].sort((a, b) => b.reale.margineDopoExtra - a.reale.margineDopoExtra).filter((m) => m.articolo);
-  const usaReale = haReali;
+  const articoli = [...calc.menu].filter((m) => m.articolo && !m.offerto).sort((a, b) => b.reale.margineDopoExtra - a.reale.margineDopoExtra);
+  const avanzi = r.costoAcquisti - r.costoConsumato;
 
   return (
     <>
@@ -58,12 +75,12 @@ export default function RiepilogoEdizione({ ed, calc, vai }: { ed: Edizione; cal
       )}
 
       <Griglia min={200}>
-        <Kpi etichetta="Ricavi menu previsti" valore={euro(p.ricavi)} nota={`Margine previsto ${euro(p.margineFinale)}`} />
+        <Kpi etichetta="Ricavi previsti" valore={euro(p.ricavi)} nota={`Margine previsto ${euro(p.margineFinale)}`} />
         <Kpi
-          etichetta="Ricavi menu reali"
+          etichetta="Ricavi reali"
           valore={haReali ? euro(r.ricavi) : "-"}
           tono="primario"
-          nota={haReali ? `Scostamento ${euro(r.ricavi - p.ricavi)}` : "Inserisci le quantità reali nel Menu"}
+          nota={haReali ? `Scostamento ${euro(r.ricavi - p.ricavi)}` : "Inserisci le quantità reali nelle schede"}
         />
         <Kpi
           etichetta="Margine reale"
@@ -81,7 +98,7 @@ export default function RiepilogoEdizione({ ed, calc, vai }: { ed: Edizione; cal
 
       <Box sx={{ display: "grid", gap: 3, mt: 3, gridTemplateColumns: { xs: "1fr", lg: "3fr 2fr" } }}>
         <Box>
-          <Sezione titolo="Previsto e reale" sottotitolo="Conto economico dell'edizione dal menu" senzaPadding>
+          <Sezione titolo="Previsto e reale" sottotitolo="Conto economico dell'edizione" senzaPadding>
             <Box className="tabella-scroll">
               <Table size="small">
                 <TableHead>
@@ -105,7 +122,7 @@ export default function RiepilogoEdizione({ ed, calc, vai }: { ed: Edizione; cal
                           {fmt(x.prev, x.tipo)}
                         </TableCell>
                         <TableCell className="num" sx={{ fontWeight: x.forte ? 600 : 400 }}>
-                          {haReali || x.voce === "Partecipanti" || x.voce === "Spesa acquisti" ? fmt(x.reale, x.tipo) : "-"}
+                          {haReali || x.sempre ? fmt(x.reale, x.tipo) : "-"}
                         </TableCell>
                         <TableCell className="num" sx={{ color: diff === undefined || diff === 0 ? "text.secondary" : diff > 0 ? "success.main" : "error.main" }}>
                           {haReali && diff !== undefined ? `${diff > 0 ? "+" : ""}${fmt(diff, x.tipo)}` : ""}
@@ -118,12 +135,59 @@ export default function RiepilogoEdizione({ ed, calc, vai }: { ed: Edizione; cal
             </Box>
           </Sezione>
 
-          {articoli.length > 0 && (
+          {calc.unita.length > 1 && (
             <Sezione
-              titolo="Margine per articolo"
-              sottotitolo={usaReale ? "Reale, dopo i costi extra ripartiti" : "Previsto, dopo i costi extra ripartiti"}
-              azioni={<Button size="small" onClick={() => vai("menu")}>Apri menu</Button>}
+              titolo={ed.serate?.length ? "Serate a confronto" : "Parti a confronto"}
+              sottotitolo={`${haReali ? "Reale" : "Previsto"}, con la quota dei costi comuni`}
+              azioni={
+                <Button size="small" onClick={() => vai("comuni")}>
+                  Costi comuni
+                </Button>
+              }
+              senzaPadding
             >
+              <Box className="tabella-scroll">
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell />
+                      <TableCell className="num">Ricavi</TableCell>
+                      <TableCell className="num">Costi</TableCell>
+                      <TableCell className="num">Comuni</TableCell>
+                      <TableCell className="num">Margine</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {calc.unita.map((u) => {
+                      const v = haReali ? u.reale : u.previsto;
+                      return (
+                        <TableRow key={u.id} hover sx={{ cursor: "pointer" }} onClick={() => vai(u.id)}>
+                          <TableCell sx={{ fontWeight: 500 }}>
+                            {u.nome}
+                            {u.data && (
+                              <Typography component="span" variant="caption" color="text.secondary">
+                                {" "}
+                                {fmtData(u.data)}
+                              </Typography>
+                            )}
+                          </TableCell>
+                          <TableCell className="num">{euro(v.ricavi)}</TableCell>
+                          <TableCell className="num">{euro(v.costi)}</TableCell>
+                          <TableCell className="num">{euro(v.comuni)}</TableCell>
+                          <TableCell className="num" sx={{ fontWeight: 600, color: v.margine >= 0 ? "success.main" : "error.main" }}>
+                            {euro(v.margine)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </Box>
+            </Sezione>
+          )}
+
+          {articoli.length > 0 && (
+            <Sezione titolo="Margine per articolo" sottotitolo={haReali ? "Reale, dopo i costi extra ripartiti" : "Previsto, dopo i costi extra ripartiti"}>
               <BarChart
                 layout="horizontal"
                 height={Math.max(160, articoli.length * 36 + 40)}
@@ -131,7 +195,7 @@ export default function RiepilogoEdizione({ ed, calc, vai }: { ed: Edizione; cal
                 xAxis={[{ valueFormatter: (v: number) => `${Math.round(v)} €` }]}
                 series={[
                   {
-                    data: articoli.map((m) => (usaReale ? m.reale.margineDopoExtra : m.previsto.margineDopoExtra)),
+                    data: articoli.map((m) => (haReali ? m.reale.margineDopoExtra : m.previsto.margineDopoExtra)),
                     label: "Margine",
                     color: "#1a73e8",
                     valueFormatter: (v) => euro(v ?? 0),
@@ -155,16 +219,24 @@ export default function RiepilogoEdizione({ ed, calc, vai }: { ed: Edizione; cal
             <RigaValore etichetta="Netto prudente" valore={euro(cassa.nettoPrudente)} forte tono={tonoValore(cassa.nettoPrudente)} />
           </Sezione>
 
-          <Sezione titolo="Magazzino" azioni={<Button size="small" onClick={() => vai("acquisti")}>Acquisti</Button>}>
+          <Sezione titolo="Acquisti e avanzi">
             <RigaValore etichetta="Spesa acquisti reale" valore={euro(r.costoAcquisti)} />
-            <RigaValore etichetta="Costo di quanto consumato" valore={euro(r.costoConsumato)} />
-            <RigaValore etichetta="Valore rimasto in magazzino" valore={euro(r.costoAcquisti - r.costoConsumato)} />
+            <RigaValore
+              etichetta={
+                <>
+                  Avanzi riportati in magazzino
+                  <Aiuto testo="Valore di quanto comprato e non usato: resta disponibile per i prossimi eventi" />
+                </>
+              }
+              valore={euro(-avanzi)}
+            />
+            <RigaValore etichetta="Costo puro (depurato dagli avanzi)" valore={euro(r.costoConsumato)} forte />
             <Divider sx={{ my: 0.5 }} />
             <RigaValore
               etichetta={
                 <>
                   Margine su consumi reali
-                  <Aiuto testo="Ricavi reali meno il costo di quanto effettivamente consumato e meno i costi extra" />
+                  <Aiuto testo="Ricavi reali meno il costo di quanto effettivamente usato (cibo e materiali) e meno i costi extra" />
                 </>
               }
               valore={haReali ? euro(r.margineSuAcquisti) : "-"}
@@ -175,10 +247,10 @@ export default function RiepilogoEdizione({ ed, calc, vai }: { ed: Edizione; cal
 
           <Sezione titolo="Quadratura con la cassa">
             <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-              Confronta i movimenti registrati con menu, acquisti e costi extra. Piccole differenze sono normali (omaggi, arrotondamenti, spese non a menu).
+              Confronta i movimenti registrati con ricavi, acquisti e costi extra. Piccole differenze sono normali (omaggi, arrotondamenti, spese non a menu).
             </Typography>
             <Stack spacing={0.5}>
-              <RigaValore etichetta="Incassi registrati − ricavi menu" valore={euro(calc.quadratura.ricavi)} tono={Math.abs(calc.quadratura.ricavi) < 1 ? "positivo" : "attenzione"} />
+              <RigaValore etichetta="Incassi registrati − ricavi" valore={euro(calc.quadratura.ricavi)} tono={Math.abs(calc.quadratura.ricavi) < 1 ? "positivo" : "attenzione"} />
               <RigaValore
                 etichetta="Uscite registrate − (acquisti + extra)"
                 valore={euro(calc.quadratura.costi)}

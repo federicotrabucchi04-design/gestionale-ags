@@ -24,7 +24,7 @@ import { euro } from "@/lib/format";
 import { EMAIL_PROPRIETARIO, type Impostazioni } from "@/lib/types";
 
 export default function ImpostazioniPagina() {
-  const { dati, anno, salvaImpostazioni, salvaAccesso, sostituisciTutto, notifica, conferma, locale } = useGestionale();
+  const { dati, anno, salvaImpostazioni, salvaAccesso, sostituisciTutto, notifica, conferma, locale, cestino, ripristina, svuotaCestino } = useGestionale();
   const imp = dati.impostazioni;
   const forzato = imp.saldiApertura[anno];
   const calcolato = aperturaAnno(anno, { ...imp, saldiApertura: Object.fromEntries(Object.entries(imp.saldiApertura).filter(([a]) => a !== anno)) }, dati.movimenti);
@@ -79,6 +79,9 @@ export default function ImpostazioniPagina() {
 
           <Sezione titolo="Backup e dati">
             <Stack spacing={1.5}>
+              <Button variant="outlined" startIcon={<TableViewOutlined />} href={`/stampa`} component="a" target="_blank">
+                Bilancio anno {anno} (stampa / PDF / Excel)
+              </Button>
               <Button variant="outlined" startIcon={<TableViewOutlined />} onClick={() => void esportaExcel(dati)}>
                 Scarica tutto in Excel
               </Button>
@@ -154,8 +157,59 @@ export default function ImpostazioniPagina() {
             </Stack>
           </Sezione>
 
+          <Sezione titolo={`Cestino (${cestino.length})`} sottotitolo="Elementi eliminati di recente: puoi ripristinarli o svuotare definitivamente">
+            {cestino.length === 0 ? (
+              <Typography variant="body2" color="text.secondary">
+                Vuoto
+              </Typography>
+            ) : (
+              <List dense disablePadding>
+                {cestino.map((v) => (
+                  <ListItem
+                    key={`${v.coll}-${v.id}`}
+                    disableGutters
+                    secondaryAction={
+                      <Button size="small" onClick={() => ripristina(v.coll, v.id)}>
+                        Ripristina
+                      </Button>
+                    }
+                  >
+                    <ListItemText primary={v.nome} secondary={`${v.coll}${v.eliminatoIl ? ` · ${new Date(v.eliminatoIl).toLocaleString("it-IT")}` : ""}`} />
+                  </ListItem>
+                ))}
+              </List>
+            )}
+            {cestino.length > 0 && (
+              <Button
+                color="error"
+                sx={{ mt: 1 }}
+                onClick={async () => {
+                  if (await conferma("Svuotare il cestino?", "Gli elementi verranno eliminati definitivamente.", "Svuota")) {
+                    const n = await svuotaCestino();
+                    notifica(`Eliminati ${n} elementi`);
+                  }
+                }}
+              >
+                Svuota cestino
+              </Button>
+            )}
+          </Sezione>
+
+          <Sezione titolo="Analisi" sottotitolo="Soglia dei semafori su prezzi e margini">
+            <Stack direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+              <CampoNumero
+                label="Margine obiettivo"
+                suffisso="%"
+                valore={Math.round((imp.margineObiettivo ?? 0.4) * 100)}
+                onCambia={(v) => salvaImpostazioni({ margineObiettivo: Math.max(0, Math.min(95, v)) / 100 })}
+                sx={{ maxWidth: 180 }}
+              />
+              <Typography variant="body2" color="text.secondary">
+                Articoli sotto questa soglia di margine sul prezzo diventano gialli, sotto la metà rossi.
+              </Typography>
+            </Stack>
+          </Sezione>
           <ListaModificabile titolo="Categorie dei movimenti" chiave="categorieMovimento" />
-          <ListaModificabile titolo="Tipologie di evento" chiave="tipologieEvento" />
           <ListaModificabile titolo="Categorie degli articoli" chiave="categorieArticolo" />
         </Box>
       </Box>
@@ -163,7 +217,7 @@ export default function ImpostazioniPagina() {
   );
 }
 
-function ListaModificabile({ titolo, chiave }: { titolo: string; chiave: "categorieMovimento" | "tipologieEvento" | "categorieArticolo" }) {
+function ListaModificabile({ titolo, chiave }: { titolo: string; chiave: "categorieMovimento" | "categorieArticolo" }) {
   const { dati, salvaImpostazioni } = useGestionale();
   const [nuova, setNuova] = useState("");
   const lista = dati.impostazioni[chiave];

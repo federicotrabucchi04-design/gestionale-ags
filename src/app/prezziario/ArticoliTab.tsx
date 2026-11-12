@@ -29,6 +29,7 @@ import ComposizionePrezzo from "@/components/ComposizionePrezzo";
 import { useGestionale } from "@/components/Gestionale";
 import { CampoNumero, Etichetta, Vuoto } from "@/components/ui";
 import { costoArticolo, listinoAl, nuovoId, oggiISO, prossimoCodice } from "@/lib/calcoli";
+import { righeMenu } from "@/lib/modelli";
 import { data as fmtData, euro, euroFine, percento } from "@/lib/format";
 import type { Articolo } from "@/lib/types";
 
@@ -155,7 +156,7 @@ function ArticoloDialog({ articolo, alData, onChiudi }: { articolo: Articolo | n
   const costo = costoArticolo(a, alData, dati);
   const listino = listinoAl(dati.listini, alData);
   const mpOrdinate = [...dati.materiePrime].sort((x, y) => x.nome.localeCompare(y.nome));
-  const usato = dati.edizioni.filter((e) => e.menu.some((m) => m.articoloId === a.id)).length;
+  const usato = dati.edizioni.filter((e) => righeMenu(e).some((m) => m.articoloId === a.id)).length;
 
   return (
     <Dialog open onClose={onChiudi} fullWidth maxWidth="lg" fullScreen={mobile}>
