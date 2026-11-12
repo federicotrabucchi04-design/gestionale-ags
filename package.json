@@ -10,6 +10,7 @@
     "test": "vitest run",
     "demo": "node tools/genera_demo.mjs",
     "importa": "node tools/importa_firestore.mjs",
+    "backup": "node tools/backup_firestore.mjs",
     "auth-domain": "node tools/aggiungi_dominio_auth.mjs"
   },
   "dependencies": {
