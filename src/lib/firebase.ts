@@ -7,6 +7,7 @@ import {
   persistentMultipleTabManager,
   type Firestore,
 } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 
 const config = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -23,6 +24,7 @@ export const firebaseConfigurato = Boolean(config.apiKey && config.projectId && 
 let app: FirebaseApp | undefined;
 let db: Firestore | undefined;
 let auth: Auth | undefined;
+let storage: FirebaseStorage | undefined;
 let appCheckAvviato = false;
 
 export function firebaseApp(): FirebaseApp {
@@ -50,4 +52,9 @@ export function firestore(): Firestore {
 export function firebaseAuth(): Auth {
   if (!auth) auth = getAuth(firebaseApp());
   return auth;
+}
+
+export function firebaseStorage(): FirebaseStorage {
+  if (!storage) storage = getStorage(firebaseApp());
+  return storage;
 }

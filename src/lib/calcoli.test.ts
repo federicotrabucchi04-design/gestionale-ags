@@ -21,7 +21,7 @@ import {
   usoStorico,
   venditeStoriche,
 } from "./calcoli";
-import { copiaStruttura, normalizzaEdizione, strutturaBase } from "./modelli";
+import { copiaPrevistiSuReali, copiaStruttura, normalizzaEdizione, strutturaBase } from "./modelli";
 import { IMPOSTAZIONI_DEFAULT, type Dati, type Edizione, type Movimento } from "./types";
 
 const mov = (p: Partial<Movimento> & Pick<Movimento, "data" | "tipo" | "importo" | "stato">): Movimento => ({
@@ -333,6 +333,18 @@ describe("edizione a parti (Festa del Bosco)", () => {
     expect(nuovaCena.ingresso).toMatchObject({ prezzo: 25, previsti: 90, prevendite: 0 });
     expect(copia.parti[3].lotteria?.vendutiPrevisti).toBe(600);
     expect(copia.comuni[0]).toMatchObject({ importoPrevisto: 400, importoReale: 0 });
+  });
+
+  it("copia previsti sui reali solo dove i reali sono ancora a zero", () => {
+    const base = structuredClone(ed);
+    base.parti[1].menu[0] = { id: "c1", articoloId: "panino", qtaPrevista: 100, qtaReale: 0 };
+    base.parti[3].lotteria!.vendutiReali = 0;
+    base.parti[3].lotteria!.vendutiPrevisti = 500;
+    base.comuni[0] = { ...base.comuni[0], importoPrevisto: 300, importoReale: 0 };
+    const out = copiaPrevistiSuReali(base);
+    expect(out.parti[1].menu[0].qtaReale).toBe(100);
+    expect(out.parti[3].lotteria?.vendutiReali).toBe(500);
+    expect(out.comuni[0].importoReale).toBe(300);
   });
 });
 

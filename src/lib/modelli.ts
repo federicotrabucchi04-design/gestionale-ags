@@ -251,6 +251,36 @@ export function copiaStruttura(prec: Edizione, nuovaData: string, op: OpzioniCop
   return { parti, serate, comuni, presepe: prec.presepe };
 }
 
+/**
+ * Copies planned quantities onto actual ones for the same edition
+ * (menu, purchases, extras, raffle, covers, participants, shared costs).
+ */
+export function copiaPrevistiSuReali(ed: Edizione): Edizione {
+  return {
+    ...ed,
+    partecipantiReali: ed.partecipantiReali || ed.partecipantiPrevisti || 0,
+    parti: ed.parti.map((p) => ({
+      ...p,
+      menu: p.menu.map((r) => ({ ...r, qtaReale: r.qtaReale || r.qtaPrevista || 0 })),
+      acquisti: p.acquisti.map((r) => ({ ...r, lottiReali: r.lottiReali || r.lottiPrevisti || 0 })),
+      costiExtra: p.costiExtra.map((c) => ({ ...c, importoReale: c.importoReale || c.importoPrevisto || 0 })),
+      ingresso: p.ingresso
+        ? {
+            ...p.ingresso,
+            venditeGiorno:
+              p.ingresso.venditeGiorno ||
+              Math.max(0, (p.ingresso.previsti || 0) - (p.ingresso.prevendite || 0)),
+            presenze: p.ingresso.presenze || p.ingresso.previsti || 0,
+          }
+        : undefined,
+      lotteria: p.lotteria
+        ? { ...p.lotteria, vendutiReali: p.lotteria.vendutiReali || p.lotteria.vendutiPrevisti || 0 }
+        : undefined,
+    })),
+    comuni: ed.comuni.map((c) => ({ ...c, importoReale: c.importoReale || c.importoPrevisto || 0 })),
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Normalizzazione dei dati salvati con versioni precedenti
 // ---------------------------------------------------------------------------

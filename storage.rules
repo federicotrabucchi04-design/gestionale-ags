@@ -1,0 +1,28 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function autorizzato() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && (
+          request.auth.token.email == 'federico.trabucchi04@gmail.com'
+          || (
+            firestore.exists(/databases/(default)/documents/config/accesso)
+            && request.auth.token.email.lower() in firestore.get(/databases/(default)/documents/config/accesso).data.emails
+          )
+        );
+    }
+
+    match /movimenti/{movimentoId}/{fileName} {
+      allow read: if autorizzato();
+      allow write: if autorizzato()
+        && request.resource.size < 8 * 1024 * 1024
+        && (
+          request.resource.contentType.matches('image/.*')
+          || request.resource.contentType == 'application/pdf'
+        );
+      allow delete: if autorizzato();
+    }
+  }
+}

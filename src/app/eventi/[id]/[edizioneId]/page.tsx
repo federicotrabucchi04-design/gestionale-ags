@@ -23,6 +23,7 @@ import AccountTreeOutlined from "@mui/icons-material/AccountTreeOutlined";
 import CheckCircleOutlined from "@mui/icons-material/CheckCircleOutlined";
 import CloudDoneOutlined from "@mui/icons-material/CloudDoneOutlined";
 import CloudSyncOutlined from "@mui/icons-material/CloudSyncOutlined";
+import ContentCopyOutlined from "@mui/icons-material/ContentCopyOutlined";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
 import EditOutlined from "@mui/icons-material/EditOutlined";
 import LockOpenOutlined from "@mui/icons-material/LockOpenOutlined";
@@ -46,7 +47,7 @@ import {
 import { checklistEdizione } from "@/lib/checklist";
 import { esportaEdizioneExcel } from "@/lib/export";
 import { dataLunga, euro } from "@/lib/format";
-import { TIPI_EVENTO, schermate } from "@/lib/modelli";
+import { TIPI_EVENTO, copiaPrevistiSuReali, schermate } from "@/lib/modelli";
 import { STATI } from "@/lib/stati";
 import type { Edizione, Parte } from "@/lib/types";
 import CostiComuni from "./CostiComuni";
@@ -316,6 +317,20 @@ export default function EdizionePagina() {
           <Menu anchorEl={menuAzioni} open={!!menuAzioni} onClose={() => setMenuAzioni(null)}>
             {!bloccata && voceMenu(<EditOutlined fontSize="small" />, "Dati edizione", () => setDatiAperti(true))}
             {!bloccata && voceMenu(<AccountTreeOutlined fontSize="small" />, "Struttura: serate e parti", () => setStrutturaAperta(true))}
+            {!bloccata &&
+              voceMenu(<ContentCopyOutlined fontSize="small" />, "Copia previsti → reali", async () => {
+                if (
+                  await conferma(
+                    "Copiare i previsti sui reali?",
+                    "Le quantità e gli importi previsti vengono copiati nei campi reali dove questi sono ancora a zero. Puoi correggerli dopo.",
+                    "Copia",
+                  )
+                ) {
+                  aggiorna((e) => copiaPrevistiSuReali(e));
+                  setVistaPrev(false);
+                  notifica("Previsti copiati sui reali");
+                }
+              })}
             {voceMenu(<ShoppingCartOutlined fontSize="small" />, "Lista della spesa", () => setSpesa(true))}
             {voceMenu(<PrintOutlined fontSize="small" />, "Stampa o PDF", () => window.open(`/stampa?edizione=${bozza.id}`, "_blank"))}
             {voceMenu(<TableViewOutlined fontSize="small" />, "Excel completo", () => void esportaEdizioneExcel(bozza, calc, dati, true))}

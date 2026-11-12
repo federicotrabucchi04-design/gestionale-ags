@@ -9,6 +9,7 @@ import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
+import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
@@ -21,17 +22,20 @@ import { CampoNumero, Intestazione, RigaValore, Sezione } from "@/components/ui"
 import { annoPrecedente, aperturaAnno } from "@/lib/calcoli";
 import { esportaExcel, esportaJson, leggiBackup } from "@/lib/backup";
 import { euro } from "@/lib/format";
-import { EMAIL_PROPRIETARIO, type Impostazioni } from "@/lib/types";
+import { ETICHETTE_RUOLO, ruoloDi } from "@/lib/ruoli";
+import { EMAIL_PROPRIETARIO, type Impostazioni, type Ruolo } from "@/lib/types";
 
 export default function ImpostazioniPagina() {
-  const { dati, anno, salvaImpostazioni, salvaAccesso, sostituisciTutto, notifica, conferma, locale, cestino, ripristina, svuotaCestino } = useGestionale();
+  const { dati, anno, salvaImpostazioni, salvaAccesso, sostituisciTutto, notifica, conferma, locale, cestino, ripristina, svuotaCestino, ruolo } = useGestionale();
   const imp = dati.impostazioni;
   const forzato = imp.saldiApertura[anno];
   const calcolato = aperturaAnno(anno, { ...imp, saldiApertura: Object.fromEntries(Object.entries(imp.saldiApertura).filter(([a]) => a !== anno)) }, dati.movimenti);
   const [valoreApertura, setValoreApertura] = useState<number>(forzato ?? calcolato);
   const [email, setEmail] = useState("");
+  const [ruoloNuovo, setRuoloNuovo] = useState<Ruolo>("cassa");
   const [inCorso, setInCorso] = useState(false);
   const file = useRef<HTMLInputElement>(null);
+  const admin = ruolo === "admin";
 
   const impostaApertura = (v: number | undefined) => {
     const saldi = { ...imp.saldiApertura };
@@ -111,50 +115,107 @@ export default function ImpostazioniPagina() {
         </Box>
 
         <Box>
-          <Sezione titolo="Utenti autorizzati" sottotitolo="Account Google che possono aprire il gestionale">
+          <Sezione titolo="Utenti e ruoli" sottotitolo="lettura · cassa · admin (soft: blocco solo nell'app)">
             {locale && (
               <Alert severity="info" sx={{ mb: 2 }}>
                 In modalità locale non c&apos;è login. Gli utenti valgono quando l&apos;app è collegata a Firebase.
               </Alert>
             )}
+            {!admin && (
+              <Alert severity="warning" sx={{ mb: 2 }}>
+                Solo un amministratore può modificare utenti e ruoli.
+              </Alert>
+            )}
             <List dense disablePadding>
-              {dati.accesso.emails.map((e) => (
-                <ListItem
-                  key={e}
-                  disableGutters
-                  secondaryAction={
-                    e !== EMAIL_PROPRIETARIO && (
-                      <IconButton
-                        onClick={async () => {
-                          if (await conferma("Rimuovere l'utente?", `${e} non potrà più accedere.`, "Rimuovi")) {
-                            salvaAccesso({ ...dati.accesso, emails: dati.accesso.emails.filter((x) => x !== e) });
-                          }
-                        }}
-                      >
-                        <DeleteOutlined />
-                      </IconButton>
-                    )
-                  }
-                >
-                  <ListItemText primary={e} secondary={e === EMAIL_PROPRIETARIO ? "Amministratore" : undefined} />
-                </ListItem>
-              ))}
+              {dati.accesso.emails.map((e) => {
+                const r = ruoloDi(e, dati.accesso);
+                return (
+                  <ListItem
+                    key={e}
+                    disableGutters
+                    secondaryAction={
+                      admin && e !== EMAIL_PROPRIETARIO ? (
+                        <IconButton
+                          onClick={async () => {
+                            if (await conferma("Rimuovere l'utente?", `${e} non potrà più accedere.`, "Rimuovi")) {
+                              const { [e]: _rimosso, ...ruoliRestanti } = dati.accesso.ruoli ?? {};
+                              salvaAccesso({
+                                ...dati.accesso,
+                                emails: dati.accesso.emails.filter((x) => x !== e),
+                                ruoli: ruoliRestanti,
+                              });
+                            }
+                          }}
+                        >
+                          <DeleteOutlined />
+                        </IconButton>
+                      ) : undefined
+                    }
+                  >
+                    <ListItemText
+                      primary={e}
+                      secondary={
+                        e === EMAIL_PROPRIETARIO || !admin ? (
+                          ETICHETTE_RUOLO[r]
+                        ) : (
+                          <TextField
+                            select
+                            size="small"
+                            value={r}
+                            onChange={(ev) => {
+                              const next = ev.target.value as Ruolo;
+                              salvaAccesso({
+                                ...dati.accesso,
+                                ruoli: { ...(dati.accesso.ruoli ?? {}), [e]: next },
+                              });
+                              notifica(`Ruolo aggiornato: ${ETICHETTE_RUOLO[next]}`);
+                            }}
+                            sx={{ mt: 0.5, minWidth: 180 }}
+                          >
+                            {(Object.keys(ETICHETTE_RUOLO) as Ruolo[]).map((k) => (
+                              <MenuItem key={k} value={k}>
+                                {ETICHETTE_RUOLO[k]}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+                        )
+                      }
+                      slotProps={{ secondary: { component: "div" } }}
+                    />
+                  </ListItem>
+                );
+              })}
             </List>
-            <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
-              <TextField label="Email Google" value={email} onChange={(e) => setEmail(e.target.value)} type="email" />
-              <Button
-                variant="contained"
-                disabled={!/^\S+@\S+\.\S+$/.test(email.trim())}
-                onClick={() => {
-                  const e = email.trim().toLowerCase();
-                  if (!dati.accesso.emails.includes(e)) salvaAccesso({ ...dati.accesso, emails: [...dati.accesso.emails, e] });
-                  setEmail("");
-                  notifica("Utente autorizzato");
-                }}
-              >
-                Aggiungi
-              </Button>
-            </Stack>
+            {admin && (
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ mt: 1 }}>
+                <TextField label="Email Google" value={email} onChange={(e) => setEmail(e.target.value)} type="email" fullWidth />
+                <TextField select label="Ruolo" value={ruoloNuovo} onChange={(e) => setRuoloNuovo(e.target.value as Ruolo)} sx={{ minWidth: 160 }}>
+                  {(Object.keys(ETICHETTE_RUOLO) as Ruolo[]).map((k) => (
+                    <MenuItem key={k} value={k}>
+                      {ETICHETTE_RUOLO[k]}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <Button
+                  variant="contained"
+                  disabled={!/^\S+@\S+\.\S+$/.test(email.trim())}
+                  onClick={() => {
+                    const e = email.trim().toLowerCase();
+                    if (!dati.accesso.emails.includes(e)) {
+                      salvaAccesso({
+                        ...dati.accesso,
+                        emails: [...dati.accesso.emails, e],
+                        ruoli: { ...(dati.accesso.ruoli ?? {}), [e]: ruoloNuovo },
+                      });
+                    }
+                    setEmail("");
+                    notifica("Utente autorizzato");
+                  }}
+                >
+                  Aggiungi
+                </Button>
+              </Stack>
+            )}
           </Sezione>
 
           <Sezione titolo={`Cestino (${cestino.length})`} sottotitolo="Elementi eliminati di recente: puoi ripristinarli o svuotare definitivamente">

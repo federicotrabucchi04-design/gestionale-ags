@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Autocomplete from "@mui/material/Autocomplete";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -9,6 +9,7 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
+import Link from "@mui/material/Link";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import ToggleButton from "@mui/material/ToggleButton";
@@ -16,7 +17,9 @@ import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Typography from "@mui/material/Typography";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import AddOutlined from "@mui/icons-material/AddOutlined";
+import AttachFileOutlined from "@mui/icons-material/AttachFileOutlined";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
+import { caricaAllegato, eliminaAllegatoStorage } from "@/lib/allegati";
 import { normalizzaQuoteMovimento, nuovoId, oggiISO, quoteMovimento } from "@/lib/calcoli";
 import { euro } from "@/lib/format";
 import type { Movimento, QuotaEdizione } from "@/lib/types";
@@ -58,8 +61,10 @@ export default function MovimentoDialog({
   movimento: Movimento | null;
   onChiudi: () => void;
 }) {
-  const { dati, salva, elimina, notifica, conferma } = useGestionale();
+  const { dati, salva, elimina, notifica, conferma, solaLettura } = useGestionale();
   const [m, setM] = useState<Movimento | null>(movimento);
+  const [caricamento, setCaricamento] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
   const mobile = useMediaQuery("(max-width:600px)");
   const [origine, setOrigine] = useState(movimento);
   if (movimento !== origine) {
@@ -210,15 +215,66 @@ export default function MovimentoDialog({
             opzioni={[...dati.fornitori].sort((a, b) => a.nome.localeCompare(b.nome)).map((f) => ({ valore: f.id, etichetta: f.nome }))}
           />
           <TextField label="Note" value={m.note ?? ""} onChange={(e) => set({ note: e.target.value })} multiline minRows={2} />
+
+          <Box sx={{ border: 1, borderColor: "divider", borderRadius: 1, p: 1.5 }}>
+            <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+              Scontrino / fattura
+            </Typography>
+            {m.allegato ? (
+              <Stack direction="row" spacing={1} sx={{ alignItems: "center", flexWrap: "wrap", gap: 1 }}>
+                <Link href={m.allegato.url} target="_blank" rel="noopener noreferrer">
+                  {m.allegato.nome}
+                </Link>
+                {!solaLettura && (
+                  <IconButton
+                    size="small"
+                    aria-label="Rimuovi allegato"
+                    onClick={async () => {
+                      await eliminaAllegatoStorage(m.allegato);
+                      set({ allegato: undefined });
+                    }}
+                  >
+                    <DeleteOutlined fontSize="small" />
+                  </IconButton>
+                )}
+              </Stack>
+            ) : (
+              <Button size="small" startIcon={<AttachFileOutlined />} disabled={solaLettura || caricamento} onClick={() => fileRef.current?.click()}>
+                {caricamento ? "Caricamento…" : "Allega foto o PDF"}
+              </Button>
+            )}
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*,application/pdf"
+              hidden
+              onChange={async (e) => {
+                const f = e.target.files?.[0];
+                e.target.value = "";
+                if (!f) return;
+                setCaricamento(true);
+                try {
+                  const allegato = await caricaAllegato(f, m.id);
+                  set({ allegato });
+                  notifica("Allegato pronto: salva il movimento");
+                } catch (err) {
+                  notifica(err instanceof Error ? err.message : "Caricamento non riuscito", "error");
+                } finally {
+                  setCaricamento(false);
+                }
+              }}
+            />
+          </Box>
         </Stack>
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
-        {esistente && (
+        {esistente && !solaLettura && (
           <Button
             color="error"
             sx={{ mr: "auto" }}
             onClick={async () => {
               if (await conferma("Eliminare il movimento?", `"${m.descrizione}" verrà eliminato definitivamente.`, "Elimina")) {
+                await eliminaAllegatoStorage(m.allegato);
                 elimina("movimenti", m.id);
                 notifica("Movimento eliminato");
                 onChiudi();
@@ -231,7 +287,7 @@ export default function MovimentoDialog({
         <Button onClick={onChiudi}>Annulla</Button>
         <Button
           variant="contained"
-          disabled={!valido}
+          disabled={!valido || solaLettura || caricamento}
           onClick={() => {
             const pronto = normalizzaQuoteMovimento({ ...m, descrizione: m.descrizione.trim() });
             salva("movimenti", pronto);

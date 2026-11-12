@@ -227,6 +227,17 @@ export interface QuotaEdizione {
   importo: number;
 }
 
+/** Receipt / invoice photo attached to a cash movement. */
+export interface AllegatoMovimento {
+  nome: string;
+  contentType: string;
+  size: number;
+  /** Firebase Storage path when uploaded to the cloud. */
+  path?: string;
+  /** Download URL, or data: URL for small local-only attachments. */
+  url: string;
+}
+
 export interface Movimento {
   id: string;
   data: string;
@@ -244,6 +255,7 @@ export interface Movimento {
   quote?: QuotaEdizione[];
   fornitoreId?: string;
   note?: string;
+  allegato?: AllegatoMovimento;
 }
 
 export type TipoInventario = "conteggio" | "carico" | "scarico";
@@ -270,9 +282,14 @@ export interface Impostazioni {
   ultimoBackup?: string;
 }
 
+/** Soft roles enforced in the UI (Firestore still allows every authorised email to write). */
+export type Ruolo = "lettura" | "cassa" | "admin";
+
 export interface Accesso {
   id: "accesso";
   emails: string[];
+  /** Role per email; missing entries default to "cassa". Owner is always admin. */
+  ruoli?: Record<string, Ruolo>;
 }
 
 export interface Dati {

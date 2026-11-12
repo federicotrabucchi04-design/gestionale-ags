@@ -34,6 +34,7 @@ import { archivio, TUTTE_LE_COLLEZIONI, type Collezione } from "@/lib/archivio";
 import { annoSociale, oggiISO } from "@/lib/calcoli";
 import { firebaseAuth, firebaseConfigurato } from "@/lib/firebase";
 import { normalizzaCollezione } from "@/lib/modelli";
+import { puoGestireImpostazioni, puoGestireUtenti, puoScrivereCollezione, ruoloDi } from "@/lib/ruoli";
 import {
   ACCESSO_DEFAULT,
   DATI_VUOTI,
@@ -42,6 +43,7 @@ import {
   type Dati,
   type Impostazioni,
   type NomeCollezione,
+  type Ruolo,
 } from "@/lib/types";
 
 type Elemento<C extends NomeCollezione> = Dati[C][number];
@@ -51,6 +53,9 @@ export type StatoSync = "online" | "offline" | "sync" | "locale";
 interface Contesto {
   dati: Dati;
   utente: { email: string; nome?: string; foto?: string } | null;
+  /** Soft role for the signed-in user (UI gates; Firestore still allows every authorised email). */
+  ruolo: Ruolo;
+  solaLettura: boolean;
   locale: boolean;
   /** Online / offline / writing / local-only. */
   sync: StatoSync;
@@ -243,6 +248,9 @@ export function GestionaleProvider({ children }: { children: ReactNode }) {
 
   const sync: StatoSync = archivio.locale ? "locale" : !online ? "offline" : pendenti > 0 ? "sync" : "online";
 
+  const ruolo: Ruolo = archivio.locale ? "admin" : ruoloDi(utente?.email, dati.accesso);
+  const solaLettura = ruolo === "lettura";
+
   const traccia = useCallback(
     <T extends { id: string }>(el: T) => ({
       ...el,
@@ -263,6 +271,8 @@ export function GestionaleProvider({ children }: { children: ReactNode }) {
           ? { email: utente.email ?? "", nome: utente.displayName ?? undefined, foto: utente.photoURL ?? undefined }
           : null
         : { email: "Modalità locale" },
+      ruolo,
+      solaLettura,
       locale: archivio.locale,
       sync,
       anno,
@@ -271,6 +281,10 @@ export function GestionaleProvider({ children }: { children: ReactNode }) {
         localStorage.setItem(CHIAVE_ANNO, a);
       },
       salva: (coll, el) => {
+        if (!puoScrivereCollezione(ruolo, coll)) {
+          notifica(solaLettura ? "Account in sola lettura" : "Il tuo ruolo non può modificare questi dati", "error");
+          return;
+        }
         setPendenti((n) => n + 1);
         archivio
           .salva(coll, traccia(el as { id: string }) as never)
@@ -278,6 +292,10 @@ export function GestionaleProvider({ children }: { children: ReactNode }) {
           .finally(() => setPendenti((n) => Math.max(0, n - 1)));
       },
       elimina: (coll, id, etichetta) => {
+        if (!puoScrivereCollezione(ruolo, coll)) {
+          notifica(solaLettura ? "Account in sola lettura" : "Il tuo ruolo non può eliminare questi dati", "error");
+          return;
+        }
         const el = (dati[coll] as { id: string }[]).find((x) => x.id === id);
         if (!el) return;
         const soft = { ...el, eliminato: true, eliminatoIl: Date.now(), aggiornatoIl: Date.now(), modificatoDa: emailUtente() || undefined };
@@ -321,12 +339,24 @@ export function GestionaleProvider({ children }: { children: ReactNode }) {
       },
       cestino,
       salvaImpostazioni: (patch) => {
+        if (!puoGestireImpostazioni(ruolo)) {
+          notifica("Solo un amministratore può cambiare le impostazioni", "error");
+          return;
+        }
         archivio.salva("config", { ...dati.impostazioni, ...patch, id: "impostazioni" } as never).catch(errore);
       },
       salvaAccesso: (a) => {
+        if (!puoGestireUtenti(ruolo)) {
+          notifica("Solo un amministratore può gestire gli utenti", "error");
+          return;
+        }
         archivio.salva("config", a as never).catch(errore);
       },
       sostituisciTutto: async (nuovi) => {
+        if (!puoGestireImpostazioni(ruolo)) {
+          notifica("Solo un amministratore può importare un backup", "error");
+          return;
+        }
         const { impostazioni, accesso, ...colls } = nuovi;
         const payload: Record<string, unknown[]> = { ...colls };
         const config: unknown[] = [];
@@ -345,7 +375,7 @@ export function GestionaleProvider({ children }: { children: ReactNode }) {
         if (firebaseConfigurato) void signOut(firebaseAuth());
       },
     }),
-    [dati, utente, anno, errore, notifica, sync, cestino, cestinoBruto, traccia],
+    [dati, utente, anno, errore, notifica, sync, cestino, cestinoBruto, traccia, ruolo, solaLettura],
   );
 
   const chiudiDialogo = (v: boolean) => {

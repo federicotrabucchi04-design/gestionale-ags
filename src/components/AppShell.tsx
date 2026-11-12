@@ -3,6 +3,7 @@
 import { useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Alert from "@mui/material/Alert";
 import AppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
 import BottomNavigation from "@mui/material/BottomNavigation";
@@ -21,6 +22,7 @@ import Paper from "@mui/material/Paper";
 import Select from "@mui/material/Select";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import { ETICHETTE_RUOLO } from "@/lib/ruoli";
 import HomeOutlined from "@mui/icons-material/HomeOutlined";
 import SwapVertOutlined from "@mui/icons-material/SwapVertOutlined";
 import CelebrationOutlined from "@mui/icons-material/CelebrationOutlined";
@@ -69,7 +71,7 @@ function attiva(path: string, href: string) {
 }
 
 export default function AppShell({ children }: { children: ReactNode }) {
-  const { dati, anno, setAnno, utente, esci, locale, sync } = useGestionale();
+  const { dati, anno, setAnno, utente, esci, locale, sync, ruolo, solaLettura } = useGestionale();
   const path = usePathname();
   const [menu, setMenu] = useState<HTMLElement | null>(null);
   const [altro, setAltro] = useState<HTMLElement | null>(null);
@@ -232,7 +234,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
           px: { xs: 2, sm: 3, lg: 4 },
         }}
       >
-        <Box sx={{ maxWidth: 1400, mx: "auto" }}>{children}</Box>
+        <Box sx={{ maxWidth: 1400, mx: "auto" }}>
+          {solaLettura && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Accesso in sola lettura ({ETICHETTE_RUOLO[ruolo]}): puoi consultare i dati ma non modificarli.
+            </Alert>
+          )}
+          {children}
+        </Box>
       </Box>
 
       <Paper
