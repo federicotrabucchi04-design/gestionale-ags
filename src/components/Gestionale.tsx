@@ -10,7 +10,15 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { GoogleAuthProvider, onAuthStateChanged, signInWithPopup, signOut, type User } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  getRedirectResult,
+  onAuthStateChanged,
+  signInWithPopup,
+  signInWithRedirect,
+  signOut,
+  type User,
+} from "firebase/auth";
 import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -162,6 +170,9 @@ export function GestionaleProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!firebaseConfigurato) return;
+    void getRedirectResult(firebaseAuth()).catch((e: Error) => {
+      if (!String(e.message).includes("popup-closed")) setErroreAccesso(`Accesso non riuscito: ${e.message}`);
+    });
     return onAuthStateChanged(firebaseAuth(), (u) => setUtente(u));
   }, []);
 
@@ -338,8 +349,18 @@ export function GestionaleProvider({ children }: { children: ReactNode }) {
         errore={erroreAccesso}
         onAccedi={() => {
           setErroreAccesso(undefined);
-          signInWithPopup(firebaseAuth(), new GoogleAuthProvider()).catch((e: Error) => {
-            if (!String(e.message).includes("popup-closed")) setErroreAccesso(`Accesso non riuscito: ${e.message}`);
+          const provider = new GoogleAuthProvider();
+          signInWithPopup(firebaseAuth(), provider).catch((e: Error) => {
+            const msg = String(e.message);
+            const code = (e as { code?: string }).code ?? "";
+            // Embedded browsers and strict popup blockers: fall back to a full-page redirect.
+            if (code === "auth/popup-blocked" || msg.includes("popup-blocked")) {
+              void signInWithRedirect(firebaseAuth(), provider);
+              return;
+            }
+            if (!msg.includes("popup-closed") && code !== "auth/popup-closed-by-user") {
+              setErroreAccesso(`Accesso non riuscito: ${msg}`);
+            }
           });
         }}
       />
