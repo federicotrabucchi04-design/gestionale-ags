@@ -34,7 +34,14 @@ import TableViewOutlined from "@mui/icons-material/TableViewOutlined";
 import { useGestionale } from "@/components/Gestionale";
 import ListaSpesa from "@/components/ListaSpesa";
 import { Etichetta, Vuoto } from "@/components/ui";
-import { annoSociale, calcolaEdizione, fissaValori, sbloccaValori } from "@/lib/calcoli";
+import {
+  annoSociale,
+  calcolaEdizione,
+  fissaValori,
+  movimentoSuEdizione,
+  normalizzaQuoteMovimento,
+  sbloccaValori,
+} from "@/lib/calcoli";
 import { esportaEdizioneExcel } from "@/lib/export";
 import { dataLunga } from "@/lib/format";
 import { TIPI_EVENTO, schermate } from "@/lib/modelli";
@@ -140,7 +147,7 @@ export default function EdizionePagina() {
   const piatta = elenco.length === 1 && elenco[0].parti.length === 1 && !bozza.serate?.length;
   const unica = piatta ? elenco[0].parti[0] : undefined;
   const mostraComuni = calc.unita.length > 1 || bozza.comuni.length > 0;
-  const nMovimenti = dati.movimenti.filter((m) => m.edizioneId === bozza.id).length;
+  const nMovimenti = dati.movimenti.filter((m) => movimentoSuEdizione(m, bozza.id)).length;
 
   const schede: { id: string; etichetta: string }[] = [
     { id: "riepilogo", etichetta: "Riepilogo" },
@@ -185,12 +192,17 @@ export default function EdizionePagina() {
   };
 
   const eliminaEdizione = async () => {
-    const collegati = dati.movimenti.filter((m) => m.edizioneId === bozza.id);
+    const collegati = dati.movimenti.filter((m) => movimentoSuEdizione(m, bozza.id));
     const testo = collegati.length
-      ? `${collegati.length} movimenti collegati resteranno in cassa come gestione ordinaria.`
+      ? `${collegati.length} movimenti collegati perderanno la quota su questa edizione (restano in cassa).`
       : "Menu, acquisti e costi di questa edizione verranno eliminati.";
     if (await conferma(`Eliminare ${bozza.nome}?`, testo, "Elimina")) {
-      collegati.forEach((m) => salva("movimenti", { ...m, edizioneId: undefined }));
+      collegati.forEach((m) => {
+        const quote = (m.quote?.length ? m.quote : m.edizioneId ? [{ edizioneId: m.edizioneId, importo: m.importo }] : []).filter(
+          (q) => q.edizioneId !== bozza.id,
+        );
+        salva("movimenti", normalizzaQuoteMovimento({ ...m, quote, edizioneId: undefined }));
+      });
       elimina("edizioni", bozza.id);
       notifica("Edizione eliminata");
       router.push(`/eventi/${id}`);

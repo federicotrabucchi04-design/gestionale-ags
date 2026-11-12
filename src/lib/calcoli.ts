@@ -436,12 +436,13 @@ export function calcolaAcquisto(
 export function cassaEdizione(movimenti: Movimento[], edizioneId: string): CassaEdizione {
   const c = { entrateUfficiali: 0, usciteUfficiali: 0, entratePreviste: 0, uscitePreviste: 0 };
   for (const m of movimenti) {
-    if (m.edizioneId !== edizioneId) continue;
+    const quota = importoSuEdizione(m, edizioneId);
+    if (!quota) continue;
     if (m.tipo === "entrata") {
-      if (m.stato === "ufficiale") c.entrateUfficiali += m.importo;
-      else c.entratePreviste += m.importo;
-    } else if (m.stato === "ufficiale") c.usciteUfficiali += m.importo;
-    else c.uscitePreviste += m.importo;
+      if (m.stato === "ufficiale") c.entrateUfficiali += quota;
+      else c.entratePreviste += quota;
+    } else if (m.stato === "ufficiale") c.usciteUfficiali += quota;
+    else c.uscitePreviste += quota;
   }
   const netto = c.entrateUfficiali - c.usciteUfficiali;
   return { ...c, netto, nettoPrudente: netto - c.uscitePreviste };
@@ -758,6 +759,43 @@ export function importoFirmato(m: Pick<Movimento, "tipo" | "importo">): number {
   return m.tipo === "entrata" ? m.importo : -m.importo;
 }
 
+/** Competence split of a movimento; falls back to the legacy single edizioneId. */
+export function quoteMovimento(m: Pick<Movimento, "importo" | "edizioneId" | "quote">): { edizioneId: string; importo: number }[] {
+  if (m.quote?.length) return m.quote.filter((q) => q.edizioneId && q.importo);
+  if (m.edizioneId) return [{ edizioneId: m.edizioneId, importo: m.importo }];
+  return [];
+}
+
+export function edizioniDelMovimento(m: Pick<Movimento, "importo" | "edizioneId" | "quote">): string[] {
+  return [...new Set(quoteMovimento(m).map((q) => q.edizioneId))];
+}
+
+export function movimentoSuEdizione(m: Pick<Movimento, "importo" | "edizioneId" | "quote">, edizioneId: string): boolean {
+  return edizioniDelMovimento(m).includes(edizioneId);
+}
+
+export function importoSuEdizione(m: Pick<Movimento, "importo" | "edizioneId" | "quote">, edizioneId: string): number {
+  return quoteMovimento(m)
+    .filter((q) => q.edizioneId === edizioneId)
+    .reduce((s, q) => s + q.importo, 0);
+}
+
+export function movimentoOrdinario(m: Pick<Movimento, "importo" | "edizioneId" | "quote">): boolean {
+  return quoteMovimento(m).length === 0;
+}
+
+/** Persist-ready shape: syncs edizioneId with quote (1 → id, many → clear id). */
+export function normalizzaQuoteMovimento(m: Movimento): Movimento {
+  const quote = (m.quote ?? []).filter((q) => q.edizioneId && q.importo > 0);
+  if (quote.length === 0) {
+    if (m.edizioneId) return { ...m, quote: undefined };
+    const { quote: _tolta, ...resto } = m;
+    return { ...resto, edizioneId: undefined };
+  }
+  if (quote.length === 1) return { ...m, quote, edizioneId: quote[0].edizioneId };
+  return { ...m, quote, edizioneId: undefined };
+}
+
 export function aperturaAnno(anno: string, impostazioni: Impostazioni, movimenti: Movimento[], profondita = 0): number {
   const forzata = impostazioni.saldiApertura[anno];
   if (forzata !== undefined && forzata !== null) return forzata;
@@ -786,8 +824,8 @@ export function riepilogoCassa(anno: string, impostazioni: Impostazioni, movimen
       if (m.tipo === "entrata") entrateUfficiali += m.importo;
       else usciteUfficiali += m.importo;
     } else if (m.tipo === "uscita") {
-      if (m.edizioneId) spesePrevisteEventi += m.importo;
-      else spesePrevisteOrdinarie += m.importo;
+      if (movimentoOrdinario(m)) spesePrevisteOrdinarie += m.importo;
+      else spesePrevisteEventi += m.importo;
     } else entratePreviste += m.importo;
   }
   const cassa = apertura + entrateUfficiali - usciteUfficiali;

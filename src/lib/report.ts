@@ -1,4 +1,12 @@
-import { calcolaEdizione, nelAnno, riepilogoCassa, type CalcoloEdizione, type RiepilogoCassa, type TotaliScenario } from "./calcoli";
+import {
+  calcolaEdizione,
+  movimentoOrdinario,
+  nelAnno,
+  riepilogoCassa,
+  type CalcoloEdizione,
+  type RiepilogoCassa,
+  type TotaliScenario,
+} from "./calcoli";
 import { TIPI_EVENTO } from "./modelli";
 import type { Dati, Edizione, Movimento } from "./types";
 
@@ -59,7 +67,7 @@ export function bilancioAnno(anno: string, dati: Dati): BilancioAnno {
     if (m.tipo === "entrata") c.entrate += m.importo;
     else c.uscite += m.importo;
     cat.set(m.categoria, c);
-    if (!m.edizioneId) {
+    if (movimentoOrdinario(m)) {
       if (m.tipo === "entrata") ordinaria.entrate += m.importo;
       else ordinaria.uscite += m.importo;
     }

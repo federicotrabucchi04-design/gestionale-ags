@@ -1,4 +1,15 @@
-import { annoSociale, calcolaEdizione, costoArticolo, costoUnitario, importoFirmato, oggiISO, prezzoMPAl, saldoInventario } from "./calcoli";
+import {
+  annoSociale,
+  calcolaEdizione,
+  costoArticolo,
+  costoUnitario,
+  edizioniDelMovimento,
+  importoFirmato,
+  oggiISO,
+  prezzoMPAl,
+  quoteMovimento,
+  saldoInventario,
+} from "./calcoli";
 import { normalizzaDati } from "./modelli";
 import { COLLEZIONI, IMPOSTAZIONI_DEFAULT, type Dati } from "./types";
 
@@ -76,7 +87,13 @@ export async function esportaExcel(dati: Dati) {
         ...m,
         anno: annoSociale(m.data),
         firmato: importoFirmato(m),
-        edizione: nomeEd(m.edizioneId) || "Ordinaria",
+        edizione: (() => {
+          const ids = edizioniDelMovimento(m);
+          if (!ids.length) return "Ordinaria";
+          return quoteMovimento(m)
+            .map((q) => `${nomeEd(q.edizioneId) || q.edizioneId} (${q.importo})`)
+            .join(" · ");
+        })(),
         fornitore: nomeForn(m.fornitoreId),
       })),
   );

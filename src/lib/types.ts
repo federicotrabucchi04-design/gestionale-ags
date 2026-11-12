@@ -221,6 +221,12 @@ export interface Edizione {
 export type TipoMovimento = "entrata" | "uscita";
 export type StatoMovimento = "previsto" | "ufficiale";
 
+/** Absolute euro amount of a movimento assigned to one edition (competence). */
+export interface QuotaEdizione {
+  edizioneId: string;
+  importo: number;
+}
+
 export interface Movimento {
   id: string;
   data: string;
@@ -229,7 +235,13 @@ export interface Movimento {
   importo: number;
   stato: StatoMovimento;
   categoria: string;
+  /**
+   * Single-edition link kept for older data and quick filters.
+   * Prefer `quote` when the same invoice/payment is split across editions.
+   */
   edizioneId?: string;
+  /** Competence split across one or more editions; amounts should sum to `importo`. */
+  quote?: QuotaEdizione[];
   fornitoreId?: string;
   note?: string;
 }

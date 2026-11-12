@@ -5,6 +5,7 @@ import {
   listinoAl,
   nelAnno,
   prezzoMPAl,
+  quoteMovimento,
   saldoInventario,
   type CalcoloEdizione,
 } from "./calcoli";
@@ -205,10 +206,6 @@ export function analisiFornitori(anno: string, dati: Dati, oggi: string): Analis
           eventi.push({ edizione: ed.nome, eventoId: ed.eventoId, edizioneId: ed.id, consumato: r.costoConsumato, pagato: r.costoAcquisto });
       }
     }
-    for (const m of dati.movimenti.filter((x) => nelAnno(x.data, anno) && x.fornitoreId === fornitoreId && x.tipo === "uscita" && x.stato === "ufficiale" && !x.edizioneId)) {
-      // Ordinary supplier payments without an edition stay on the supplier total only.
-      a.pagato += m.importo;
-    }
     const giacenza = saldoInventario(mp.id, dati, oggi);
     if (pagato || consumato || Math.abs(giacenza) > 0.01) {
       a.pagato += pagato;
@@ -217,7 +214,45 @@ export function analisiFornitori(anno: string, dati: Dati, oggi: string): Analis
       a.voci.push({ mp, pagatoNellAnno: pagato, consumatoNellAnno: consumato, giacenza, valoreGiacenza: Math.max(0, giacenza) * cum, eventi });
     }
   }
-  return [...mappa.values()].filter((f) => f.pagato || f.consumato || f.giacenzaValore).sort((a, b) => b.pagato - a.pagato);
+
+  // Cash invoices: ordinary payments, or one invoice split across several editions.
+  // Single-edition movimenti are skipped here (already covered by edition cash / acquisti).
+  for (const m of dati.movimenti.filter(
+    (x) => nelAnno(x.data, anno) && x.fornitoreId && x.tipo === "uscita" && x.stato === "ufficiale",
+  )) {
+    const quote = quoteMovimento(m);
+    if (quote.length === 1) continue;
+    const a = get(m.fornitoreId);
+    a.pagato += m.importo;
+    if (quote.length > 1) {
+      const eventi: VoceFornitore["eventi"] = quote.map((q) => {
+        const ed = dati.edizioni.find((e) => e.id === q.edizioneId);
+        return {
+          edizione: ed?.nome ?? q.edizioneId,
+          eventoId: ed?.eventoId ?? "",
+          edizioneId: q.edizioneId,
+          consumato: 0,
+          pagato: q.importo,
+        };
+      });
+      a.voci.push({
+        mp: {
+          id: `mov-${m.id}`,
+          codice: "FATT",
+          nome: m.descrizione,
+          um: "€",
+          attiva: true,
+        },
+        pagatoNellAnno: m.importo,
+        consumatoNellAnno: 0,
+        giacenza: 0,
+        valoreGiacenza: 0,
+        eventi,
+      });
+    }
+  }
+
+  return [...mappa.values()].filter((f) => f.pagato || f.consumato || f.giacenzaValore || f.voci.length).sort((a, b) => b.pagato - a.pagato);
 }
 
 export function etichettaTipo(tipo: Evento["tipo"]) {

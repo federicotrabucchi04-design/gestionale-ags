@@ -3,12 +3,17 @@ import {
   annoSociale,
   aperturaAnno,
   calcolaEdizione,
+  cassaEdizione,
   costoArticolo,
   flussiMensili,
+  importoSuEdizione,
   intervalloAnno,
   listinoAl,
+  movimentoOrdinario,
+  normalizzaQuoteMovimento,
   prezzoMPAl,
   quoteCostoFisso,
+  quoteMovimento,
   riepilogoCassa,
   saldoInventario,
   storicoInventario,
@@ -74,6 +79,28 @@ describe("cassa (numeri del file Excel attuale)", () => {
     expect(f[0]).toMatchObject({ mese: "2026-10", entrate: 510, uscite: 145, saldo: 376 });
     expect(f[1]).toMatchObject({ mese: "2026-11", entrate: 2300, uscite: 930, saldo: 1746 });
     expect(f[11].saldo).toBe(1746);
+  });
+
+  it("ripartisce una fattura su più edizioni in cassa per competenza", () => {
+    const fattura = mov({
+      data: "2026-12-01",
+      tipo: "uscita",
+      importo: 300,
+      stato: "ufficiale",
+      quote: [
+        { edizioneId: "natale24", importo: 100 },
+        { edizioneId: "natale25", importo: 200 },
+      ],
+    });
+    expect(quoteMovimento(fattura)).toHaveLength(2);
+    expect(importoSuEdizione(fattura, "natale24")).toBe(100);
+    expect(importoSuEdizione(fattura, "natale25")).toBe(200);
+    expect(movimentoOrdinario(fattura)).toBe(false);
+    expect(cassaEdizione([fattura], "natale24").usciteUfficiali).toBe(100);
+    expect(cassaEdizione([fattura], "natale25").usciteUfficiali).toBe(200);
+    const norm = normalizzaQuoteMovimento(fattura);
+    expect(norm.edizioneId).toBeUndefined();
+    expect(norm.quote).toHaveLength(2);
   });
 });
 

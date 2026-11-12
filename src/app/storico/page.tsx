@@ -11,7 +11,7 @@ import TableRow from "@mui/material/TableRow";
 import { BarChart } from "@mui/x-charts/BarChart";
 import { useGestionale } from "@/components/Gestionale";
 import { Intestazione, Sezione, Vuoto } from "@/components/ui";
-import { anniDisponibili, annoSociale, calcolaEdizione, nelAnno, riepilogoCassa } from "@/lib/calcoli";
+import { anniDisponibili, annoSociale, calcolaEdizione, movimentoOrdinario, nelAnno, riepilogoCassa } from "@/lib/calcoli";
 import { data, euro, numero, percento } from "@/lib/format";
 
 export default function Storico() {
@@ -29,7 +29,7 @@ export default function Storico() {
             anno,
             c,
             ordinaria: dati.movimenti
-              .filter((m) => !m.edizioneId && m.stato === "ufficiale" && nelAnno(m.data, anno))
+              .filter((m) => movimentoOrdinario(m) && m.stato === "ufficiale" && nelAnno(m.data, anno))
               .reduce((s, m) => s + (m.tipo === "entrata" ? m.importo : -m.importo), 0),
             eventi: edizioni.reduce((s, e) => s + e.cassa.netto, 0),
             nEdizioni: edizioni.length,

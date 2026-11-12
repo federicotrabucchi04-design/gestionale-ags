@@ -27,7 +27,7 @@ import SwapVertOutlined from "@mui/icons-material/SwapVertOutlined";
 import { useGestionale } from "@/components/Gestionale";
 import MovimentoDialog, { movimentoVuoto } from "@/components/MovimentoDialog";
 import { CampoScelta, Etichetta, Griglia, Intestazione, Kpi, Vuoto } from "@/components/ui";
-import { importoFirmato, nelAnno } from "@/lib/calcoli";
+import { edizioniDelMovimento, importoFirmato, movimentoOrdinario, movimentoSuEdizione, nelAnno, quoteMovimento } from "@/lib/calcoli";
 import { data, euro } from "@/lib/format";
 import type { Movimento } from "@/lib/types";
 
@@ -43,9 +43,14 @@ export default function Movimenti() {
   const [cerca, setCerca] = useState("");
   const mobile = useMediaQuery("(max-width:900px)");
 
-  const nomeEdizione = (id?: string) => {
-    const e = dati.edizioni.find((x) => x.id === id);
-    return e ? e.nome : undefined;
+  const nomeEdizione = (id: string) => dati.edizioni.find((x) => x.id === id)?.nome;
+  const etichettaEdizioni = (m: Movimento) => {
+    const ids = edizioniDelMovimento(m);
+    if (!ids.length) return undefined;
+    if (ids.length === 1) return nomeEdizione(ids[0]);
+    return quoteMovimento(m)
+      .map((q) => `${nomeEdizione(q.edizioneId) ?? "?"} ${euro(q.importo)}`)
+      .join(" · ");
   };
   const nomeFornitore = (id?: string) => dati.fornitori.find((f) => f.id === id)?.nome;
 
@@ -53,14 +58,14 @@ export default function Movimenti() {
     const q = cerca.trim().toLowerCase();
     return dati.movimenti
       .filter((m) => nelAnno(m.data, anno))
-      .filter((m) => (ambito === "ordinaria" ? !m.edizioneId : ambito === "eventi" ? !!m.edizioneId : true))
+      .filter((m) => (ambito === "ordinaria" ? movimentoOrdinario(m) : ambito === "eventi" ? !movimentoOrdinario(m) : true))
       .filter((m) => !stato || m.stato === stato)
       .filter((m) => !tipo || m.tipo === tipo)
-      .filter((m) => !edizione || m.edizioneId === edizione)
+      .filter((m) => !edizione || movimentoSuEdizione(m, edizione))
       .filter(
         (m) =>
           !q ||
-          [m.descrizione, m.categoria, m.note, nomeFornitore(m.fornitoreId), nomeEdizione(m.edizioneId)]
+          [m.descrizione, m.categoria, m.note, nomeFornitore(m.fornitoreId), etichettaEdizioni(m)]
             .filter(Boolean)
             .some((s) => s!.toLowerCase().includes(q)),
       )
@@ -172,7 +177,7 @@ export default function Movimenti() {
                   primary={m.descrizione}
                   secondary={
                     <>
-                      {data(m.data)} · {nomeEdizione(m.edizioneId) ?? "Ordinaria"}
+                      {data(m.data)} · {etichettaEdizioni(m) ?? "Ordinaria"}
                       {m.stato === "previsto" && " · previsto"}
                     </>
                   }
@@ -211,7 +216,13 @@ export default function Movimenti() {
                       )}
                     </TableCell>
                     <TableCell>{m.categoria}</TableCell>
-                    <TableCell>{nomeEdizione(m.edizioneId) ?? <Typography variant="body2" color="text.secondary">Ordinaria</Typography>}</TableCell>
+                    <TableCell>
+                      {etichettaEdizioni(m) ?? (
+                        <Typography variant="body2" color="text.secondary">
+                          Ordinaria
+                        </Typography>
+                      )}
+                    </TableCell>
                     <TableCell>{nomeFornitore(m.fornitoreId) ?? ""}</TableCell>
                     <TableCell>
                       {m.stato === "ufficiale" ? <Etichetta tono="positivo">Ufficiale</Etichetta> : <Etichetta tono="attenzione">Previsto</Etichetta>}

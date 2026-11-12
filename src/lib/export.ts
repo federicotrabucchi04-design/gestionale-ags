@@ -1,6 +1,7 @@
 import type { Workbook } from "exceljs";
 import { scarica } from "./backup";
 import type { CalcoloEdizione } from "./calcoli";
+import { edizioniDelMovimento, importoSuEdizione, movimentoSuEdizione, quoteMovimento } from "./calcoli";
 import { bilancioAnno, contoEconomico } from "./report";
 import type { Dati, Edizione } from "./types";
 
@@ -175,9 +176,12 @@ export async function esportaEdizioneExcel(ed: Edizione, calc: CalcoloEdizione, 
         { header: "Importo", key: "firmato", euro: true },
       ],
       dati.movimenti
-        .filter((m) => m.edizioneId === ed.id)
+        .filter((m) => movimentoSuEdizione(m, ed.id))
         .sort((a, b) => (a.data < b.data ? -1 : 1))
-        .map((m) => ({ ...m, firmato: m.tipo === "entrata" ? m.importo : -m.importo })),
+        .map((m) => {
+          const quota = importoSuEdizione(m, ed.id);
+          return { ...m, firmato: m.tipo === "entrata" ? quota : -quota };
+        }),
     );
   }
   await salvaWorkbook(wb, `${nomeFile(ed.nome)}${completo ? "" : "_sintesi"}.xlsx`);
@@ -252,7 +256,14 @@ export async function esportaAnnoExcel(anno: string, dati: Dati, completo = true
     }),
   );
   if (completo) {
-    const nomeEd = (id?: string) => dati.edizioni.find((e) => e.id === id)?.nome ?? "Ordinaria";
+    const nomeEd = (id: string) => dati.edizioni.find((e) => e.id === id)?.nome ?? id;
+    const etichettaEd = (m: (typeof b.movimenti)[number]) => {
+      const ids = edizioniDelMovimento(m);
+      if (!ids.length) return "Ordinaria";
+      return quoteMovimento(m)
+        .map((q) => `${nomeEd(q.edizioneId)} (${q.importo})`)
+        .join(" · ");
+    };
     foglio(
       wb,
       "Movimenti",
@@ -260,11 +271,11 @@ export async function esportaAnnoExcel(anno: string, dati: Dati, completo = true
         { header: "Data", key: "data", width: 12 },
         { header: "Descrizione", key: "descrizione", width: 34 },
         { header: "Categoria", key: "categoria", width: 20 },
-        { header: "Edizione", key: "ed", width: 24 },
+        { header: "Edizione / riparto", key: "ed", width: 36 },
         { header: "Stato", key: "stato", width: 11 },
         { header: "Importo", key: "firmato", euro: true },
       ],
-      b.movimenti.map((m) => ({ ...m, ed: nomeEd(m.edizioneId), firmato: m.tipo === "entrata" ? m.importo : -m.importo })),
+      b.movimenti.map((m) => ({ ...m, ed: etichettaEd(m), firmato: m.tipo === "entrata" ? m.importo : -m.importo })),
     );
   }
   await salvaWorkbook(wb, `Bilancio_${anno.replace("/", "-")}${completo ? "" : "_sintesi"}.xlsx`);
