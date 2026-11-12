@@ -209,6 +209,10 @@ export function CampoNumero({
         onCambia(numeroDa(t));
       }}
       onFocus={(e) => e.target.select()}
+      sx={{
+        "& .MuiInputBase-input": { fontSize: { xs: 18, sm: 16 }, py: { xs: 1.25, sm: undefined } },
+        ...(typeof props.sx === "object" && props.sx && !Array.isArray(props.sx) ? props.sx : {}),
+      }}
       slotProps={{
         ...props.slotProps,
         htmlInput: { inputMode: "decimal", ...(props.slotProps?.htmlInput as object) },

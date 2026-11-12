@@ -21,8 +21,10 @@ import AddOutlined from "@mui/icons-material/AddOutlined";
 import DeleteOutlined from "@mui/icons-material/DeleteOutlined";
 import PostAddOutlined from "@mui/icons-material/PostAddOutlined";
 import MovimentoDialog, { movimentoVuoto } from "@/components/MovimentoDialog";
+import Alert from "@mui/material/Alert";
 import { Aiuto, CampoNumero, CampoScelta, Sezione, Vuoto } from "@/components/ui";
 import { nuovoId, type CalcoloEdizione } from "@/lib/calcoli";
+import { comuniNetti } from "@/lib/checklist";
 import { euro, percento } from "@/lib/format";
 import type { Edizione, Movimento, VoceComune } from "@/lib/types";
 import type { Aggiorna } from "./tipi";
@@ -32,6 +34,7 @@ export default function CostiComuni({ ed, calc, aggiorna }: { ed: Edizione; calc
   const [vista, setVista] = useState<"previsto" | "reale">(ed.stato === "pianificata" ? "previsto" : "reale");
   const setVoce = (id: string, patch: Partial<VoceComune>) => aggiorna((e) => ({ comuni: e.comuni.map((c) => (c.id === id ? { ...c, ...patch } : c)) }));
   const pesoTot = calc.unita.reduce((s, u) => s + u.peso, 0);
+  const netti = comuniNetti(ed, vista === "reale");
 
   const setPeso = (unitaId: string, peso: number) =>
     aggiorna((e) =>
@@ -116,21 +119,30 @@ export default function CostiComuni({ ed, calc, aggiorna }: { ed: Edizione; calc
           )}
         </Box>
         <Sezione titolo="Pesi del riparto">
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-            Peso 0 = la voce non riceve costi comuni (es. la lotteria). Pesi uguali dividono in parti uguali; una serata con peso 2 prende il doppio.
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+            Peso 0 = non riceve comuni (es. lotteria). Peso 2 prende il doppio di peso 1.
           </Typography>
+          <Alert severity="info" sx={{ mb: 1.5, py: 0.5 }}>
+            Netti {vista}: {euro(netti.uscite)} uscite − {euro(netti.entrate)} entrate = <b>{euro(netti.netti)}</b>
+          </Alert>
           <Stack spacing={1}>
-            {calc.unita.map((u) => (
-              <Stack key={u.id} direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
-                <Typography variant="body2" sx={{ flex: 1 }}>
-                  {u.nome}
-                </Typography>
-                <CampoNumero valore={u.peso} onCambia={(v) => setPeso(u.id, Math.max(0, v))} sx={{ width: 90 }} />
-                <Typography variant="body2" color="text.secondary" sx={{ width: 52, textAlign: "right" }}>
-                  {percento(pesoTot ? u.peso / pesoTot : 0)}
-                </Typography>
-              </Stack>
-            ))}
+            {calc.unita.map((u) => {
+              const quota = pesoTot ? (u.peso / pesoTot) * netti.netti : 0;
+              return (
+                <Stack key={u.id} direction="row" spacing={1.5} sx={{ alignItems: "center" }}>
+                  <Typography variant="body2" sx={{ flex: 1 }}>
+                    {u.nome}
+                    <Typography component="span" variant="caption" color="text.secondary" sx={{ display: "block" }}>
+                      {u.peso}/{pesoTot || 0} × {euro(netti.netti)} = {euro(quota)}
+                    </Typography>
+                  </Typography>
+                  <CampoNumero valore={u.peso} onCambia={(v) => setPeso(u.id, Math.max(0, v))} sx={{ width: 90 }} />
+                  <Typography variant="body2" color="text.secondary" sx={{ width: 52, textAlign: "right" }}>
+                    {percento(pesoTot ? u.peso / pesoTot : 0)}
+                  </Typography>
+                </Stack>
+              );
+            })}
           </Stack>
         </Sezione>
       </Box>
@@ -182,6 +194,11 @@ export default function CostiComuni({ ed, calc, aggiorna }: { ed: Edizione; calc
           </Box>
         </CardContent>
       </Card>
+      {ed.comuni.length > 0 && (
+        <Alert severity="warning">
+          Queste voci contano nel margine dell&apos;edizione, ma entrano in cassa solo se le registri nei movimenti. Usa l&apos;icona «Registra» su ogni riga oppure vai in Movimenti.
+        </Alert>
+      )}
       <MovimentoDialog movimento={movimento} onChiudi={() => setMovimento(null)} />
     </Stack>
   );

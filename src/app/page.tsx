@@ -50,8 +50,39 @@ export default function Home() {
     [dati.movimenti, anno],
   );
 
+  const oggi = oggiISO();
+
+  const impegni = useMemo(() => {
+    const out: { titolo: string; dettaglio: string; href: string; tono?: "attenzione" | "neutro" }[] = [];
+    const prossime = edizioniAnno
+      .filter((e) => e.ed.stato !== "chiusa" && e.ed.data >= oggi)
+      .slice(0, 2);
+    for (const e of prossime) {
+      out.push({
+        titolo: e.ed.nome,
+        dettaglio: `${e.evento?.nome ?? "Evento"} · ${data(e.ed.data)} · ${e.ed.stato === "pianificata" ? "da preparare" : "da chiudere"}`,
+        href: `/eventi/${e.ed.eventoId}/${e.ed.id}`,
+      });
+    }
+    for (const m of previste.filter((x) => x.data < oggi).slice(0, 3)) {
+      out.push({
+        titolo: m.descrizione,
+        dettaglio: `Previsto scaduto · ${data(m.data)} · ${euro(m.importo)}`,
+        href: "/movimenti",
+        tono: "attenzione",
+      });
+    }
+    for (const a of dati.articoli.filter((x) => x.attivo)) {
+      const c = costoArticolo(a, oggi, dati);
+      if (!c.completo) {
+        out.push({ titolo: a.nome, dettaglio: c.avvisi[0], href: "/prezziario?tab=articoli", tono: "attenzione" });
+        if (out.length >= 6) break;
+      }
+    }
+    return out.slice(0, 6);
+  }, [edizioniAnno, previste, dati, oggi]);
+
   const avvisi = useMemo(() => {
-    const oggi = oggiISO();
     const out: { testo: string; href: string }[] = [];
     for (const a of dati.articoli.filter((x) => x.attivo)) {
       const c = costoArticolo(a, oggi, dati);
@@ -64,7 +95,7 @@ export default function Home() {
       if (m.data < oggi) out.push({ testo: `Spesa prevista scaduta: ${m.descrizione} (${data(m.data)})`, href: "/movimenti" });
     }
     return out;
-  }, [dati, edizioniAnno, previste]);
+  }, [dati, edizioniAnno, previste, oggi]);
 
   const mesi = flussi.map((f) => meseBreve(f.mese));
   const fmt = (v: number | null) => euro(v ?? 0);
@@ -112,6 +143,26 @@ export default function Home() {
           nota={cassa.entratePreviste ? `Esclude ${euro(cassa.entratePreviste)} di entrate previste` : "Cassa meno spese previste"}
         />
       </Griglia>
+
+      {impegni.length > 0 && (
+        <Box sx={{ mt: 3 }}>
+          <Sezione titolo="Prossimi impegni" sottotitolo="Cosa fare adesso" senzaPadding>
+            <List dense sx={{ pt: 0, pb: 1 }}>
+              {impegni.map((i, idx) => (
+                <ListItemButton key={idx} component={Link} href={i.href} sx={{ borderRadius: 2, mx: 1 }}>
+                  <ListItemText
+                    primary={i.titolo}
+                    secondary={i.dettaglio}
+                    slotProps={{
+                      primary: { sx: { fontWeight: 500, color: i.tono === "attenzione" ? "warning.dark" : undefined } },
+                    }}
+                  />
+                </ListItemButton>
+              ))}
+            </List>
+          </Sezione>
+        </Box>
+      )}
 
       <Box sx={{ display: "grid", gap: 3, mt: 3, gridTemplateColumns: { xs: "1fr", lg: "3fr 2fr" } }}>
         <Sezione titolo="Flussi di cassa" sottotitolo="Entrate e uscite ufficiali per mese">

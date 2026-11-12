@@ -12,6 +12,7 @@ import Typography from "@mui/material/Typography";
 import AddOutlined from "@mui/icons-material/AddOutlined";
 import { Griglia, Kpi } from "@/components/ui";
 import type { CalcoloParte } from "@/lib/calcoli";
+import { etichettaParteBreve } from "@/lib/checklist";
 import { FORMULE_SERATA, capacita, ingressoVuoto, type Schermata } from "@/lib/modelli";
 import { data as fmtData, euro, percento } from "@/lib/format";
 import type { Parte } from "@/lib/types";
@@ -131,10 +132,15 @@ export function SchermataEdizione({
           {schermata.parti.map((p) => (
             <Chip
               key={p.id}
-              label={p.nome}
+              label={etichettaParteBreve(p)}
               color={p.id === parte.id ? "primary" : "default"}
               variant={p.id === parte.id ? "filled" : "outlined"}
-              onClick={() => setParteId(p.id)}
+              onClick={() => {
+                setParteId(p.id);
+                const next = sezioniParte(p);
+                if (next.length) setSezione(next[0].id);
+              }}
+              sx={{ fontSize: { xs: 15, sm: 13 }, height: { xs: 36, sm: 32 } }}
             />
           ))}
         </Stack>

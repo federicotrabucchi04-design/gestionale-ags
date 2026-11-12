@@ -29,6 +29,7 @@ import Inventory2Outlined from "@mui/icons-material/Inventory2Outlined";
 import HistoryOutlined from "@mui/icons-material/HistoryOutlined";
 import InsightsOutlined from "@mui/icons-material/InsightsOutlined";
 import SettingsOutlined from "@mui/icons-material/SettingsOutlined";
+import MoreHorizOutlined from "@mui/icons-material/MoreHorizOutlined";
 import LogoutOutlined from "@mui/icons-material/LogoutOutlined";
 import { anniDisponibili } from "@/lib/calcoli";
 import { useGestionale } from "./Gestionale";
@@ -48,6 +49,19 @@ const ALTRE = [
   { href: "/impostazioni", etichetta: "Impostazioni", icona: <SettingsOutlined /> },
 ];
 
+/** Mobile bottom bar: keep primary paths + Altro for Analisi and the rest. */
+const VOCI_MOBILE = [
+  { href: "/", etichetta: "Home", icona: <HomeOutlined /> },
+  { href: "/movimenti", etichetta: "Movimenti", icona: <SwapVertOutlined /> },
+  { href: "/eventi", etichetta: "Eventi", icona: <CelebrationOutlined /> },
+  { href: "/inventario", etichetta: "Inventario", icona: <Inventory2Outlined /> },
+];
+
+const ALTRO_MOBILE = [
+  { href: "/prezziario", etichetta: "Prezziario", icona: <MenuBookOutlined /> },
+  ...ALTRE,
+];
+
 const LARGHEZZA = 248;
 
 function attiva(path: string, href: string) {
@@ -58,6 +72,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const { dati, anno, setAnno, utente, esci, locale, sync } = useGestionale();
   const path = usePathname();
   const [menu, setMenu] = useState<HTMLElement | null>(null);
+  const [altro, setAltro] = useState<HTMLElement | null>(null);
   const anni = useMemo(() => {
     const a = anniDisponibili(dati);
     return a.includes(anno) ? a : [anno, ...a];
@@ -71,6 +86,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
       </Box>
     );
   }
+
+  const altroAttivo = ALTRO_MOBILE.some((v) => attiva(path, v.href));
+  const bottomValue = altroAttivo ? VOCI_MOBILE.length : VOCI_MOBILE.findIndex((v) => attiva(path, v.href));
 
   return (
     <Box sx={{ display: "flex", minHeight: "100dvh", bgcolor: "background.default" }}>
@@ -232,8 +250,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
           pb: "env(safe-area-inset-bottom)",
         }}
       >
-        <BottomNavigation showLabels value={VOCI.findIndex((v) => attiva(path, v.href))} sx={{ height: 64 }}>
-          {VOCI.map((v) => (
+        <BottomNavigation showLabels value={bottomValue} sx={{ height: 64 }}>
+          {VOCI_MOBILE.map((v) => (
             <BottomNavigationAction
               key={v.href}
               component={Link}
@@ -243,7 +261,33 @@ export default function AppShell({ children }: { children: ReactNode }) {
               sx={{ minWidth: 0, px: 0.5, "& .MuiBottomNavigationAction-label": { fontSize: 11 } }}
             />
           ))}
+          <BottomNavigationAction
+            label="Altro"
+            icon={<MoreHorizOutlined />}
+            onClick={(e) => setAltro(e.currentTarget)}
+            sx={{ minWidth: 0, px: 0.5, "& .MuiBottomNavigationAction-label": { fontSize: 11 } }}
+          />
         </BottomNavigation>
+        <Menu
+          anchorEl={altro}
+          open={!!altro}
+          onClose={() => setAltro(null)}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          transformOrigin={{ vertical: "bottom", horizontal: "right" }}
+        >
+          {ALTRO_MOBILE.map((v) => (
+            <MenuItem
+              key={v.href}
+              component={Link}
+              href={v.href}
+              selected={attiva(path, v.href)}
+              onClick={() => setAltro(null)}
+            >
+              <ListItemIcon>{v.icona}</ListItemIcon>
+              {v.etichetta}
+            </MenuItem>
+          ))}
+        </Menu>
       </Paper>
     </Box>
   );

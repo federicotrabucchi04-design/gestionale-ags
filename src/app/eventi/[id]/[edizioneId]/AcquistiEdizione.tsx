@@ -26,7 +26,10 @@ import { useGestionale } from "@/components/Gestionale";
 import ListaSpesa from "@/components/ListaSpesa";
 import NuovaMateriaRapida from "@/components/NuovaMateriaRapida";
 import { Aiuto, CampoNumero, Vuoto } from "@/components/ui";
+import Alert from "@mui/material/Alert";
+import Chip from "@mui/material/Chip";
 import { nuovoId, saldoInventario, suggerimentoAcquisto, usoStorico, type DatoStorico } from "@/lib/calcoli";
+import { spiegazioneSuggerimento } from "@/lib/checklist";
 import { euro, numero } from "@/lib/format";
 import type { MateriaPrima, RigaAcquisto } from "@/lib/types";
 import { Storico } from "./MenuEdizione";
@@ -54,8 +57,10 @@ export default function AcquistiEdizione({ ed, parte, calc, calcEd, aggiornaPart
   const mobile = useMediaQuery("(max-width:1200px)");
   const [nuova, setNuova] = useState<string | null>(null);
   const [spesa, setSpesa] = useState(false);
+  const [giornoSpesa, setGiornoSpesa] = useState(false);
   const materiali = parte.tipo === "materiali";
   const conScadenza = (mp?: MateriaPrima) => (mp?.genere ?? "consumo") === "consumo";
+  const senzaPartecipanti = !ed.partecipantiPrevisti;
 
   const info = useMemo(() => {
     const altre = { ...dati, edizioni: dati.edizioni.filter((e) => e.id !== ed.id) };
@@ -98,13 +103,21 @@ export default function AcquistiEdizione({ ed, parte, calc, calcEd, aggiornaPart
   const suggerito = (id: string) => {
     const i = info.get(id);
     if (i?.suggeriti === undefined) return <Typography component="span" variant="body2" color="text.disabled">–</Typography>;
+    const a = calc.acquisti.find((x) => x.riga.id === id);
+    const spieg = spiegazioneSuggerimento(i.storico.mediaPerPartecipante, i.storico.media, ed.partecipantiPrevisti, i.giacenza, a?.qtaLotto);
     return (
-      <Tooltip title="Uso medio delle ultime edizioni (riscalato sui partecipanti previsti, se noti) meno quanto c'è in magazzino. Clic per usarlo.">
-        <Link component="button" type="button" underline="hover" onClick={() => setRiga(id, { lottiPrevisti: i.suggeriti! })} sx={{ fontSize: 14 }}>
+      <Tooltip title={spieg?.testo ?? "Clic per usare il suggerimento"}>
+        <Link component="button" type="button" underline="hover" onClick={() => setRiga(id, { lottiPrevisti: i.suggeriti! })} sx={{ fontSize: { xs: 16, sm: 14 }, fontWeight: 600 }}>
           {numero(i.suggeriti)} conf.
         </Link>
       </Tooltip>
     );
+  };
+
+  const applicaTuttiSuggeriti = () => {
+    for (const [id, i] of info) {
+      if (i.suggeriti !== undefined) setRiga(id, { lottiPrevisti: i.suggeriti });
+    }
   };
 
   const scadenza = (r: RigaAcquisto) => (
@@ -137,10 +150,39 @@ export default function AcquistiEdizione({ ed, parte, calc, calcEd, aggiornaPart
           {materiali ? "Nuovo materiale" : "Nuova voce"}
         </Button>
         <Box sx={{ flex: 1 }} />
-        <Button startIcon={<ShoppingCartOutlined />} onClick={() => setSpesa(true)}>
+        <Chip
+          label={giornoSpesa ? "Giorno spesa attivo" : "Giorno spesa"}
+          color={giornoSpesa ? "primary" : "default"}
+          onClick={() => setGiornoSpesa((v) => !v)}
+          variant={giornoSpesa ? "filled" : "outlined"}
+        />
+        <Button startIcon={<ShoppingCartOutlined />} onClick={() => setSpesa(true)} variant={giornoSpesa ? "contained" : "outlined"}>
           Lista della spesa
         </Button>
       </Stack>
+      {senzaPartecipanti && parte.acquisti.length > 0 && (
+        <Alert severity="info" sx={{ mb: 1.5 }}>
+          Manca il numero di partecipanti previsti: i suggerimenti usano la media storica assoluta. Inseriscili nei dati edizione per un calcolo più preciso.
+        </Alert>
+      )}
+      {giornoSpesa && parte.acquisti.length > 0 && (
+        <Alert
+          severity="success"
+          sx={{ mb: 1.5 }}
+          action={
+            <Button color="inherit" size="small" onClick={applicaTuttiSuggeriti}>
+              Applica tutti i suggeriti
+            </Button>
+          }
+        >
+          Modalità spesa: applica i suggeriti, poi apri la lista per fornitore. Totale previsto {euro(tot.prev)}.
+        </Alert>
+      )}
+      {materiali && parte.acquisti.length > 0 && (
+        <Alert severity="info" sx={{ mb: 1.5 }}>
+          Materiali — tieni distinti: spesa {euro(tot.reale || tot.prev)} · avanzi {euro(tot.avanzi)} · costo evento {euro(tot.consumato || tot.prev)}.
+        </Alert>
+      )}
       <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
         Per ogni voce: quanto si usa di solito, cosa c&apos;è già in magazzino, quanto comprare. A fine evento inserisci quanto hai preso dal magazzino e quanto
         riporti: l&apos;uso e l&apos;inventario si calcolano da soli.

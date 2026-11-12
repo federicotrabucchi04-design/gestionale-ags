@@ -31,6 +31,7 @@ import MoreVertOutlined from "@mui/icons-material/MoreVertOutlined";
 import PrintOutlined from "@mui/icons-material/PrintOutlined";
 import ShoppingCartOutlined from "@mui/icons-material/ShoppingCartOutlined";
 import TableViewOutlined from "@mui/icons-material/TableViewOutlined";
+import ChecklistEdizione from "@/components/ChecklistEdizione";
 import { useGestionale } from "@/components/Gestionale";
 import ListaSpesa from "@/components/ListaSpesa";
 import { Etichetta, Vuoto } from "@/components/ui";
@@ -42,8 +43,9 @@ import {
   normalizzaQuoteMovimento,
   sbloccaValori,
 } from "@/lib/calcoli";
+import { checklistEdizione } from "@/lib/checklist";
 import { esportaEdizioneExcel } from "@/lib/export";
-import { dataLunga } from "@/lib/format";
+import { dataLunga, euro } from "@/lib/format";
 import { TIPI_EVENTO, schermate } from "@/lib/modelli";
 import { STATI } from "@/lib/stati";
 import type { Edizione, Parte } from "@/lib/types";
@@ -142,12 +144,13 @@ export default function EdizionePagina() {
 
   const stato = STATI[bozza.stato];
   const bloccata = bozza.stato === "chiusa";
-  const previsione = vistaPrev ?? !calc.haReali;
+  const previsione = vistaPrev ?? bozza.stato === "pianificata";
   const elenco = schermate(bozza);
   const piatta = elenco.length === 1 && elenco[0].parti.length === 1 && !bozza.serate?.length;
   const unica = piatta ? elenco[0].parti[0] : undefined;
   const mostraComuni = calc.unita.length > 1 || bozza.comuni.length > 0;
   const nMovimenti = dati.movimenti.filter((m) => movimentoSuEdizione(m, bozza.id)).length;
+  const passi = checklistEdizione(bozza, calc, dati.movimenti);
 
   const schede: { id: string; etichetta: string }[] = [
     { id: "riepilogo", etichetta: "Riepilogo" },
@@ -174,11 +177,19 @@ export default function EdizionePagina() {
   });
 
   const chiudi = async () => {
+    const gap = Math.abs(calc.quadratura.ricavi);
+    const avvisi = [...calc.avvisi];
+    if (gap > 20) avvisi.unshift(`Incassi e ricavi differiscono di ${euro(gap)}`);
+    if (calc.cassa.uscitePreviste > 0) avvisi.unshift(`Ci sono ancora ${euro(calc.cassa.uscitePreviste)} di uscite previste da pagare`);
+    const extra =
+      avvisi.length > 0
+        ? `\n\nAttenzione:\n• ${avvisi.slice(0, 5).join("\n• ")}${avvisi.length > 5 ? `\n• …e altri ${avvisi.length - 5}` : ""}`
+        : "";
     if (
       await conferma(
         "Chiudere l'edizione?",
-        "Prezzi e costi vengono congelati e l'edizione diventa di sola lettura: modifiche future a listini, ricette e prezzi non cambieranno più i suoi conti. Potrai riaprirla.",
-        "Chiudi edizione",
+        `Prezzi e costi vengono congelati e l'edizione diventa di sola lettura: modifiche future a listini, ricette e prezzi non cambieranno più i suoi conti. Potrai riaprirla.${extra}`,
+        avvisi.length ? "Chiudi comunque" : "Chiudi edizione",
       )
     ) {
       aggiorna((e) => ({ stato: "chiusa", parti: fissaValori(e, dati) }));
@@ -321,9 +332,23 @@ export default function EdizionePagina() {
           Edizione chiusa: i dati sono in sola lettura. Riaprila per correggere qualcosa.
         </Alert>
       ) : (
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
           {stato.spiegazione}
         </Typography>
+      )}
+
+      {!bloccata && (
+        <ChecklistEdizione
+          passi={passi}
+          onVai={(s) => {
+            if (!unica && s.startsWith("s:")) {
+              const prima = elenco[0]?.id;
+              if (prima) cambiaScheda(prima);
+              return;
+            }
+            cambiaScheda(s);
+          }}
+        />
       )}
 
       <Card sx={{ mb: 3, position: "sticky", top: { xs: 56, sm: 64 }, zIndex: 2, display: "flex", alignItems: "center" }}>

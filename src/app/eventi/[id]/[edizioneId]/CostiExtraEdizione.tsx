@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -114,6 +115,11 @@ export default function CostiExtraEdizione({ ed, parte, calc, aggiornaParte }: P
             I costi extra non sono movimenti di cassa: per la cassa registra il pagamento con il pulsante accanto a ogni voce.
           </Typography>
         </Sezione>
+        {parte.costiExtra.length > 0 && (
+          <Alert severity="warning" sx={{ mt: 2 }}>
+            Non è ancora in cassa — usa «Registra» su ogni voce o vai in Movimenti.
+          </Alert>
+        )}
       </Box>
       <MovimentoDialog movimento={movimento} onChiudi={() => setMovimento(null)} />
     </Box>
