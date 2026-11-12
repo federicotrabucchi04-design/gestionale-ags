@@ -21,8 +21,8 @@ service cloud.firestore {
         && request.auth.token.email == 'federico.trabucchi04@gmail.com';
     }
 
-    function collezioneNota() {
-      return collezione in [
+    function collezioneNota(nome) {
+      return nome in [
         'fornitori', 'materiePrime', 'prezziMP', 'articoli', 'listini',
         'costiFissi', 'eventi', 'edizioni', 'movimenti', 'inventario'
       ];
@@ -37,11 +37,11 @@ service cloud.firestore {
       allow delete: if proprietario();
     }
 
-    match /{collezione}/{id} {
-      allow read: if autorizzato() && collezioneNota();
-      allow create, update: if autorizzato() && collezioneNota()
-        && (!('id' in request.resource.data) || request.resource.data.id == id);
-      allow delete: if autorizzato() && collezioneNota();
+    match /{collezione}/{documento} {
+      allow read: if autorizzato() && collezioneNota(collezione);
+      allow create, update: if autorizzato() && collezioneNota(collezione)
+        && (!('id' in request.resource.data) || request.resource.data.id == documento);
+      allow delete: if autorizzato() && collezioneNota(collezione);
     }
   }
 }
