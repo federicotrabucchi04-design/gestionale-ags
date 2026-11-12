@@ -91,7 +91,15 @@ function Caricamento({ testo }: { testo: string }) {
   );
 }
 
-function Accedi({ errore, onAccedi }: { errore?: string; onAccedi: () => void }) {
+function Accedi({
+  errore,
+  onAccedi,
+  onAccediRedirect,
+}: {
+  errore?: string;
+  onAccedi: () => void;
+  onAccediRedirect: () => void;
+}) {
   return (
     <Box sx={{ minHeight: "100dvh", display: "grid", placeItems: "center", p: 2, bgcolor: "background.default" }}>
       <Paper variant="outlined" sx={{ p: { xs: 4, sm: 6 }, maxWidth: 420, width: "100%", textAlign: "center" }}>
@@ -125,6 +133,9 @@ function Accedi({ errore, onAccedi }: { errore?: string; onAccedi: () => void })
         )}
         <Button variant="contained" size="large" onClick={onAccedi} fullWidth>
           Accedi con Google
+        </Button>
+        <Button variant="text" size="small" onClick={onAccediRedirect} fullWidth sx={{ mt: 1.5 }}>
+          Accedi con reindirizzamento
         </Button>
       </Paper>
     </Box>
@@ -362,6 +373,10 @@ export function GestionaleProvider({ children }: { children: ReactNode }) {
               setErroreAccesso(`Accesso non riuscito: ${msg}`);
             }
           });
+        }}
+        onAccediRedirect={() => {
+          setErroreAccesso(undefined);
+          void signInWithRedirect(firebaseAuth(), new GoogleAuthProvider());
         }}
       />
     );
