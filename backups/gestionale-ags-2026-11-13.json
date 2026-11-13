@@ -1,0 +1,5129 @@
+{
+  "app": "gestionale-ags",
+  "versione": 1,
+  "creato": "2026-11-13T11:42:23.241Z",
+  "dati": {
+    "fornitori": [
+      {
+        "id": "demo-forn",
+        "nome": "Fornitore Demo SRL",
+        "contatto": "demo@example.com"
+      },
+      {
+        "id": "forn-bosco",
+        "nome": "Bosco"
+      },
+      {
+        "id": "forn-fumagalli",
+        "nome": "Fumagalli"
+      },
+      {
+        "id": "forn-mafi",
+        "nome": "Mafi"
+      }
+    ],
+    "materiePrime": [
+      {
+        "id": "8406de95-29be-43df-9ee2-0ba46e62344d",
+        "codice": "MP-25",
+        "nome": "Taneda",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo",
+        "aggiornatoIl": 1794556968528,
+        "modificatoDa": "federico.trabucchi04@gmail.com",
+        "eliminato": false
+      },
+      {
+        "id": "demo-mp-birra",
+        "codice": "DEMO-BIR",
+        "nome": "Birra fusto (demo)",
+        "um": "l",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "demo-mp-legno",
+        "codice": "DEMO-LEG",
+        "nome": "Legno abete (demo)",
+        "um": "m",
+        "attiva": true,
+        "genere": "materiale"
+      },
+      {
+        "id": "demo-mp-pane",
+        "codice": "DEMO-PAN",
+        "nome": "Pane hamburger (demo)",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-01",
+        "codice": "MP-01",
+        "nome": "Piatti grandi",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-02",
+        "codice": "MP-02",
+        "nome": "Piatti piccoli",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-03",
+        "codice": "MP-03",
+        "nome": "Fazzoletti",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-04",
+        "codice": "MP-04",
+        "nome": "Bicchieri grandi",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-05",
+        "codice": "MP-05",
+        "nome": "Bicchieri piccoli",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-06",
+        "codice": "MP-06",
+        "nome": "Cannuccia",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-07",
+        "codice": "MP-07",
+        "nome": "Formaggio",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-08",
+        "codice": "MP-08",
+        "nome": "Verze",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-09",
+        "codice": "MP-09",
+        "nome": "Farina bianca",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-10",
+        "codice": "MP-10",
+        "nome": "Farina nera",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-11",
+        "codice": "MP-11",
+        "nome": "Grappa",
+        "um": "l",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-12",
+        "codice": "MP-12",
+        "nome": "Sale",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-13",
+        "codice": "MP-13",
+        "nome": "Patatine (sacchetto)",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-14",
+        "codice": "MP-14",
+        "nome": "Patate",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-15",
+        "codice": "MP-15",
+        "nome": "Olio friggitura",
+        "um": "l",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-16",
+        "codice": "MP-16",
+        "nome": "Vaschette patatine",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-17",
+        "codice": "MP-17",
+        "nome": "Maionese",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-18",
+        "codice": "MP-18",
+        "nome": "Ketchup",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-19",
+        "codice": "MP-19",
+        "nome": "Pizzocheri",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-20",
+        "codice": "MP-20",
+        "nome": "Salsiccia",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-21",
+        "codice": "MP-21",
+        "nome": "Pane",
+        "um": "kg",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-22",
+        "codice": "MP-22",
+        "nome": "Bombole gas",
+        "um": "l",
+        "attiva": true,
+        "note": "anche in overhead",
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-23",
+        "codice": "MP-23",
+        "nome": "Coca Cola Lattina",
+        "um": "pz",
+        "attiva": true,
+        "genere": "consumo"
+      },
+      {
+        "id": "mp-mp-24",
+        "codice": "MP-24",
+        "nome": "Birra",
+        "um": "l",
+        "attiva": true,
+        "genere": "consumo"
+      }
+    ],
+    "prezziMP": [
+      {
+        "id": "659311ce-ed5d-4741-94f7-de85c239df72",
+        "mpId": "8406de95-29be-43df-9ee2-0ba46e62344d",
+        "validoDal": "2026-11-07",
+        "costoLotto": 14,
+        "qtaLotto": 1,
+        "aggiornatoIl": 1794556968529,
+        "modificatoDa": "federico.trabucchi04@gmail.com",
+        "eliminato": false
+      },
+      {
+        "id": "demo-prz-birra",
+        "mpId": "demo-mp-birra",
+        "validoDal": "2023-10-01",
+        "costoLotto": 45,
+        "qtaLotto": 30,
+        "fornitoreId": "demo-forn"
+      },
+      {
+        "id": "demo-prz-legno",
+        "mpId": "demo-mp-legno",
+        "validoDal": "2023-10-01",
+        "costoLotto": 25,
+        "qtaLotto": 3
+      },
+      {
+        "id": "demo-prz-pane",
+        "mpId": "demo-mp-pane",
+        "validoDal": "2023-10-01",
+        "costoLotto": 12,
+        "qtaLotto": 40,
+        "fornitoreId": "demo-forn"
+      },
+      {
+        "id": "prz-mp-01-0",
+        "mpId": "mp-mp-01",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 8,
+        "qtaLotto": 50
+      },
+      {
+        "id": "prz-mp-02-1",
+        "mpId": "mp-mp-02",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 5,
+        "qtaLotto": 50
+      },
+      {
+        "id": "prz-mp-03-2",
+        "mpId": "mp-mp-03",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 3,
+        "qtaLotto": 100
+      },
+      {
+        "id": "prz-mp-04-3",
+        "mpId": "mp-mp-04",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 6,
+        "qtaLotto": 50
+      },
+      {
+        "id": "prz-mp-05-4",
+        "mpId": "mp-mp-05",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 4.5,
+        "qtaLotto": 50
+      },
+      {
+        "id": "prz-mp-06-5",
+        "mpId": "mp-mp-06",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 2,
+        "qtaLotto": 100
+      },
+      {
+        "id": "prz-mp-07-6",
+        "mpId": "mp-mp-07",
+        "fornitoreId": "forn-mafi",
+        "validoDal": "2025-01-01",
+        "costoLotto": 120,
+        "qtaLotto": 12
+      },
+      {
+        "id": "prz-mp-07-7",
+        "mpId": "mp-mp-07",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 100,
+        "qtaLotto": 12
+      },
+      {
+        "id": "prz-mp-08-8",
+        "mpId": "mp-mp-08",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 2.5,
+        "qtaLotto": 1
+      },
+      {
+        "id": "prz-mp-09-9",
+        "mpId": "mp-mp-09",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 1.2,
+        "qtaLotto": 1
+      },
+      {
+        "id": "prz-mp-10-10",
+        "mpId": "mp-mp-10",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 2.8,
+        "qtaLotto": 1
+      },
+      {
+        "id": "prz-mp-11-11",
+        "mpId": "mp-mp-11",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 15,
+        "qtaLotto": 1
+      },
+      {
+        "id": "prz-mp-12-12",
+        "mpId": "mp-mp-12",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 0.8,
+        "qtaLotto": 1
+      },
+      {
+        "id": "prz-mp-13-13",
+        "mpId": "mp-mp-13",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 22,
+        "qtaLotto": 10
+      },
+      {
+        "id": "prz-mp-14-14",
+        "mpId": "mp-mp-14",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 6,
+        "qtaLotto": 6
+      },
+      {
+        "id": "prz-mp-15-15",
+        "mpId": "mp-mp-15",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 40,
+        "qtaLotto": 10
+      },
+      {
+        "id": "prz-mp-16-16",
+        "mpId": "mp-mp-16",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 5,
+        "qtaLotto": 50
+      },
+      {
+        "id": "prz-mp-17-17",
+        "mpId": "mp-mp-17",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 10,
+        "qtaLotto": 100
+      },
+      {
+        "id": "prz-mp-18-18",
+        "mpId": "mp-mp-18",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 12,
+        "qtaLotto": 100
+      },
+      {
+        "id": "prz-mp-19-19",
+        "mpId": "mp-mp-19",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 3.5,
+        "qtaLotto": 1
+      },
+      {
+        "id": "prz-mp-20-20",
+        "mpId": "mp-mp-20",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 50,
+        "qtaLotto": 5
+      },
+      {
+        "id": "prz-mp-21-21",
+        "mpId": "mp-mp-21",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 3.5,
+        "qtaLotto": 1
+      },
+      {
+        "id": "prz-mp-22-22",
+        "mpId": "mp-mp-22",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 28,
+        "qtaLotto": 10
+      },
+      {
+        "id": "prz-mp-23-23",
+        "mpId": "mp-mp-23",
+        "fornitoreId": "forn-bosco",
+        "validoDal": "2025-09-30",
+        "costoLotto": 32,
+        "qtaLotto": 24
+      },
+      {
+        "id": "prz-mp-24-24",
+        "mpId": "mp-mp-24",
+        "fornitoreId": "forn-fumagalli",
+        "validoDal": "2025-09-30",
+        "costoLotto": 100,
+        "qtaLotto": 30
+      }
+    ],
+    "articoli": [
+      {
+        "id": "art-art-01",
+        "codice": "ART-01",
+        "nome": "Coca Cola",
+        "categoria": "Bar",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "mp-mp-05",
+            "qta": 1
+          },
+          {
+            "mpId": "mp-mp-06",
+            "qta": 1
+          },
+          {
+            "mpId": "mp-mp-23",
+            "qta": 1
+          }
+        ]
+      },
+      {
+        "id": "art-art-02",
+        "codice": "ART-02",
+        "nome": "Birra 0,4",
+        "categoria": "Bar",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "mp-mp-24",
+            "qta": 0.4
+          },
+          {
+            "mpId": "mp-mp-04",
+            "qta": 1
+          }
+        ]
+      },
+      {
+        "id": "art-art-03",
+        "codice": "ART-03",
+        "nome": "Birra 0,2",
+        "categoria": "Bar",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "mp-mp-24",
+            "qta": 0.2
+          },
+          {
+            "mpId": "mp-mp-05",
+            "qta": 1
+          }
+        ]
+      },
+      {
+        "id": "art-art-04",
+        "codice": "ART-04",
+        "nome": "Panino salsiccia",
+        "categoria": "Cena",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "mp-mp-21",
+            "qta": 0.1,
+            "note": "pane ~100g"
+          },
+          {
+            "mpId": "mp-mp-20",
+            "qta": 0.12,
+            "note": "salsiccia ~120g"
+          },
+          {
+            "mpId": "mp-mp-02",
+            "qta": 1
+          },
+          {
+            "mpId": "mp-mp-03",
+            "qta": 1
+          }
+        ]
+      },
+      {
+        "id": "art-art-05",
+        "codice": "ART-05",
+        "nome": "Pizzocheri",
+        "categoria": "Cena",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "mp-mp-10",
+            "qta": 0.08
+          },
+          {
+            "mpId": "mp-mp-09",
+            "qta": 0.04
+          },
+          {
+            "mpId": "mp-mp-07",
+            "qta": 0.08
+          },
+          {
+            "mpId": "mp-mp-08",
+            "qta": 0.06
+          },
+          {
+            "mpId": "mp-mp-12",
+            "qta": 0.005
+          },
+          {
+            "mpId": "mp-mp-01",
+            "qta": 1
+          },
+          {
+            "mpId": "mp-mp-03",
+            "qta": 2
+          }
+        ]
+      },
+      {
+        "id": "art-art-06",
+        "codice": "ART-06",
+        "nome": "Sciatt",
+        "categoria": "Cena",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "mp-mp-10",
+            "qta": 0.04
+          },
+          {
+            "mpId": "mp-mp-09",
+            "qta": 0.04
+          },
+          {
+            "mpId": "mp-mp-07",
+            "qta": 0.05
+          },
+          {
+            "mpId": "mp-mp-15",
+            "qta": 0.02
+          },
+          {
+            "mpId": "mp-mp-12",
+            "qta": 0.002
+          },
+          {
+            "mpId": "mp-mp-02",
+            "qta": 1
+          },
+          {
+            "mpId": "mp-mp-03",
+            "qta": 1
+          }
+        ]
+      },
+      {
+        "id": "art-art-07",
+        "codice": "ART-07",
+        "nome": "Patatine",
+        "categoria": "Cena",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "mp-mp-13",
+            "qta": 0.25
+          },
+          {
+            "mpId": "mp-mp-15",
+            "qta": 0.03
+          },
+          {
+            "mpId": "mp-mp-12",
+            "qta": 0.003
+          },
+          {
+            "mpId": "mp-mp-16",
+            "qta": 1
+          }
+        ]
+      },
+      {
+        "id": "art-art-08",
+        "codice": "ART-08",
+        "nome": "Pane",
+        "categoria": "Cena",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "mp-mp-21",
+            "qta": 0.2
+          }
+        ]
+      },
+      {
+        "id": "demo-art-birra",
+        "codice": "DEMO-A1",
+        "nome": "Birra alla spina (demo)",
+        "categoria": "Bevande",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "demo-mp-birra",
+            "qta": 0.4
+          }
+        ]
+      },
+      {
+        "id": "demo-art-panino",
+        "codice": "DEMO-A2",
+        "nome": "Panino (demo)",
+        "categoria": "Cibo",
+        "um": "pz",
+        "attivo": true,
+        "ricetta": [
+          {
+            "mpId": "demo-mp-pane",
+            "qta": 1
+          }
+        ]
+      }
+    ],
+    "listini": [
+      {
+        "id": "demo-listino",
+        "nome": "Listino demo",
+        "validoDal": "2023-10-01",
+        "prezzi": {
+          "demo-art-birra": 3.5,
+          "demo-art-panino": 5
+        }
+      },
+      {
+        "id": "lst-2025-09-30",
+        "nome": "Listino dal 30/09/2025",
+        "validoDal": "2025-09-30",
+        "prezzi": {
+          "art-art-01": 3,
+          "art-art-02": 4,
+          "art-art-03": 2.5,
+          "art-art-04": 5,
+          "art-art-05": 12,
+          "art-art-06": 4.5,
+          "art-art-07": 3.5,
+          "art-art-08": 1
+        }
+      }
+    ],
+    "costiFissi": [
+      {
+        "id": "cf-bombola-gas-quota-cucina",
+        "nome": "Bombola gas (quota cucina)",
+        "costoTotale": 100,
+        "baseRiparto": 400,
+        "articoliIds": [
+          "art-art-04",
+          "art-art-05"
+        ],
+        "attivo": true,
+        "note": "riparto food"
+      }
+    ],
+    "eventi": [
+      {
+        "id": "demo-ev-bosco",
+        "nome": "Festa del Bosco (demo)",
+        "tipo": "bosco"
+      },
+      {
+        "id": "demo-ev-cammina",
+        "nome": "Cammina e Spizzigola (demo)",
+        "tipo": "cammina"
+      },
+      {
+        "id": "demo-ev-halloween",
+        "nome": "Halloween AGS (demo)",
+        "tipo": "festa",
+        "descrizione": "Serie demo affiancata ai dati reali"
+      },
+      {
+        "id": "demo-ev-natale",
+        "nome": "Natale e Capodanno (demo)",
+        "tipo": "natale"
+      },
+      {
+        "id": "df149ab4-c800-4b84-91a1-0ae4bd068c5b",
+        "nome": "Ingresso nuovi",
+        "tipo": "altro",
+        "aggiornatoIl": 1794556729883,
+        "modificatoDa": "federico.trabucchi04@gmail.com",
+        "eliminato": false
+      },
+      {
+        "id": "evt-camminata",
+        "nome": "Camminata degustazioni",
+        "tipologia": "Camminata",
+        "tipo": "cammina"
+      },
+      {
+        "id": "evt-cena-musica",
+        "tipologia": "Cena e musica",
+        "nome": "Cena con musica",
+        "tipo": "altro",
+        "eliminato": true,
+        "eliminatoIl": 1794556698763,
+        "aggiornatoIl": 1794556698763,
+        "modificatoDa": "federico.trabucchi04@gmail.com"
+      },
+      {
+        "id": "evt-festa-con-bar",
+        "nome": "Festa con bar",
+        "tipologia": "Festa con bar",
+        "tipo": "festa"
+      }
+    ],
+    "edizioni": [
+      {
+        "id": "9d573713-52ff-4a2a-acad-3400ce75d8b6",
+        "stato": "pianificata",
+        "eventoId": "df149ab4-c800-4b84-91a1-0ae4bd068c5b",
+        "nome": "Ingresso nuovi 2026",
+        "data": "2026-11-07",
+        "partecipantiPrevisti": 39,
+        "comuni": [],
+        "parti": [
+          {
+            "id": "93f1c289-6d2c-4d60-b569-a09113b2f048",
+            "nome": "Generale",
+            "tipo": "generica",
+            "peso": 1,
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": []
+          }
+        ],
+        "aggiornatoIl": 1794557084063,
+        "modificatoDa": "federico.trabucchi04@gmail.com",
+        "eliminato": false
+      },
+      {
+        "id": "demo-ed-demo-ev-bosco-2024-06-14",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-bosco",
+        "nome": "Bosco 23/24",
+        "data": "2024-06-14",
+        "partecipantiPrevisti": 135,
+        "partecipantiReali": 126,
+        "parti": [
+          {
+            "id": "demo-mwdrd8rx-bkl345",
+            "nome": "Bar e musica",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s0-brlsg5",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 108,
+                "qtaReale": 99
+              },
+              {
+                "id": "demo-mwdrd8s0-upieln",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 72,
+                "qtaReale": 68
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s0-t7u2r3",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s0-u6rfpb",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s0-6aayu6",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 270,
+                "importoReale": 261,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8rs-2k70m9"
+          },
+          {
+            "id": "demo-mwdrd8ry-92kzxh",
+            "nome": "Cena a menu fisso",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s0-x4yal4",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 108,
+                "qtaReale": 99
+              },
+              {
+                "id": "demo-mwdrd8s0-9b4brb",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 72,
+                "qtaReale": 68
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s0-8bdyc6",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s0-dkcmge",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s0-dvit0e",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 270,
+                "importoReale": 261,
+                "ripartisci": true
+              }
+            ],
+            "formula": "fisso",
+            "ingresso": {
+              "prezzo": 25,
+              "previsti": 72,
+              "prevendite": 45,
+              "venditeGiorno": 25,
+              "presenze": 63
+            },
+            "serataId": "demo-mwdrd8rs-jylwcj"
+          },
+          {
+            "id": "demo-mwdrd8rz-qd3rgr",
+            "nome": "Bar dopo cena",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s0-lsfscs",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 108,
+                "qtaReale": 99
+              },
+              {
+                "id": "demo-mwdrd8s0-j9loqw",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 72,
+                "qtaReale": 68
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s0-jtdlad",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s0-nyrwvo",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s0-ue6b6p",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 270,
+                "importoReale": 261,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8rs-jylwcj"
+          },
+          {
+            "id": "demo-mwdrd8rz-tq5ipd",
+            "nome": "Pranzo alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s0-s2dmn2",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 108,
+                "qtaReale": 99
+              },
+              {
+                "id": "demo-mwdrd8s0-o4pccl",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 72,
+                "qtaReale": 68
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s0-f1k7f5",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s0-6314qw",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s0-apr2ob",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 270,
+                "importoReale": 261,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8rx-dtbiqt"
+          },
+          {
+            "id": "demo-mwdrd8rz-o64f1a",
+            "nome": "Cena alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s0-k06hw2",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 108,
+                "qtaReale": 99
+              },
+              {
+                "id": "demo-mwdrd8s0-ld1lef",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 72,
+                "qtaReale": 68
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s0-ag13px",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s0-fo61st",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s0-7zagka",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 270,
+                "importoReale": 261,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8rx-dtbiqt"
+          },
+          {
+            "id": "demo-mwdrd8rz-lvslio",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s0-dq0a5b",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 108,
+                "qtaReale": 99
+              },
+              {
+                "id": "demo-mwdrd8s0-oaux74",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 72,
+                "qtaReale": 68
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s0-z8y73q",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s0-7trnqt",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s0-kprve5",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 270,
+                "importoReale": 261,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8rx-dtbiqt"
+          },
+          {
+            "id": "demo-mwdrd8s0-y498j2",
+            "nome": "Cena alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s0-wxz2fl",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 108,
+                "qtaReale": 99
+              },
+              {
+                "id": "demo-mwdrd8s0-i5e59y",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 72,
+                "qtaReale": 68
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s0-a03p09",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s0-fi0ytc",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s0-dva7h4",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 270,
+                "importoReale": 261,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8rx-uatiq6"
+          },
+          {
+            "id": "demo-mwdrd8s0-mo5aji",
+            "nome": "Bar dopo cena",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s0-kak705",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 108,
+                "qtaReale": 99
+              },
+              {
+                "id": "demo-mwdrd8s0-wam71q",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 72,
+                "qtaReale": 68
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s0-orody0",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s0-vg0czy",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s0-pzt0nu",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 270,
+                "importoReale": 261,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8rx-uatiq6"
+          },
+          {
+            "id": "demo-mwdrd8s0-oxnwbg",
+            "nome": "Lotteria",
+            "tipo": "lotteria",
+            "peso": 0,
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": [],
+            "lotteria": {
+              "prezzoBiglietto": 1,
+              "bigliettiStampati": 450,
+              "vendutiPrevisti": 315,
+              "vendutiReali": 288,
+              "premi": [
+                {
+                  "id": "demo-mwdrd8s0-y0cgs2",
+                  "descrizione": "Cesto natalizio",
+                  "valore": 50,
+                  "donato": true
+                },
+                {
+                  "id": "demo-mwdrd8s0-580vxb",
+                  "descrizione": "Cena per due",
+                  "valore": 80,
+                  "donato": false
+                }
+              ]
+            }
+          }
+        ],
+        "serate": [
+          {
+            "id": "demo-mwdrd8rs-2k70m9",
+            "nome": "Venerdì",
+            "data": "2024-06-14",
+            "formula": "bar",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8rs-jylwcj",
+            "nome": "Sabato",
+            "data": "2024-06-15",
+            "formula": "cenaFissa",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8rx-dtbiqt",
+            "nome": "Domenica",
+            "data": "2024-06-16",
+            "formula": "pranzoCena",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8rx-uatiq6",
+            "nome": "Lunedì",
+            "data": "2024-06-17",
+            "formula": "cenaCarta",
+            "peso": 1
+          }
+        ],
+        "comuni": [
+          {
+            "id": "demo-mwdrd8s0-200vg8",
+            "descrizione": "Tensostruttura",
+            "tipo": "uscita",
+            "importoPrevisto": 720,
+            "importoReale": 702
+          },
+          {
+            "id": "demo-mwdrd8s0-r5p440",
+            "descrizione": "Sponsor comune",
+            "tipo": "entrata",
+            "importoPrevisto": 200,
+            "importoReale": 200
+          }
+        ]
+      },
+      {
+        "id": "demo-ed-demo-ev-bosco-2025-06-13",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-bosco",
+        "nome": "Bosco 24/25",
+        "data": "2025-06-13",
+        "partecipantiPrevisti": 153,
+        "partecipantiReali": 143,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s1-kle1v5",
+            "nome": "Bar e musica",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-5fyuje",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 122,
+                "qtaReale": 112
+              },
+              {
+                "id": "demo-mwdrd8s2-mt2n0o",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 82,
+                "qtaReale": 77
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-odsixd",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-9iz2lf",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-rp5gli",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 306,
+                "importoReale": 296,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s1-s3pvmj"
+          },
+          {
+            "id": "demo-mwdrd8s2-bp1p51",
+            "nome": "Cena a menu fisso",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-o57vzw",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 122,
+                "qtaReale": 112
+              },
+              {
+                "id": "demo-mwdrd8s2-0z94ev",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 82,
+                "qtaReale": 77
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-qpegx6",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-pwtpjf",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-1il504",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 306,
+                "importoReale": 296,
+                "ripartisci": true
+              }
+            ],
+            "formula": "fisso",
+            "ingresso": {
+              "prezzo": 25,
+              "previsti": 82,
+              "prevendite": 51,
+              "venditeGiorno": 29,
+              "presenze": 71
+            },
+            "serataId": "demo-mwdrd8s1-mbczls"
+          },
+          {
+            "id": "demo-mwdrd8s2-qxbsie",
+            "nome": "Bar dopo cena",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-zqlfpo",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 122,
+                "qtaReale": 112
+              },
+              {
+                "id": "demo-mwdrd8s2-8srol6",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 82,
+                "qtaReale": 77
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-hroyt2",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-omry7o",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-w7td6c",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 306,
+                "importoReale": 296,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s1-mbczls"
+          },
+          {
+            "id": "demo-mwdrd8s2-fg0wz6",
+            "nome": "Pranzo alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-bwipsx",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 122,
+                "qtaReale": 112
+              },
+              {
+                "id": "demo-mwdrd8s2-z0t20i",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 82,
+                "qtaReale": 77
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-vpwl7q",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-be2zor",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-4xasog",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 306,
+                "importoReale": 296,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8s1-zkezcl"
+          },
+          {
+            "id": "demo-mwdrd8s2-ploabe",
+            "nome": "Cena alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-rej6dp",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 122,
+                "qtaReale": 112
+              },
+              {
+                "id": "demo-mwdrd8s2-qcckas",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 82,
+                "qtaReale": 77
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-puizqm",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-yqdwpy",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-70jgu1",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 306,
+                "importoReale": 296,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8s1-zkezcl"
+          },
+          {
+            "id": "demo-mwdrd8s2-aerl4c",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-ddd8qx",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 122,
+                "qtaReale": 112
+              },
+              {
+                "id": "demo-mwdrd8s2-fuzzvc",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 82,
+                "qtaReale": 77
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-g5rj1z",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-340wkd",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-pc84sf",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 306,
+                "importoReale": 296,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s1-zkezcl"
+          },
+          {
+            "id": "demo-mwdrd8s2-3ki9tl",
+            "nome": "Cena alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-l9jt9n",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 122,
+                "qtaReale": 112
+              },
+              {
+                "id": "demo-mwdrd8s2-wm0ugg",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 82,
+                "qtaReale": 77
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-ys9grv",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-w3ivgc",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-mnqqxm",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 306,
+                "importoReale": 296,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8s1-o5wm4g"
+          },
+          {
+            "id": "demo-mwdrd8s2-w73mfm",
+            "nome": "Bar dopo cena",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-v8rzn2",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 122,
+                "qtaReale": 112
+              },
+              {
+                "id": "demo-mwdrd8s2-e52mci",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 82,
+                "qtaReale": 77
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-59jpzq",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-q9eibh",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-1gop4n",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 306,
+                "importoReale": 296,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s1-o5wm4g"
+          },
+          {
+            "id": "demo-mwdrd8s2-ocr017",
+            "nome": "Lotteria",
+            "tipo": "lotteria",
+            "peso": 0,
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": [],
+            "lotteria": {
+              "prezzoBiglietto": 1,
+              "bigliettiStampati": 510,
+              "vendutiPrevisti": 357,
+              "vendutiReali": 326,
+              "premi": [
+                {
+                  "id": "demo-mwdrd8s2-ykxy80",
+                  "descrizione": "Cesto natalizio",
+                  "valore": 50,
+                  "donato": true
+                },
+                {
+                  "id": "demo-mwdrd8s2-zhl8hq",
+                  "descrizione": "Cena per due",
+                  "valore": 80,
+                  "donato": false
+                }
+              ]
+            }
+          }
+        ],
+        "serate": [
+          {
+            "id": "demo-mwdrd8s1-s3pvmj",
+            "nome": "Venerdì",
+            "data": "2025-06-13",
+            "formula": "bar",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8s1-mbczls",
+            "nome": "Sabato",
+            "data": "2025-06-14",
+            "formula": "cenaFissa",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8s1-zkezcl",
+            "nome": "Domenica",
+            "data": "2025-06-15",
+            "formula": "pranzoCena",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8s1-o5wm4g",
+            "nome": "Lunedì",
+            "data": "2025-06-16",
+            "formula": "cenaCarta",
+            "peso": 1
+          }
+        ],
+        "comuni": [
+          {
+            "id": "demo-mwdrd8s2-j0t1b9",
+            "descrizione": "Tensostruttura",
+            "tipo": "uscita",
+            "importoPrevisto": 816,
+            "importoReale": 796
+          },
+          {
+            "id": "demo-mwdrd8s2-yt84l2",
+            "descrizione": "Sponsor comune",
+            "tipo": "entrata",
+            "importoPrevisto": 200,
+            "importoReale": 200
+          }
+        ]
+      },
+      {
+        "id": "demo-ed-demo-ev-bosco-2026-06-12",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-bosco",
+        "nome": "Bosco 25/26",
+        "data": "2026-06-12",
+        "partecipantiPrevisti": 171,
+        "partecipantiReali": 160,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s3-nux6x6",
+            "nome": "Bar e musica",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-jmxqjl",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 137,
+                "qtaReale": 125
+              },
+              {
+                "id": "demo-mwdrd8s3-bd7odk",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 91,
+                "qtaReale": 85
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-bx5v8c",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 11,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-e12nym",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s3-shfkwh",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 342,
+                "importoReale": 331,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s3-7uvwfh"
+          },
+          {
+            "id": "demo-mwdrd8s3-c7i5nd",
+            "nome": "Cena a menu fisso",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-go87nf",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 137,
+                "qtaReale": 125
+              },
+              {
+                "id": "demo-mwdrd8s3-yl5oxy",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 91,
+                "qtaReale": 85
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-md4r3u",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 11,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-e3ee3b",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s3-udx9ui",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 342,
+                "importoReale": 331,
+                "ripartisci": true
+              }
+            ],
+            "formula": "fisso",
+            "ingresso": {
+              "prezzo": 25,
+              "previsti": 91,
+              "prevendite": 57,
+              "venditeGiorno": 32,
+              "presenze": 80
+            },
+            "serataId": "demo-mwdrd8s3-o9elld"
+          },
+          {
+            "id": "demo-mwdrd8s3-019lnf",
+            "nome": "Bar dopo cena",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-k4d329",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 137,
+                "qtaReale": 125
+              },
+              {
+                "id": "demo-mwdrd8s3-qodqlm",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 91,
+                "qtaReale": 85
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-d02agv",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 11,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-55v1u1",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s3-wed188",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 342,
+                "importoReale": 331,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s3-o9elld"
+          },
+          {
+            "id": "demo-mwdrd8s3-ijqmf5",
+            "nome": "Pranzo alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-c005la",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 137,
+                "qtaReale": 125
+              },
+              {
+                "id": "demo-mwdrd8s3-767pc7",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 91,
+                "qtaReale": 85
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-ib4zuy",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 11,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-qad4c4",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s3-y6th2y",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 342,
+                "importoReale": 331,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8s3-aobfbw"
+          },
+          {
+            "id": "demo-mwdrd8s3-woqv61",
+            "nome": "Cena alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-zjjah4",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 137,
+                "qtaReale": 125
+              },
+              {
+                "id": "demo-mwdrd8s3-spot4i",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 91,
+                "qtaReale": 85
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-6hy8lh",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 11,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-oeoq9h",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s3-ks06sk",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 342,
+                "importoReale": 331,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8s3-aobfbw"
+          },
+          {
+            "id": "demo-mwdrd8s3-yicppg",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-s8zmcs",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 137,
+                "qtaReale": 125
+              },
+              {
+                "id": "demo-mwdrd8s3-ftzz7v",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 91,
+                "qtaReale": 85
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-1icfs0",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 11,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-k4z1pe",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s3-3fj0vz",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 342,
+                "importoReale": 331,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s3-aobfbw"
+          },
+          {
+            "id": "demo-mwdrd8s3-a68ils",
+            "nome": "Cena alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-i75bv6",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 137,
+                "qtaReale": 125
+              },
+              {
+                "id": "demo-mwdrd8s3-5m2o4k",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 91,
+                "qtaReale": 85
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-6prj3n",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 11,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-ezdbw1",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s3-3nisis",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 342,
+                "importoReale": 331,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8s3-xpjma2"
+          },
+          {
+            "id": "demo-mwdrd8s3-qzn7a6",
+            "nome": "Bar dopo cena",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-revy3l",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 137,
+                "qtaReale": 125
+              },
+              {
+                "id": "demo-mwdrd8s3-m8jun5",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 91,
+                "qtaReale": 85
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-2lelsm",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 11,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-btw1pd",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s3-sjjybc",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 342,
+                "importoReale": 331,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s3-xpjma2"
+          },
+          {
+            "id": "demo-mwdrd8s3-sroixi",
+            "nome": "Lotteria",
+            "tipo": "lotteria",
+            "peso": 0,
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": [],
+            "lotteria": {
+              "prezzoBiglietto": 1,
+              "bigliettiStampati": 570,
+              "vendutiPrevisti": 399,
+              "vendutiReali": 365,
+              "premi": [
+                {
+                  "id": "demo-mwdrd8s3-vp3gh0",
+                  "descrizione": "Cesto natalizio",
+                  "valore": 50,
+                  "donato": true
+                },
+                {
+                  "id": "demo-mwdrd8s3-cqadzc",
+                  "descrizione": "Cena per due",
+                  "valore": 80,
+                  "donato": false
+                }
+              ]
+            }
+          }
+        ],
+        "serate": [
+          {
+            "id": "demo-mwdrd8s3-7uvwfh",
+            "nome": "Venerdì",
+            "data": "2026-06-12",
+            "formula": "bar",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8s3-o9elld",
+            "nome": "Sabato",
+            "data": "2026-06-13",
+            "formula": "cenaFissa",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8s3-aobfbw",
+            "nome": "Domenica",
+            "data": "2026-06-14",
+            "formula": "pranzoCena",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8s3-xpjma2",
+            "nome": "Lunedì",
+            "data": "2026-06-15",
+            "formula": "cenaCarta",
+            "peso": 1
+          }
+        ],
+        "comuni": [
+          {
+            "id": "demo-mwdrd8s3-smluye",
+            "descrizione": "Tensostruttura",
+            "tipo": "uscita",
+            "importoPrevisto": 912,
+            "importoReale": 889
+          },
+          {
+            "id": "demo-mwdrd8s3-5bsm3c",
+            "descrizione": "Sponsor comune",
+            "tipo": "entrata",
+            "importoPrevisto": 200,
+            "importoReale": 200
+          }
+        ]
+      },
+      {
+        "id": "demo-ed-demo-ev-bosco-2027-06-11",
+        "stato": "pianificata",
+        "eventoId": "demo-ev-bosco",
+        "nome": "Bosco 26/27",
+        "data": "2027-06-11",
+        "partecipantiPrevisti": 189,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s4-2dvlpw",
+            "nome": "Bar e musica",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s4-qmllxf",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 151,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-iys1j5",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s4-x214gr",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 13,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-pjnlnl",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s4-y8eakc",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 378,
+                "importoReale": 0,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s3-1jwkp7"
+          },
+          {
+            "id": "demo-mwdrd8s4-hdz92l",
+            "nome": "Cena a menu fisso",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s4-pk53dx",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 151,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-l18rnd",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s4-ly60k1",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 13,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-w9z8vr",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s4-9q4e13",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 378,
+                "importoReale": 0,
+                "ripartisci": true
+              }
+            ],
+            "formula": "fisso",
+            "ingresso": {
+              "prezzo": 25,
+              "previsti": 101,
+              "prevendite": 0,
+              "venditeGiorno": 0,
+              "presenze": 0
+            },
+            "serataId": "demo-mwdrd8s3-e3m8bx"
+          },
+          {
+            "id": "demo-mwdrd8s4-mo8h9t",
+            "nome": "Bar dopo cena",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s4-osvecl",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 151,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-bxvywl",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s4-h80z8h",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 13,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-v81t8s",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s4-0rlc24",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 378,
+                "importoReale": 0,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s3-e3m8bx"
+          },
+          {
+            "id": "demo-mwdrd8s4-sp4kro",
+            "nome": "Pranzo alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s4-v8r8aj",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 151,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-t2q58v",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s4-yaso1n",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 13,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-34ibjd",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s4-qcp4eu",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 378,
+                "importoReale": 0,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8s4-rom1ws"
+          },
+          {
+            "id": "demo-mwdrd8s4-kn6xy2",
+            "nome": "Cena alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s4-cer5fa",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 151,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-zid91v",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s4-5iyoj7",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 13,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s4-p5hvve",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s4-bnt47a",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 378,
+                "importoReale": 0,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8s4-rom1ws"
+          },
+          {
+            "id": "demo-mwdrd8s4-cxewig",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s4-loo07u",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 151,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-8k4ued",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-nkqvfr",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 13,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-hz054f",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s7-yf8gnr",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 378,
+                "importoReale": 0,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s4-rom1ws"
+          },
+          {
+            "id": "demo-mwdrd8s4-6jxl91",
+            "nome": "Cena alla carta",
+            "tipo": "servizio",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s7-8fatvq",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 151,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-prh17h",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-bu2byk",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 13,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-wifrv6",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s7-zncx6l",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 378,
+                "importoReale": 0,
+                "ripartisci": true
+              }
+            ],
+            "formula": "carta",
+            "serataId": "demo-mwdrd8s4-5eafpd"
+          },
+          {
+            "id": "demo-mwdrd8s4-f4ze8p",
+            "nome": "Bar dopo cena",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s7-xphdkn",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 151,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-i6d4f2",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-vflaf1",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 13,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-50gr37",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 6,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s7-m6llt9",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 378,
+                "importoReale": 0,
+                "ripartisci": true
+              }
+            ],
+            "serataId": "demo-mwdrd8s4-5eafpd"
+          },
+          {
+            "id": "demo-mwdrd8s4-9e54a0",
+            "nome": "Lotteria",
+            "tipo": "lotteria",
+            "peso": 0,
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": [],
+            "lotteria": {
+              "prezzoBiglietto": 1,
+              "bigliettiStampati": 630,
+              "vendutiPrevisti": 441,
+              "vendutiReali": 0,
+              "premi": [
+                {
+                  "id": "demo-mwdrd8s7-m0m67s",
+                  "descrizione": "Cesto natalizio",
+                  "valore": 50,
+                  "donato": true
+                },
+                {
+                  "id": "demo-mwdrd8s7-0f9g40",
+                  "descrizione": "Cena per due",
+                  "valore": 80,
+                  "donato": false
+                }
+              ]
+            }
+          }
+        ],
+        "serate": [
+          {
+            "id": "demo-mwdrd8s3-1jwkp7",
+            "nome": "Venerdì",
+            "data": "2027-06-11",
+            "formula": "bar",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8s3-e3m8bx",
+            "nome": "Sabato",
+            "data": "2027-06-12",
+            "formula": "cenaFissa",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8s4-rom1ws",
+            "nome": "Domenica",
+            "data": "2027-06-13",
+            "formula": "pranzoCena",
+            "peso": 1
+          },
+          {
+            "id": "demo-mwdrd8s4-5eafpd",
+            "nome": "Lunedì",
+            "data": "2027-06-14",
+            "formula": "cenaCarta",
+            "peso": 1
+          }
+        ],
+        "comuni": [
+          {
+            "id": "demo-mwdrd8s7-b3legn",
+            "descrizione": "Tensostruttura",
+            "tipo": "uscita",
+            "importoPrevisto": 1008,
+            "importoReale": 0
+          },
+          {
+            "id": "demo-mwdrd8s7-xermuf",
+            "descrizione": "Sponsor comune",
+            "tipo": "entrata",
+            "importoPrevisto": 200,
+            "importoReale": 0
+          }
+        ]
+      },
+      {
+        "id": "demo-ed-demo-ev-cammina-2024-05-05",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-cammina",
+        "nome": "Cammina 23/24",
+        "data": "2024-05-05",
+        "partecipantiPrevisti": 90,
+        "partecipantiReali": 84,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s0-x7fc0k",
+            "nome": "Iscrizioni",
+            "tipo": "ingressi",
+            "peso": 0,
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": [],
+            "ingresso": {
+              "prezzo": 15,
+              "previsti": 48,
+              "prevendite": 30,
+              "venditeGiorno": 17,
+              "presenze": 42
+            }
+          },
+          {
+            "id": "demo-mwdrd8s1-pdpbsj",
+            "nome": "Tappa 1",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s1-qzouem",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 72,
+                "qtaReale": 66
+              },
+              {
+                "id": "demo-mwdrd8s1-z64gbw",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 48,
+                "qtaReale": 45
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-f514q2",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-qlxagk",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s1-go4fyk",
+            "nome": "Tappa 2",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s1-oja87r",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 72,
+                "qtaReale": 66
+              },
+              {
+                "id": "demo-mwdrd8s1-g9ln2c",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 48,
+                "qtaReale": 45
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-n36dum",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-uvofzc",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s1-2qgow2",
+            "nome": "Tappa 3",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s1-cws7td",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 72,
+                "qtaReale": 66
+              },
+              {
+                "id": "demo-mwdrd8s1-xvqn7t",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 48,
+                "qtaReale": 45
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-d7nr2t",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-bh5g41",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s1-0eyyri",
+            "nome": "Tappa 4",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s1-r2poq5",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 72,
+                "qtaReale": 66
+              },
+              {
+                "id": "demo-mwdrd8s1-6ep7yv",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 48,
+                "qtaReale": 45
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-om1c73",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-fk6eeu",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s1-osem6j",
+            "nome": "Tappa 5",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s1-8kac8a",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 72,
+                "qtaReale": 66
+              },
+              {
+                "id": "demo-mwdrd8s1-4popix",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 48,
+                "qtaReale": 45
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-bnmwgf",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-koxaga",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s1-9kmeqj",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s1-llw54x",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 72,
+                "qtaReale": 66
+              },
+              {
+                "id": "demo-mwdrd8s1-0z2e2f",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 48,
+                "qtaReale": 45
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-6iu508",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-u6mh5c",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s1-7br6wc",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 180,
+                "importoReale": 174,
+                "ripartisci": true
+              }
+            ]
+          }
+        ],
+        "comuni": []
+      },
+      {
+        "id": "demo-ed-demo-ev-cammina-2025-05-04",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-cammina",
+        "nome": "Cammina 24/25",
+        "data": "2025-05-04",
+        "partecipantiPrevisti": 102,
+        "partecipantiReali": 95,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s2-gyvgc6",
+            "nome": "Iscrizioni",
+            "tipo": "ingressi",
+            "peso": 0,
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": [],
+            "ingresso": {
+              "prezzo": 15,
+              "previsti": 54,
+              "prevendite": 34,
+              "venditeGiorno": 19,
+              "presenze": 48
+            }
+          },
+          {
+            "id": "demo-mwdrd8s2-0zgaq8",
+            "nome": "Tappa 1",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-48a36h",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 82,
+                "qtaReale": 75
+              },
+              {
+                "id": "demo-mwdrd8s2-gsgj1a",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 54,
+                "qtaReale": 51
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-jdr2ar",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 7,
+                "lottiReali": 7,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-w5dhsd",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s2-5iozpf",
+            "nome": "Tappa 2",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-s48ykd",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 82,
+                "qtaReale": 75
+              },
+              {
+                "id": "demo-mwdrd8s2-gdp91u",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 54,
+                "qtaReale": 51
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-v4yhur",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 7,
+                "lottiReali": 7,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-rt7ohh",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s2-5r7nhu",
+            "nome": "Tappa 3",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-dkv7a8",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 82,
+                "qtaReale": 75
+              },
+              {
+                "id": "demo-mwdrd8s2-uxof6z",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 54,
+                "qtaReale": 51
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-a2075g",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 7,
+                "lottiReali": 7,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-aft9i4",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s2-w29n7k",
+            "nome": "Tappa 4",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-0ljj3h",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 82,
+                "qtaReale": 75
+              },
+              {
+                "id": "demo-mwdrd8s2-tkcp47",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 54,
+                "qtaReale": 51
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-03aqdz",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 7,
+                "lottiReali": 7,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-gllwo4",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s2-vn1jt0",
+            "nome": "Tappa 5",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-613j0d",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 82,
+                "qtaReale": 75
+              },
+              {
+                "id": "demo-mwdrd8s2-oi1ihu",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 54,
+                "qtaReale": 51
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-s7h5t6",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 7,
+                "lottiReali": 7,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-t4zo9s",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s2-20r7cv",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-2jcm59",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 82,
+                "qtaReale": 75
+              },
+              {
+                "id": "demo-mwdrd8s2-knrnnd",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 54,
+                "qtaReale": 51
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-kdq3bh",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 7,
+                "lottiReali": 7,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-vntx3m",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-8opfcm",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 204,
+                "importoReale": 197,
+                "ripartisci": true
+              }
+            ]
+          }
+        ],
+        "comuni": []
+      },
+      {
+        "id": "demo-ed-demo-ev-cammina-2026-05-03",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-cammina",
+        "nome": "Cammina 25/26",
+        "data": "2026-05-03",
+        "partecipantiPrevisti": 114,
+        "partecipantiReali": 106,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s3-cj5wf7",
+            "nome": "Iscrizioni",
+            "tipo": "ingressi",
+            "peso": 0,
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": [],
+            "ingresso": {
+              "prezzo": 15,
+              "previsti": 61,
+              "prevendite": 38,
+              "venditeGiorno": 21,
+              "presenze": 53
+            }
+          },
+          {
+            "id": "demo-mwdrd8s3-8q18hg",
+            "nome": "Tappa 1",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-8ynjua",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 91,
+                "qtaReale": 84
+              },
+              {
+                "id": "demo-mwdrd8s3-q02ist",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 61,
+                "qtaReale": 57
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-qnltbu",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-ooqpms",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s3-tybqcw",
+            "nome": "Tappa 2",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-c51avq",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 91,
+                "qtaReale": 84
+              },
+              {
+                "id": "demo-mwdrd8s3-voof6i",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 61,
+                "qtaReale": 57
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-zoudju",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-9x0pxp",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s3-yxumg8",
+            "nome": "Tappa 3",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-ea96vi",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 91,
+                "qtaReale": 84
+              },
+              {
+                "id": "demo-mwdrd8s3-qjsz1v",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 61,
+                "qtaReale": 57
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-khtqyi",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-2i9teg",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s3-fg98y3",
+            "nome": "Tappa 4",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-cchq3f",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 91,
+                "qtaReale": 84
+              },
+              {
+                "id": "demo-mwdrd8s3-em57pg",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 61,
+                "qtaReale": 57
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-07ta9c",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-w89lwb",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s3-5uzdjo",
+            "nome": "Tappa 5",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-q5ifb2",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 91,
+                "qtaReale": 84
+              },
+              {
+                "id": "demo-mwdrd8s3-y6gy5g",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 61,
+                "qtaReale": 57
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-a6uizj",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-ih3tso",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s3-44o6sc",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-rai1cu",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 91,
+                "qtaReale": 84
+              },
+              {
+                "id": "demo-mwdrd8s3-uftlpp",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 61,
+                "qtaReale": 57
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-kdz9zj",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-ezrwfi",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s3-rh2izv",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 228,
+                "importoReale": 220,
+                "ripartisci": true
+              }
+            ]
+          }
+        ],
+        "comuni": []
+      },
+      {
+        "id": "demo-ed-demo-ev-cammina-2027-05-02",
+        "stato": "pianificata",
+        "eventoId": "demo-ev-cammina",
+        "nome": "Cammina 26/27",
+        "data": "2027-05-02",
+        "partecipantiPrevisti": 126,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s7-eal9qw",
+            "nome": "Iscrizioni",
+            "tipo": "ingressi",
+            "peso": 0,
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": [],
+            "ingresso": {
+              "prezzo": 15,
+              "previsti": 67,
+              "prevendite": 0,
+              "venditeGiorno": 0,
+              "presenze": 0
+            }
+          },
+          {
+            "id": "demo-mwdrd8s7-euk6rb",
+            "nome": "Tappa 1",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s7-de68c4",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-gyk5be",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 67,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-vlb36v",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-qz53ry",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s7-p5pw9j",
+            "nome": "Tappa 2",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s7-dbgdu1",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-pbpo56",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 67,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-1wwhhw",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-ystdjd",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s7-ucgvpa",
+            "nome": "Tappa 3",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s7-j1z6lz",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-7nnis9",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 67,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-s5fb8x",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-t6cwrz",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s7-cguoqx",
+            "nome": "Tappa 4",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s7-tko2mf",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-d8gaao",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 67,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-s3t7ga",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-29hh7t",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s7-wh4s8j",
+            "nome": "Tappa 5",
+            "tipo": "tappa",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s7-bz4tpb",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-kxblps",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 67,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-6julja",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-skls12",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s7-4afp9p",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s7-37l0ji",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 101,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-9vzgvi",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 67,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-wjox8m",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-0k1z8p",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s7-usge3x",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 252,
+                "importoReale": 0,
+                "ripartisci": true
+              }
+            ]
+          }
+        ],
+        "comuni": []
+      },
+      {
+        "id": "demo-ed-demo-ev-halloween-2023-11-04",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-halloween",
+        "nome": "Halloween 23/24",
+        "data": "2023-11-04",
+        "partecipantiPrevisti": 113,
+        "partecipantiReali": 105,
+        "parti": [
+          {
+            "id": "demo-mwdrd8ql-4ptwf6",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8qm-c5qkol",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 90,
+                "qtaReale": 83
+              },
+              {
+                "id": "demo-mwdrd8qm-5c737c",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 60,
+                "qtaReale": 56
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8qm-wcpnt6",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8qm-h0sohk",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8rr-6kwxue",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 225,
+                "importoReale": 218,
+                "ripartisci": true
+              }
+            ]
+          }
+        ],
+        "comuni": []
+      },
+      {
+        "id": "demo-ed-demo-ev-halloween-2024-11-02",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-halloween",
+        "nome": "Halloween 24/25",
+        "data": "2024-11-02",
+        "partecipantiPrevisti": 128,
+        "partecipantiReali": 119,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s1-gcl88h",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s1-g560ph",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 102,
+                "qtaReale": 94
+              },
+              {
+                "id": "demo-mwdrd8s1-s63hp1",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 68,
+                "qtaReale": 64
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-ak5lvf",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-rnv7jj",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s1-u37r8j",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 255,
+                "importoReale": 247,
+                "ripartisci": true
+              }
+            ]
+          }
+        ],
+        "comuni": []
+      },
+      {
+        "id": "demo-ed-demo-ev-halloween-2025-11-01",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-halloween",
+        "nome": "Halloween 25/26",
+        "data": "2025-11-01",
+        "partecipantiPrevisti": 143,
+        "partecipantiReali": 133,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s2-uvf3lj",
+            "nome": "Bar",
+            "tipo": "bar",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-kx20tn",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 114,
+                "qtaReale": 105
+              },
+              {
+                "id": "demo-mwdrd8s2-3cmv7d",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 76,
+                "qtaReale": 71
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-fnwr2f",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-i8wqf1",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "demo-mwdrd8s2-2xt526",
+                "descrizione": "Musica / SIAE",
+                "importoPrevisto": 285,
+                "importoReale": 276,
+                "ripartisci": true
+              }
+            ]
+          }
+        ],
+        "comuni": []
+      },
+      {
+        "id": "demo-ed-demo-ev-halloween-2026-10-31",
+        "stato": "conclusa",
+        "eventoId": "demo-ev-halloween",
+        "parti": [
+          {
+            "acquisti": [
+              {
+                "rimanenza": 0,
+                "id": "demo-mwdrd8s3-u89x16",
+                "daMagazzino": 0,
+                "lottiPrevisti": 11,
+                "mpId": "demo-mp-birra",
+                "lottiReali": 0
+              },
+              {
+                "rimanenza": 0,
+                "mpId": "demo-mp-pane",
+                "daMagazzino": 0,
+                "lottiReali": 0,
+                "id": "demo-mwdrd8s3-5jrvtc",
+                "lottiPrevisti": 5
+              }
+            ],
+            "menu": [
+              {
+                "id": "54cc9309-3e1f-45c9-abbf-cf8573549b55",
+                "articoloId": "art-art-02",
+                "qtaPrevista": 0,
+                "qtaReale": 85
+              }
+            ],
+            "peso": 1,
+            "id": "demo-mwdrd8s3-r5hxu0",
+            "nome": "Bar",
+            "costiExtra": [
+              {
+                "importoReale": 0,
+                "importoPrevisto": 315,
+                "ripartisci": true,
+                "id": "demo-mwdrd8s3-rqvuc7",
+                "descrizione": "Musica / SIAE"
+              }
+            ],
+            "tipo": "bar"
+          }
+        ],
+        "partecipantiPrevisti": 158,
+        "nome": "Halloween 26/27",
+        "data": "2026-10-31",
+        "comuni": [],
+        "aggiornatoIl": 1794557238998,
+        "modificatoDa": "federico.trabucchi04@gmail.com",
+        "eliminato": false
+      },
+      {
+        "id": "demo-ed-demo-ev-natale-2023-12-08",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-natale",
+        "nome": "Natale 23/24",
+        "data": "2023-12-08",
+        "partecipantiPrevisti": 113,
+        "partecipantiReali": 105,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s1-o23enh",
+            "nome": "Presepe",
+            "tipo": "materiali",
+            "peso": 1,
+            "menu": [],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-nwdm77",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-2hng7l",
+                "mpId": "demo-mp-legno",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s1-2440ke",
+            "nome": "Albero di Natale",
+            "tipo": "materiali",
+            "peso": 1,
+            "menu": [],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-mueocu",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-7zp7nc",
+                "mpId": "demo-mp-legno",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s1-f3e5us",
+            "nome": "Capodanno",
+            "tipo": "generica",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s1-mgw9l9",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 90,
+                "qtaReale": 83
+              },
+              {
+                "id": "demo-mwdrd8s1-r52x3u",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 60,
+                "qtaReale": 56
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s1-s1h4we",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 8,
+                "lottiReali": 8,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s1-xi456z",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          }
+        ],
+        "comuni": [],
+        "presepe": "fermo"
+      },
+      {
+        "id": "demo-ed-demo-ev-natale-2024-12-07",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-natale",
+        "nome": "Natale 24/25",
+        "data": "2024-12-07",
+        "partecipantiPrevisti": 128,
+        "partecipantiReali": 119,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s2-uv40ck",
+            "nome": "Presepe",
+            "tipo": "materiali",
+            "peso": 1,
+            "menu": [],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-qhe5j3",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-lp60ks",
+                "mpId": "demo-mp-legno",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s2-mn9jya",
+            "nome": "Albero di Natale",
+            "tipo": "materiali",
+            "peso": 1,
+            "menu": [],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-cj9m4n",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-pjjkm6",
+                "mpId": "demo-mp-legno",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s2-px1w7y",
+            "nome": "Capodanno",
+            "tipo": "generica",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s2-tbr4ve",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 102,
+                "qtaReale": 94
+              },
+              {
+                "id": "demo-mwdrd8s2-j71qws",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 68,
+                "qtaReale": 64
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s2-0kf6x8",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 9,
+                "lottiReali": 9,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s2-kyjs5z",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 4,
+                "lottiReali": 4,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          }
+        ],
+        "comuni": [],
+        "presepe": "fermo"
+      },
+      {
+        "id": "demo-ed-demo-ev-natale-2025-12-06",
+        "stato": "chiusa",
+        "eventoId": "demo-ev-natale",
+        "nome": "Natale 25/26",
+        "data": "2025-12-06",
+        "partecipantiPrevisti": 143,
+        "partecipantiReali": 133,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s3-ahk72h",
+            "nome": "Presepe",
+            "tipo": "materiali",
+            "peso": 1,
+            "menu": [],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-1351ys",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-987ouo",
+                "mpId": "demo-mp-legno",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s3-qt9tt6",
+            "nome": "Albero di Natale",
+            "tipo": "materiali",
+            "peso": 1,
+            "menu": [],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-hm9xl2",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-6w0v5i",
+                "mpId": "demo-mp-legno",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s3-ho1uub",
+            "nome": "Capodanno",
+            "tipo": "generica",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s3-l8z6k5",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 114,
+                "qtaReale": 105
+              },
+              {
+                "id": "demo-mwdrd8s3-un0a72",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 76,
+                "qtaReale": 71
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s3-h7b0hx",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 10,
+                "lottiReali": 10,
+                "daMagazzino": 1,
+                "rimanenza": 2
+              },
+              {
+                "id": "demo-mwdrd8s3-cqiofa",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 1,
+                "scadenza": "2027-03-02"
+              }
+            ],
+            "costiExtra": []
+          }
+        ],
+        "comuni": [],
+        "presepe": "fermo"
+      },
+      {
+        "id": "demo-ed-demo-ev-natale-2026-12-05",
+        "stato": "pianificata",
+        "eventoId": "demo-ev-natale",
+        "nome": "Natale 26/27",
+        "data": "2026-12-05",
+        "partecipantiPrevisti": 158,
+        "parti": [
+          {
+            "id": "demo-mwdrd8s7-7r0p1b",
+            "nome": "Presepe",
+            "tipo": "materiali",
+            "peso": 1,
+            "menu": [],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-otcv7b",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-8rij0r",
+                "mpId": "demo-mp-legno",
+                "lottiPrevisti": 5,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s7-wtq9dc",
+            "nome": "Albero di Natale",
+            "tipo": "materiali",
+            "peso": 1,
+            "menu": [],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-231hm6",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-lwrqyh",
+                "mpId": "demo-mp-legno",
+                "lottiPrevisti": 5,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": []
+          },
+          {
+            "id": "demo-mwdrd8s7-kctdu8",
+            "nome": "Capodanno",
+            "tipo": "generica",
+            "peso": 1,
+            "menu": [
+              {
+                "id": "demo-mwdrd8s7-n63vvm",
+                "articoloId": "demo-art-birra",
+                "qtaPrevista": 126,
+                "qtaReale": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-pd9hg9",
+                "articoloId": "demo-art-panino",
+                "qtaPrevista": 84,
+                "qtaReale": 0
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "demo-mwdrd8s7-b84ksr",
+                "mpId": "demo-mp-birra",
+                "lottiPrevisti": 11,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              },
+              {
+                "id": "demo-mwdrd8s7-cwzc02",
+                "mpId": "demo-mp-pane",
+                "lottiPrevisti": 5,
+                "lottiReali": 0,
+                "daMagazzino": 0,
+                "rimanenza": 0
+              }
+            ],
+            "costiExtra": []
+          }
+        ],
+        "comuni": [],
+        "presepe": "fermo"
+      },
+      {
+        "id": "ed-festa-halloween-2025",
+        "stato": "conclusa",
+        "eventoId": "evt-festa-con-bar",
+        "nome": "Festa halloween 2025",
+        "data": "2025-11-11",
+        "parti": [
+          {
+            "nome": "Bar",
+            "tipo": "bar",
+            "menu": [],
+            "acquisti": [],
+            "costiExtra": [],
+            "id": "ed-festa-halloween-2025-p1",
+            "peso": 1
+          }
+        ],
+        "comuni": []
+      },
+      {
+        "id": "ed-festa-halloween-2026",
+        "stato": "conclusa",
+        "eventoId": "evt-festa-con-bar",
+        "nome": "Festa halloween 2026",
+        "data": "2026-11-11",
+        "parti": [
+          {
+            "nome": "Bar",
+            "tipo": "bar",
+            "menu": [
+              {
+                "id": "menu-0",
+                "articoloId": "art-art-01",
+                "qtaPrevista": 60,
+                "qtaReale": 55
+              },
+              {
+                "id": "menu-1",
+                "articoloId": "art-art-04",
+                "qtaPrevista": 50,
+                "qtaReale": 48
+              },
+              {
+                "id": "menu-2",
+                "articoloId": "art-art-02",
+                "qtaPrevista": 200,
+                "qtaReale": 225
+              },
+              {
+                "id": "menu-3",
+                "articoloId": "art-art-06",
+                "qtaPrevista": 45,
+                "qtaReale": 50
+              },
+              {
+                "id": "menu-4",
+                "articoloId": "art-art-07",
+                "qtaPrevista": 70,
+                "qtaReale": 65
+              },
+              {
+                "id": "menu-5",
+                "articoloId": "art-art-08",
+                "qtaPrevista": 40,
+                "qtaReale": 36
+              },
+              {
+                "id": "menu-6",
+                "articoloId": "art-art-03",
+                "qtaPrevista": 200,
+                "qtaReale": 190
+              }
+            ],
+            "acquisti": [
+              {
+                "id": "acq-0",
+                "mpId": "mp-mp-23",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 17
+              },
+              {
+                "id": "acq-1",
+                "mpId": "mp-mp-24",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 22
+              },
+              {
+                "id": "acq-2",
+                "mpId": "mp-mp-04",
+                "lottiPrevisti": 5,
+                "lottiReali": 5,
+                "daMagazzino": 0,
+                "rimanenza": 25
+              },
+              {
+                "id": "acq-3",
+                "mpId": "mp-mp-05",
+                "lottiPrevisti": 6,
+                "lottiReali": 6,
+                "daMagazzino": 0,
+                "rimanenza": 55
+              },
+              {
+                "id": "acq-4",
+                "mpId": "mp-mp-20",
+                "lottiPrevisti": 3,
+                "lottiReali": 3,
+                "daMagazzino": 0,
+                "rimanenza": 3
+              },
+              {
+                "id": "acq-5",
+                "mpId": "mp-mp-21",
+                "lottiPrevisti": 20,
+                "lottiReali": 20,
+                "daMagazzino": 0,
+                "rimanenza": 4
+              },
+              {
+                "id": "acq-6",
+                "mpId": "mp-mp-13",
+                "lottiPrevisti": 2,
+                "lottiReali": 2,
+                "daMagazzino": 0,
+                "rimanenza": 7
+              },
+              {
+                "id": "acq-7",
+                "mpId": "mp-mp-16",
+                "lottiPrevisti": 2,
+                "lottiReali": 2,
+                "daMagazzino": 0,
+                "rimanenza": 35
+              }
+            ],
+            "costiExtra": [
+              {
+                "id": "extra-0",
+                "descrizione": "Musica",
+                "importoPrevisto": 500,
+                "importoReale": 500,
+                "ripartisci": true
+              }
+            ],
+            "id": "ed-festa-halloween-2026-p1",
+            "peso": 1
+          }
+        ],
+        "comuni": []
+      }
+    ],
+    "movimenti": [
+      {
+        "id": "606105f4-d2fe-4926-82c3-e72ca88f1459",
+        "data": "2026-11-07",
+        "descrizione": "Quota associati",
+        "tipo": "entrata",
+        "importo": 390,
+        "stato": "ufficiale",
+        "categoria": "Altro",
+        "edizioneId": "9d573713-52ff-4a2a-acad-3400ce75d8b6",
+        "aggiornatoIl": 1794556845568,
+        "modificatoDa": "federico.trabucchi04@gmail.com",
+        "eliminato": false,
+        "quote": [
+          {
+            "edizioneId": "9d573713-52ff-4a2a-acad-3400ce75d8b6",
+            "importo": 390
+          }
+        ],
+        "note": "39x10"
+      },
+      {
+        "id": "demo-mwdrd8s1-4dv3e9",
+        "data": "2023-11-04",
+        "descrizione": "Incasso Halloween 23/24",
+        "tipo": "entrata",
+        "importo": 1650,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-halloween-2023-11-04"
+      },
+      {
+        "id": "demo-mwdrd8s1-cosg4a",
+        "data": "2024-05-05",
+        "descrizione": "Incasso Cammina 23/24",
+        "tipo": "entrata",
+        "importo": 1650,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-cammina-2024-05-05"
+      },
+      {
+        "id": "demo-mwdrd8s1-j7llza",
+        "data": "2024-05-05",
+        "descrizione": "Fornitori Cammina 23/24",
+        "tipo": "uscita",
+        "importo": 1050,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-cammina-2024-05-05"
+      },
+      {
+        "id": "demo-mwdrd8s1-kyeow3",
+        "data": "2023-12-08",
+        "descrizione": "Fornitori Natale 23/24",
+        "tipo": "uscita",
+        "importo": 1050,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-natale-2023-12-08"
+      },
+      {
+        "id": "demo-mwdrd8s1-mufcfn",
+        "data": "2024-06-14",
+        "descrizione": "Incasso Bosco 23/24",
+        "tipo": "entrata",
+        "importo": 1650,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-bosco-2024-06-14"
+      },
+      {
+        "id": "demo-mwdrd8s1-uzok8h",
+        "data": "2023-12-08",
+        "descrizione": "Incasso Natale 23/24",
+        "tipo": "entrata",
+        "importo": 1650,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-natale-2023-12-08"
+      },
+      {
+        "id": "demo-mwdrd8s1-wk90bu",
+        "data": "2023-11-04",
+        "descrizione": "Fornitori Halloween 23/24",
+        "tipo": "uscita",
+        "importo": 1050,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-halloween-2023-11-04"
+      },
+      {
+        "id": "demo-mwdrd8s1-x9o5sv",
+        "data": "2024-06-14",
+        "descrizione": "Fornitori Bosco 23/24",
+        "tipo": "uscita",
+        "importo": 1050,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-bosco-2024-06-14"
+      },
+      {
+        "id": "demo-mwdrd8s1-xmkzo8",
+        "data": "2023-10-01",
+        "descrizione": "Tesseramento 23/24",
+        "tipo": "entrata",
+        "importo": 480,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento"
+      },
+      {
+        "id": "demo-mwdrd8s1-ywor1c",
+        "data": "2023-10-15",
+        "descrizione": "Utenze 23/24",
+        "tipo": "uscita",
+        "importo": 90,
+        "stato": "ufficiale",
+        "categoria": "Utenze"
+      },
+      {
+        "id": "demo-mwdrd8s2-0jqs2w",
+        "data": "2024-10-15",
+        "descrizione": "Utenze 24/25",
+        "tipo": "uscita",
+        "importo": 100,
+        "stato": "ufficiale",
+        "categoria": "Utenze"
+      },
+      {
+        "id": "demo-mwdrd8s2-1ns3aq",
+        "data": "2025-06-13",
+        "descrizione": "Incasso Bosco 24/25",
+        "tipo": "entrata",
+        "importo": 1870,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-bosco-2025-06-13"
+      },
+      {
+        "id": "demo-mwdrd8s2-5x8n64",
+        "data": "2025-05-04",
+        "descrizione": "Fornitori Cammina 24/25",
+        "tipo": "uscita",
+        "importo": 1190,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-cammina-2025-05-04"
+      },
+      {
+        "id": "demo-mwdrd8s2-6xe9cy",
+        "data": "2024-11-02",
+        "descrizione": "Fornitori Halloween 24/25",
+        "tipo": "uscita",
+        "importo": 1190,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-halloween-2024-11-02"
+      },
+      {
+        "id": "demo-mwdrd8s2-nsaiid",
+        "data": "2024-11-02",
+        "descrizione": "Incasso Halloween 24/25",
+        "tipo": "entrata",
+        "importo": 1870,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-halloween-2024-11-02"
+      },
+      {
+        "id": "demo-mwdrd8s2-q13zhx",
+        "data": "2025-05-04",
+        "descrizione": "Incasso Cammina 24/25",
+        "tipo": "entrata",
+        "importo": 1870,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-cammina-2025-05-04"
+      },
+      {
+        "id": "demo-mwdrd8s2-rp1vgb",
+        "data": "2024-12-07",
+        "descrizione": "Fornitori Natale 24/25",
+        "tipo": "uscita",
+        "importo": 1190,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-natale-2024-12-07"
+      },
+      {
+        "id": "demo-mwdrd8s2-rsdzri",
+        "data": "2024-12-07",
+        "descrizione": "Incasso Natale 24/25",
+        "tipo": "entrata",
+        "importo": 1870,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-natale-2024-12-07"
+      },
+      {
+        "id": "demo-mwdrd8s2-sd5amo",
+        "data": "2025-06-13",
+        "descrizione": "Fornitori Bosco 24/25",
+        "tipo": "uscita",
+        "importo": 1190,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-bosco-2025-06-13"
+      },
+      {
+        "id": "demo-mwdrd8s2-vb6fej",
+        "data": "2024-10-01",
+        "descrizione": "Tesseramento 24/25",
+        "tipo": "entrata",
+        "importo": 510,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento"
+      },
+      {
+        "id": "demo-mwdrd8s3-6h62ua",
+        "data": "2025-11-01",
+        "descrizione": "Incasso Halloween 25/26",
+        "tipo": "entrata",
+        "importo": 2090,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-halloween-2025-11-01"
+      },
+      {
+        "id": "demo-mwdrd8s3-7ja6nd",
+        "data": "2025-12-06",
+        "descrizione": "Fornitori Natale 25/26",
+        "tipo": "uscita",
+        "importo": 1330,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-natale-2025-12-06"
+      },
+      {
+        "id": "demo-mwdrd8s3-900dd8",
+        "data": "2026-05-03",
+        "descrizione": "Fornitori Cammina 25/26",
+        "tipo": "uscita",
+        "importo": 1330,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-cammina-2026-05-03"
+      },
+      {
+        "id": "demo-mwdrd8s3-b3i2ls",
+        "data": "2026-05-03",
+        "descrizione": "Incasso Cammina 25/26",
+        "tipo": "entrata",
+        "importo": 2090,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-cammina-2026-05-03"
+      },
+      {
+        "id": "demo-mwdrd8s3-j9hn3a",
+        "data": "2025-11-01",
+        "descrizione": "Fornitori Halloween 25/26",
+        "tipo": "uscita",
+        "importo": 1330,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-halloween-2025-11-01"
+      },
+      {
+        "id": "demo-mwdrd8s3-ppc278",
+        "data": "2026-06-12",
+        "descrizione": "Incasso Bosco 25/26",
+        "tipo": "entrata",
+        "importo": 2090,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-bosco-2026-06-12"
+      },
+      {
+        "id": "demo-mwdrd8s3-swth6n",
+        "data": "2026-06-12",
+        "descrizione": "Fornitori Bosco 25/26",
+        "tipo": "uscita",
+        "importo": 1330,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "demo-ed-demo-ev-bosco-2026-06-12"
+      },
+      {
+        "id": "demo-mwdrd8s3-t3kxow",
+        "data": "2025-10-15",
+        "descrizione": "Utenze 25/26",
+        "tipo": "uscita",
+        "importo": 110,
+        "stato": "ufficiale",
+        "categoria": "Utenze"
+      },
+      {
+        "id": "demo-mwdrd8s3-ycprzo",
+        "data": "2025-10-01",
+        "descrizione": "Tesseramento 25/26",
+        "tipo": "entrata",
+        "importo": 540,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento"
+      },
+      {
+        "id": "demo-mwdrd8s3-zkblh0",
+        "data": "2025-12-06",
+        "descrizione": "Incasso Natale 25/26",
+        "tipo": "entrata",
+        "importo": 2090,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "demo-ed-demo-ev-natale-2025-12-06"
+      },
+      {
+        "id": "demo-mwdrd8s7-62qll3",
+        "data": "2026-10-01",
+        "descrizione": "Tesseramento 26/27",
+        "tipo": "entrata",
+        "importo": 570,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento"
+      },
+      {
+        "id": "demo-mwdrd8s8-dot9z0",
+        "data": "2026-10-15",
+        "descrizione": "Utenze 26/27",
+        "tipo": "uscita",
+        "importo": 120,
+        "stato": "ufficiale",
+        "categoria": "Utenze"
+      },
+      {
+        "id": "fest-0",
+        "data": "2026-11-07",
+        "descrizione": "Fumagalli fornitore",
+        "tipo": "uscita",
+        "importo": 500,
+        "stato": "previsto",
+        "categoria": "Fornitori",
+        "edizioneId": "ed-festa-halloween-2026",
+        "fornitoreId": "forn-fumagalli"
+      },
+      {
+        "id": "fest-1",
+        "data": "2026-11-16",
+        "descrizione": "Incasso totale",
+        "tipo": "entrata",
+        "importo": 2300,
+        "stato": "ufficiale",
+        "categoria": "Incassi evento",
+        "edizioneId": "ed-festa-halloween-2026"
+      },
+      {
+        "id": "fest-2",
+        "data": "2026-11-16",
+        "descrizione": "Musica",
+        "tipo": "uscita",
+        "importo": 500,
+        "stato": "ufficiale",
+        "categoria": "Musica e servizi",
+        "edizioneId": "ed-festa-halloween-2026"
+      },
+      {
+        "id": "fest-3",
+        "data": "2026-11-08",
+        "descrizione": "Bosco fornitore",
+        "tipo": "uscita",
+        "importo": 430,
+        "stato": "ufficiale",
+        "categoria": "Fornitori",
+        "edizioneId": "ed-festa-halloween-2026",
+        "fornitoreId": "forn-bosco"
+      },
+      {
+        "id": "ord-0",
+        "data": "2026-10-02",
+        "descrizione": "Bombole gas",
+        "tipo": "uscita",
+        "importo": 120,
+        "stato": "ufficiale",
+        "categoria": "Fondo sede"
+      },
+      {
+        "id": "ord-1",
+        "data": "2026-10-08",
+        "descrizione": "Luce",
+        "tipo": "uscita",
+        "importo": 100,
+        "stato": "previsto",
+        "categoria": "Bollette"
+      },
+      {
+        "id": "ord-2",
+        "data": "2026-10-11",
+        "descrizione": "Cose per pulire sede",
+        "tipo": "uscita",
+        "importo": 25,
+        "stato": "ufficiale",
+        "categoria": "Fondo sede"
+      },
+      {
+        "id": "ord-3",
+        "data": "2026-11-11",
+        "descrizione": "Tesseramento",
+        "tipo": "entrata",
+        "importo": 510,
+        "stato": "ufficiale",
+        "categoria": "Entrate straordinarie",
+        "note": "51x10"
+      }
+    ],
+    "inventario": [],
+    "impostazioni": {
+      "id": "impostazioni",
+      "saldiApertura": {
+        "2026/27": 11
+      },
+      "categorieMovimento": [
+        "Incassi evento",
+        "Fornitori",
+        "Musica e servizi",
+        "Bollette",
+        "Fondo sede",
+        "Tesseramento",
+        "Pulizie",
+        "Entrate straordinarie",
+        "Altro"
+      ],
+      "categorieArticolo": [
+        "Bar",
+        "Cucina",
+        "Altro"
+      ],
+      "margineObiettivo": 0.4
+    }
+  }
+}
