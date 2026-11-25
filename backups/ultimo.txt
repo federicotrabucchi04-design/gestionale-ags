@@ -1,2 +1,2 @@
-Ultimo backup: 2026-11-24T14:24:39.038Z
-File: /home/runner/work/gestionale-ags/gestionale-ags/backups/gestionale-ags-2026-11-24.json
+Ultimo backup: 2026-11-25T13:42:58.558Z
+File: /home/runner/work/gestionale-ags/gestionale-ags/backups/gestionale-ags-2026-11-25.json
